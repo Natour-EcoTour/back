@@ -33,7 +33,7 @@ class CustomUser(AbstractUser):
     id = models.AutoField(primary_key=True)
     role = models.ForeignKey(
         Role,
-        default=1,
+        default=3,
         on_delete=models.SET_NULL,
         related_name="users",
         blank=False,
