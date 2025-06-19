@@ -1,3 +1,6 @@
+"""
+Module for Django admin registration of models.
+"""
 from django.contrib import admin
 from .models import Role, CustomUser, Point, PointReview, Terms
 

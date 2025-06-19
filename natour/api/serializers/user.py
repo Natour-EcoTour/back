@@ -1,18 +1,40 @@
+"""
+Serializers for user-related models.
+"""
+
 import re
 
 from django.core.validators import EmailValidator, RegexValidator
-
 from rest_framework import serializers
 
-from ..models import CustomUser, Point, PointReview, Terms
+from natour.api.models import CustomUser
 
+class GenericUserSerializer(serializers.ModelSerializer):
+    """
+    Generic serializer for CustomUser model.
+    """
+    class Meta:
+        """
+        Meta class for GenericUserSerializer.
+        """
+        model = CustomUser
+        fields = ['username', 'email', 'role', 'is_active', 'is_staff']
 
 class CustomUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for CustomUser model.
+    """
     class Meta:
+        """
+        Meta class for CustomUserSerializer.
+        """
         model = CustomUser
         fields = '__all__'
 
         def create(self, validated_data):
+            """
+            Create a new CustomUser instance.
+            """
             password = validated_data.pop('password')
             user = CustomUser(**validated_data)
             user.set_password(password)
@@ -21,7 +43,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
 
 class CreateUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for creating a new user.
+    """
     class Meta:
+        """
+        Meta class for CreateUserSerializer.
+        """
         model = CustomUser
         fields = ['username', 'email', 'password', 'role']
 
@@ -53,13 +81,15 @@ class CreateUserSerializer(serializers.ModelSerializer):
         })
 
     def validate_password(self, value):
+        """
+        Validate the password to ensure it meets security requirements.
+        """
         if len(value) < 8 or not re.search(r'[A-Za-z]', value) or not re.search(r'[0-9]', value):
             raise serializers.ValidationError(
                 'Senha deve ter pelo menos 8 caracteres, incluindo letras e números.')
         return value
 
     def create(self, validated_data):
-
         email = validated_data.get('email')
         email = email.lower()
         validated_data['email'] = email

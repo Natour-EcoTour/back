@@ -1,6 +1,6 @@
-import re
-
-from django.core.validators import EmailValidator, RegexValidator
+"""
+Module for serializers used in the Natour API.
+"""
 
 from rest_framework import serializers
 
