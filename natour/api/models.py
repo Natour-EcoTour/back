@@ -37,7 +37,7 @@ class CustomUser(AbstractUser):
         on_delete=models.SET_NULL,
         related_name="users",
         blank=False,
-        null=False)
+        null=True)
     email = models.EmailField(unique=True)
     deactivation_reson = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
