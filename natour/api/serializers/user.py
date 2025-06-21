@@ -20,6 +20,28 @@ class GenericUserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['username', 'email', 'role', 'is_active', 'is_staff']
 
+class CustomUserInfoSerializer(serializers.ModelSerializer):
+    """
+    Serializer for CustomUser model with additional fields.
+    """
+
+    photo = serializers.SerializerMethodField()
+
+    class Meta:
+        """
+        Meta class for CustomUserInfoSerializer.
+        """
+        model = CustomUser
+        fields = ['username', 'email', 'photo']
+
+    def get_photo(self, obj):
+        """
+        Get the URL of the user's photo if it exists.
+        """
+        if hasattr(obj, 'photos') and obj.photos:
+            return obj.photos.image.url
+        return None
+
 class CustomUserSerializer(serializers.ModelSerializer):
     """
     Serializer for CustomUser model.
