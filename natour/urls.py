@@ -20,6 +20,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .api.views.auth import MyTokenObtainPairView, create_user, login
+from .api.views.photo import create_photo
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +30,6 @@ urlpatterns = [
 
     path('users/create/', create_user, name='create_user'),
     path('users/login/', login, name='login'),
+
+    path('photos/upload/', create_photo, name='photo-upload')
 ]

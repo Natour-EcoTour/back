@@ -3,8 +3,10 @@ Entity creation file
 """
 
 from django.db import models
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractUser
+from cloudinary.models import CloudinaryField
 
 
 class Role(models.Model):
@@ -26,6 +28,34 @@ class Role(models.Model):
         verbose_name_plural = "Roles"
 
 
+class Photo(models.Model):
+    """
+    Model representing a photo associated with a user or a point.
+    """
+    image = CloudinaryField('image')
+    user = models.ForeignKey('CustomUser', on_delete=models.CASCADE,
+                             related_name='photos', null=True, blank=True)
+    point = models.ForeignKey(
+        'Point', on_delete=models.CASCADE, related_name='photos', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if not self.user and not self.point:
+            raise ValidationError(
+                "Foto deve ser atribuida a um usuário ou a um ponto.")
+        if self.user and self.point:
+            raise ValidationError(
+                "Foto só pode ser atribuida a um usuário ou a um ponto, não aos dois.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Photo for {'User' if self.user else 'Point'} {self.user or self.point}"
+
+
 class CustomUser(AbstractUser):
     """
     Custom user model that extends the default Django user model.
@@ -39,7 +69,7 @@ class CustomUser(AbstractUser):
         blank=False,
         null=True)
     email = models.EmailField(unique=True)
-    deactivation_reson = models.TextField(blank=True, null=True)
+    deactivation_reason = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
