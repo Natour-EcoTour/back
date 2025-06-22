@@ -121,3 +121,23 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+
+
+class UpdateUserSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating user information.
+    """
+    class Meta:
+        """
+        Meta class for UpdateUserSerializer.
+        """
+        model = CustomUser
+        fields = ['username']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['username'].error_messages.update({
+            'required': 'Nome de usuário é obrigatório.',
+            'blank': 'Nome de usuário não pode estar em branco.',
+        })

@@ -9,7 +9,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import permission_classes
 
-from natour.api.serializers.user import CustomUserInfoSerializer
+from natour.api.serializers.user import CustomUserInfoSerializer, UpdateUserSerializer
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -19,3 +20,31 @@ def get_my_info(request):
     """
     user = request.user
     return Response(CustomUserInfoSerializer(user).data, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_my_account(request):
+    """
+    Endpoint to delete the authenticated user's account.
+    """
+    user = request.user
+    user.delete()
+    return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_my_info(request):
+    """
+    Endpoint to update the authenticated user's information.
+    """
+    user = request.user
+    serializer = UpdateUserSerializer(
+        user, data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
