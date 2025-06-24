@@ -9,7 +9,7 @@ from rest_framework import status
 from cloudinary.uploader import destroy
 
 from natour.api.models import Photo
-from natour.api.serializers.photo import PhotoSerializer
+from natour.api.serializers.photo import PhotoSerializer, PhotoIDSerializer
 
 
 @api_view(['POST'])
@@ -61,3 +61,28 @@ def update_photo(request, photo_id, user_id=None, point_id=None):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticatedOrReadOnly])
+def get_photo(request):
+    """
+    Endpoint
+    """
+    user_id = request.query_params.get('user_id')
+    point_id = request.query_params.get('point_id')
+
+    if not user_id and not point_id:
+        return Response(
+            {"detail": "You must provide at least 'user_id' or 'point_id' as query parameter."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    queryset = Photo.objects.all()  # pylint: disable=no-member
+
+    if user_id:
+        queryset = queryset.filter(user_id=user_id)
+    if point_id:
+        queryset = queryset.filter(point_id=point_id)
+
+    serializer = PhotoIDSerializer(queryset, many=True)
+    return Response(serializer.data)

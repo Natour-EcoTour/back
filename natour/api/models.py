@@ -33,6 +33,7 @@ class Photo(models.Model):
     Model representing a photo associated with a user or a point.
     """
     image = CloudinaryField('image')
+    public_id = models.CharField(max_length=255, blank=True, null=True)
     user = models.OneToOneField('CustomUser', on_delete=models.CASCADE,
                              related_name='photos', null=True, blank=True)
     point = models.ForeignKey(
@@ -63,7 +64,7 @@ class CustomUser(AbstractUser):
     id = models.AutoField(primary_key=True)
     role = models.ForeignKey(
         Role,
-        default=3,
+        default=1, # 1 is for 'user' role
         on_delete=models.SET_NULL,
         related_name="users",
         blank=False,
