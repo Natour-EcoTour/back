@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .api.views.auth import MyTokenObtainPairView, create_user, login
 from .api.views.users import get_my_info, delete_my_account, update_my_info
-from .api.views.photo import create_photo, update_photo, get_photo
+from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -46,4 +46,5 @@ urlpatterns = [
     path('points/<int:point_id>/photo/update/<int:photo_id>/', update_photo, name='point-photo-update'),
 
     path('photos/', get_photo, name='photo-list'),
+    path('photos/delete/', delete_photo, name='photo-delete'),
 ]
