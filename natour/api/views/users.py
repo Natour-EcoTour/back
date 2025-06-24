@@ -1,6 +1,8 @@
 """
 Views for user management in the Natour API.
 """
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
 
 # from django_ratelimit.decorators import ratelimit
 from rest_framework.decorators import api_view
@@ -12,6 +14,8 @@ from rest_framework.decorators import permission_classes
 from natour.api.serializers.user import CustomUserInfoSerializer, UpdateUserSerializer
 
 
+@cache_page(60)
+@vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_my_info(request):
