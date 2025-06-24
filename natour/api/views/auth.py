@@ -68,7 +68,7 @@ def login(request):
     try:
         user = CustomUser.objects.get(email=request.data['email'])
     except CustomUser.DoesNotExist:  # pylint: disable=no-member
-        return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error": "E-mail ou senha incorretos."}, status=status.HTTP_404_NOT_FOUND)
 
     if user.check_password(request.data['password']):
         if user.is_active is False:
@@ -82,4 +82,4 @@ def login(request):
             "user": GenericUserSerializer(user).data
         }, status=status.HTTP_200_OK)
 
-    return Response({"error": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED)
+    return Response({"error": "E-mail ou senha incorretos."}, status=status.HTTP_401_UNAUTHORIZED)
