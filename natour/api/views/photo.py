@@ -6,10 +6,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 from cloudinary.uploader import destroy
 from cloudinary.exceptions import Error as CloudinaryError
 
-from natour.api.models import Photo
+from natour.api.models import Photo, CustomUser, Point
 from natour.api.serializers.photo import PhotoSerializer, PhotoIDSerializer
 
 
@@ -22,8 +23,10 @@ def create_photo(request, user_id=None, point_id=None):
     """
     data = request.data.copy()
     if user_id:
+        get_object_or_404(CustomUser, id=user_id)
         data['user'] = user_id
     elif point_id:
+        get_object_or_404(Point, id=point_id)
         data['point'] = point_id
     serializer = PhotoSerializer(data=data)
     if serializer.is_valid():
@@ -40,13 +43,13 @@ def update_photo(request, photo_id, user_id=None, point_id=None):
     """
     data = request.data.copy()
     if user_id:
+        get_object_or_404(CustomUser, id=user_id)
         data['user'] = user_id
     elif point_id:
+        get_object_or_404(Point, id=point_id)
         data['point'] = point_id
-    try:
-        photo = Photo.objects.get(id=photo_id) # pylint: disable=no-member
-    except Photo.DoesNotExist: # pylint: disable=no-member
-        return Response({'error': 'Photo not found.'}, status=404)
+
+    photo = get_object_or_404(Photo, id=photo_id)
 
     # Verifica se está vindo uma nova imagem
     new_image = data.get('image', None)
@@ -63,6 +66,7 @@ def update_photo(request, photo_id, user_id=None, point_id=None):
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def get_photo(request):
@@ -78,6 +82,11 @@ def get_photo(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    if user_id:
+        get_object_or_404(CustomUser, id=user_id)
+    if point_id:
+        get_object_or_404(Point, id=point_id)
+
     queryset = Photo.objects.all()  # pylint: disable=no-member
 
     if user_id:
@@ -87,6 +96,7 @@ def get_photo(request):
 
     serializer = PhotoIDSerializer(queryset, many=True)
     return Response(serializer.data)
+
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])

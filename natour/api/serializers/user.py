@@ -9,6 +9,7 @@ from rest_framework import serializers
 
 from natour.api.models import CustomUser
 
+
 class GenericUserSerializer(serializers.ModelSerializer):
     """
     Generic serializer for CustomUser model.
@@ -19,6 +20,7 @@ class GenericUserSerializer(serializers.ModelSerializer):
         """
         model = CustomUser
         fields = ['username', 'email', 'role', 'is_active', 'is_staff']
+
 
 class CustomUserInfoSerializer(serializers.ModelSerializer):
     """
@@ -41,6 +43,7 @@ class CustomUserInfoSerializer(serializers.ModelSerializer):
         if hasattr(obj, 'photos') and obj.photos:
             return obj.photos.image.url
         return None
+
 
 class CustomUserSerializer(serializers.ModelSerializer):
     """
@@ -141,3 +144,24 @@ class UpdateUserSerializer(serializers.ModelSerializer):
             'required': 'Nome de usuário é obrigatório.',
             'blank': 'Nome de usuário não pode estar em branco.',
         })
+
+
+class AllUsersSerializer(serializers.ModelSerializer):
+    """
+    Serializer for retriving all users.
+    """
+    class Meta:
+        """
+        Meta class for AllUsersSerializer.
+        """
+        model = CustomUser
+        fields = ['username', 'email']
+
+    # def get_photo(self, obj):
+    #     """
+    #     Get the URL of the user's photo if it exists.
+    #     """
+    #     photo_obj = getattr(obj, "photos", None)
+    #     if photo_obj and getattr(photo_obj, "image", None):
+    #         return photo_obj.image.url
+    #     return None

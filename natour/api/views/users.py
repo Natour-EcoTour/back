@@ -11,7 +11,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import permission_classes
 
-from natour.api.serializers.user import CustomUserInfoSerializer, UpdateUserSerializer
+from natour.api.pagination import CustomPagination
+from natour.api.models import CustomUser
+from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSerializer,
+                                         AllUsersSerializer)
 
 
 @cache_page(60)
@@ -52,3 +55,40 @@ def update_my_info(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_users(request):
+    """
+    Endpoint to get a list of all users.
+    """
+    if 'page' not in request.query_params:
+        return Response(
+            {"detail": "Você deve fornecer o parâmetro de paginação ?page=N."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    queryset = CustomUser.objects.all()
+
+    queryset = queryset.exclude(role__id=2)
+
+    username = request.query_params.get('username')
+    if username:
+        queryset = queryset.filter(username__istartswith=username)
+    email = request.query_params.get('email')
+    if email:
+        queryset = queryset.filter(email__istartswith=email)
+
+    queryset = queryset.order_by('username')
+
+    paginator = CustomPagination()
+    page = paginator.paginate_queryset(queryset, request)
+    if page:
+        serializer = AllUsersSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+    else:
+        return Response(
+            {"detail": "Nenhm resultado encontrado."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
