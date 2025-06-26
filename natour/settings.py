@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework.authtoken',
     'rest_framework_simplejwt.token_blacklist',
-    'natour.api'
+    'natour.api',
+    'anymail'
 ]
 
 MIDDLEWARE = [
@@ -195,3 +196,12 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': config('api_secret')
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Email settings for Brevo
+MAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
+
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": config('SENDINBLUE_API_KEY'),
+}
+
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')

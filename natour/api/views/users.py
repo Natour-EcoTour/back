@@ -3,18 +3,20 @@ Views for user management in the Natour API.
 """
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
+from django.core.mail import send_mail
 
 # from django_ratelimit.decorators import ratelimit
 from rest_framework.decorators import api_view
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import permission_classes
+from rest_framework.generics import get_object_or_404
 
 from natour.api.pagination import CustomPagination
 from natour.api.models import CustomUser
 from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSerializer,
-                                         AllUsersSerializer)
+                                         AllUsersSerializer, UserStatusSerializer)
 
 
 @cache_page(60)
@@ -57,6 +59,8 @@ def update_my_info(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@cache_page(60)
+@vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_users(request):
@@ -92,3 +96,36 @@ def get_all_users(request):
             {"detail": "Nenhm resultado encontrado."},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def change_user_status(request, user_id):
+    """
+    Endpoint to change the status of a user.
+    """
+    target_user = get_object_or_404(CustomUser, id=user_id)
+
+    target_user.is_active = not target_user.is_active
+    serializer = UserStatusSerializer(
+        target_user, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+
+        try:
+            send_mail(
+                "Staus da conta alterado",
+                f"Olá {target_user.username},\n\n a sua conta foi {'ativada' if target_user.is_active else 'desativada'}.",
+                "natourproject@gmail.com",
+                [target_user.email],  # Recipient email
+            )
+        except Exception as e: # pylint: disable=broad-except
+            return Response(
+                {"detail": f"Erro ao enviar email: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -20,7 +20,7 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .api.views.auth import MyTokenObtainPairView, create_user, login
-from .api.views.users import get_my_info, delete_my_account, update_my_info, get_all_users
+from .api.views.users import get_my_info, delete_my_account, update_my_info, get_all_users, change_user_status
 from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 
 urlpatterns = [
@@ -38,6 +38,7 @@ urlpatterns = [
     path('users/me/update/', update_my_info, name='update_my_info'),
     path('users/me/delete/', delete_my_account, name='delete_my_account'),
     path('users/list/', get_all_users, name='get_all_users'),
+    path('users/<int:user_id>/status/', change_user_status, name='change_user_status'),
 
     # Photo management URLs
     path('users/<int:user_id>/photo/upload/', create_photo, name='user-photo-upload'),

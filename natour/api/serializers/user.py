@@ -155,7 +155,7 @@ class AllUsersSerializer(serializers.ModelSerializer):
         Meta class for AllUsersSerializer.
         """
         model = CustomUser
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'is_active', 'is_staff']
 
     # def get_photo(self, obj):
     #     """
@@ -165,3 +165,14 @@ class AllUsersSerializer(serializers.ModelSerializer):
     #     if photo_obj and getattr(photo_obj, "image", None):
     #         return photo_obj.image.url
     #     return None
+
+class UserStatusSerializer(serializers.ModelSerializer):
+    """
+    Serializer for changing user status.
+    """
+    class Meta:
+        """
+        Meta class for UserStatusSerializer.
+        """
+        model = CustomUser
+        fields = ['is_active']
