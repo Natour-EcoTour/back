@@ -116,7 +116,7 @@ def change_user_status(request, user_id):
         try:
             send_mail(
                 "Staus da conta alterado",
-                f"Olá {target_user.username},\n\n a sua conta foi {'ativada' if target_user.is_active else 'desativada'}.",
+                f"Olá {target_user.username},\n\n A sua conta foi {'ativada' if target_user.is_active else 'desativada'}.",
                 "natourproject@gmail.com",
                 [target_user.email],  # Recipient email
             )
