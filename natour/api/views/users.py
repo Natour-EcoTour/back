@@ -4,6 +4,9 @@ Views for user management in the Natour API.
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
 from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from smtplib import SMTPException
 
 # from django_ratelimit.decorators import ratelimit
 from rest_framework.decorators import api_view
@@ -113,14 +116,25 @@ def change_user_status(request, user_id):
     if serializer.is_valid():
         serializer.save()
 
+        html_content = render_to_string(
+            'email_templates/user_status_change.html',
+            {
+                'username': target_user.username,
+                'status_class': 'ativo' if target_user.is_active else 'inativo',
+                'is_active': 'Ativada' if target_user.is_active else 'Desativada'
+            }
+        )
+
         try:
-            send_mail(
-                "Staus da conta alterado",
-                f"Olá {target_user.username},\n\n A sua conta foi {'ativada' if target_user.is_active else 'desativada'}.",
-                "natourproject@gmail.com",
-                [target_user.email],  # Recipient email
+            msg = EmailMultiAlternatives(
+                subject="Natour - Status da Conta",
+                body=f"Sua conta foi {'ativada' if target_user.is_active else 'desativada'}.",
+                from_email="natourproject@gmail.com",
+                to=[target_user.email],
             )
-        except Exception as e: # pylint: disable=broad-except
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+        except SMTPException as e:
             return Response(
                 {"detail": f"Erro ao enviar email: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

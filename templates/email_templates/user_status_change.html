@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natour - Status da Conta</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #66ea87 0%, #00ff4897 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .content h2 {
+            color: #0e6600;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .message {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #0e6600;
+            margin: 20px 0;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px
+            }
+
+            .content {
+                padding: 20px 15px
+            }
+
+            .header {
+                padding: 20px
+            }
+
+            .header h1 {
+                font-size: 2em
+            }
+
+            .content h2 {
+                font-size: 1.3em
+            }
+        }
+
+        /* Accessibility improvements */
+        .btn:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Animation for status */
+        .status {
+            transition: all 0.3s ease;
+        }
+
+        /* Better text spacing */
+        p {
+            margin-bottom: 15px;
+        }
+
+        /* Contact info styling */
+        .contact-info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #0e6600;
+            margin: 20px 0;
+        }
+
+        .contact-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 Natour</h1>
+        </div>
+
+        <div class="content">
+            <h2>📧 Status da Conta</h2>
+
+            <div class="message">
+                <p><strong>Olá, {{username}}!</strong></p>
+                <p>Nós da equipe Natour viemos por meio deste e-mail informar sobre o status da sua conta:</p>
+
+                <p>Sua conta foi: {{is_active}}</span></p>
+            </div>
+
+            <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em entrar em contato conosco.</p>
+
+            <div class="contact-info">
+                <p><strong>📞 Suporte:</strong> (11) 9999-9999</p>
+                <p><strong>📧 Email:</strong> suporte@natour.com</p>
+                <p><strong>⏰ Horário:</strong> Segunda a Sexta, 8h às 18h</p>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Natour. Todos os direitos reservados.</p>
+            <p>Este é um e-mail automático, por favor não responda.</p>
+        </div>
+    </div>
+</body>
+
+</html>
