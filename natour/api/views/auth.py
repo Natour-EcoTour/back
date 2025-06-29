@@ -83,3 +83,5 @@ def login(request):
         }, status=status.HTTP_200_OK)
 
     return Response({"error": "E-mail ou senha incorretos."}, status=status.HTTP_401_UNAUTHORIZED)
+
+# logout

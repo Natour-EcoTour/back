@@ -1,12 +1,11 @@
 """
 Views for user management in the Natour API.
 """
+from smtplib import SMTPException
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
-from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from smtplib import SMTPException
 
 # from django_ratelimit.decorators import ratelimit
 from rest_framework.decorators import api_view
