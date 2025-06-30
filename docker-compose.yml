@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./docker/prometheus/config.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:2.9.2
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+
+  promtail:
+    image: grafana/promtail:2.9.2
+    volumes:
+      - ./docker/promtail/config.yml:/etc/promtail/config.yml
+      - ./app.log:/var/log/django/app.log
+    command: -config.file=/etc/promtail/config.yml
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.4.1
+    ports:
+      - "3200:3200"
+    command: ["-config.file=/etc/tempo/config.yml"]
+    volumes:
+      - ./docker/tempo/config.yml:/etc/tempo/config.yml
+    restart: unless-stopped

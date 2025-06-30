@@ -19,6 +19,8 @@ from django.urls import path
 
 from rest_framework_simplejwt.views import TokenRefreshView
 
+from django_prometheus import exports
+
 from .api.views.auth import MyTokenObtainPairView, create_user, login
 from .api.views.users import (get_my_info, delete_my_account, update_my_info,
                               get_all_users, change_user_status)
@@ -28,6 +30,8 @@ from .api.views.terms import create_terms, get_terms, update_terms
 urlpatterns = [
     # Admin URL
     path('admin/', admin.site.urls),
+
+    path("metrics", exports.ExportToDjangoView, name="metrics"),
 
     # Auth URLs
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", 'host.docker.internal']
 
 
 # Application definition
@@ -45,9 +45,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'natour.api',
     'anymail',
+    'django_prometheus',
 ]
 
 MIDDLEWARE = [
+    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -57,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django_prometheus.middleware.PrometheusAfterMiddleware'
 ]
 
 REST_FRAMEWORK = {
@@ -205,3 +208,32 @@ ANYMAIL = {
 }
 
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+
+# Loggin
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json": {
+            "format": '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "message": "%(message)s", "module": "%(module)s"}',
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": str(BASE_DIR / "app.log"),
+            "formatter": "json",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
+
+OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
+OTEL_SERVICE_NAME = "drf-api"
