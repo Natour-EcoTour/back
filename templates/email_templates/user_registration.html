@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natour - Bem-vindo(a)!</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #66ea87 0%, #00ff4897 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .welcome-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .content h2 {
+            color: #0e6600;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .welcome-message {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0e6600;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .feature-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #66ea87 0%, #0e6600 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .tips-section {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 25px 0;
+        }
+
+        .tips-section h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .tips-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f8d7da;
+        }
+
+        .tips-list li:last-child {
+            border-bottom: none;
+        }
+
+        .contact-info {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #0e6600;
+            margin: 20px 0;
+        }
+
+        .contact-info p {
+            margin: 8px 0;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .social-links {
+            margin: 15px 0;
+        }
+
+        .social-links a {
+            color: #0e6600;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 1.2em;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content h2 {
+                font-size: 1.3em;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility improvements */
+        .cta-button:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Better text spacing */
+        p {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 Natour</h1>
+            <div class="welcome-badge">
+                🎉 Bem-vindo(a) à nossa comunidade!
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>🌟 Olá, {{username}}!</h2>
+
+            <div class="welcome-message">
+                <h3>🎊 Parabéns por se juntar ao Natour!</h3>
+                <p>Estamos muito felizes em tê-lo(a) conosco! Sua jornada de descobertas na natureza começa agora.</p>
+                <p><strong>Sua conta foi criada com sucesso e está ativa!</strong></p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h4>Explore Trilhas</h4>
+                    <p>Descubra rotas incríveis e aventuras únicas</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📸</div>
+                    <h4>Compartilhe Momentos</h4>
+                    <p>Capture e compartilhe suas experiências</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h4>Conecte-se</h4>
+                    <p>Conheça outros aventureiros como você</p>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="{{platform_url}}" class="cta-button">
+                    🚀 Começar Minha Jornada
+                </a>
+            </div>
+
+            <div class="tips-section">
+                <h3>💡 Dicas para começar:</h3>
+                <ul class="tips-list">
+                    <li>✅ Complete seu perfil para uma experiência personalizada</li>
+                    <li>🔍 Explore nossa seção de trilhas recomendadas</li>
+                    <li>📱 Baixe nosso app para aventuras offline</li>
+                    <li>🌟 Siga outros usuários para descobrir novos locais</li>
+                    <li>📷 Não esqueça de compartilhar suas primeiras fotos!</li>
+                </ul>
+            </div>
+
+            <p>Estamos aqui para tornar sua experiência incrível. Se precisar de ajuda ou tiver dúvidas, nossa equipe está sempre pronta para ajudar!</p>
+
+            <div class="contact-info">
+                <h4>📞 Como podemos ajudar:</h4>
+                <p><strong>📧 Email:</strong> suporte@natour.com</p>
+                <p><strong>💬 WhatsApp:</strong> (11) 9999-9999</p>
+                <p><strong>⏰ Horário de Atendimento:</strong> Segunda a Sexta, 8h às 18h</p>
+                <p><strong>🌐 Central de Ajuda:</strong> help.natour.com</p>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <div class="social-links">
+                <a href="#">📘 Facebook</a>
+                <a href="#">📸 Instagram</a>
+                <a href="#">🐦 Twitter</a>
+                <a href="#">🎥 YouTube</a>
+            </div>
+            <p>© 2025 Natour. Todos os direitos reservados.</p>
+            <p>Você está recebendo este email porque se cadastrou em nossa plataforma.</p>
+            <p><a href="#" style="color: #6c757d;">Gerenciar preferências de email</a></p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natour - Conta Removida</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .deletion-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .content h2 {
+            color: #dc3545;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .deletion-notice {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .deletion-notice .alert-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .info-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            border-left: 4px solid #6c757d;
+        }
+
+        .info-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #6c757d;
+        }
+
+        .reason-section {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 25px 0;
+        }
+
+        .reason-section h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .data-info {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin: 25px 0;
+        }
+
+        .data-info h3 {
+            color: #0d47a1;
+            margin-top: 0;
+        }
+
+        .contact-info {
+            background-color: #e8f5e8;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+
+        .contact-info p {
+            margin: 8px 0;
+        }
+
+        .appeal-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .appeal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .legal-links {
+            margin: 15px 0;
+        }
+
+        .legal-links a {
+            color: #dc3545;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        .legal-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content h2 {
+                font-size: 1.3em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility improvements */
+        .appeal-button:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Better text spacing */
+        p {
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .deletion-details {
+            background-color: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 Natour</h1>
+            <div class="deletion-badge">
+                🚫 Conta Removida
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>❌ Olá, {{username}}</h2>
+
+            <div class="deletion-notice">
+                <div class="alert-icon">⚠️</div>
+                <h3>Sua conta foi removida da plataforma Natour</h3>
+                <p>Informamos que sua conta foi <strong>desativada permanentemente</strong> por nossa equipe de administração.</p>
+            </div>
+
+            <!-- <div class="deletion-details">
+                <strong>📋 Detalhes da Remoção:</strong><br>
+                <strong>Data/Hora:</strong> {{deletion_date}}<br>
+                <strong>Administrador:</strong> {{admin_username}}<br>
+                <strong>ID da Conta:</strong> {{user_id}}<br>
+                <strong>Email:</strong> {{user_email}}
+            </div> -->
+
+            <div class="reason-section">
+                <h3>📝 Motivo da Remoção:</h3>
+                <p><strong>{{deletion_reason}}</strong></p>
+                <p>{{detailed_reason}}</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="info-icon">🗑️</div>
+                    <h4>Conta Removida</h4>
+                    <p>Sua conta foi permanentemente desativada e não pode mais ser acessada</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">📊</div>
+                    <h4>Dados Removidos</h4>
+                    <p>Todos os dados pessoais foram processados conforme nossa política</p>
+                </div>
+            </div>
+
+            <div class="data-info">
+                <h3>🔒 Sobre seus Dados:</h3>
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li><strong>Dados pessoais:</strong> Removidos conforme LGPD dentro de 30 dias</li>
+                    <li><strong>Conteúdo público:</strong> Postagens e comentários podem ser mantidos anonimizados</li>
+                    <li><strong>Dados de segurança:</strong> Logs básicos mantidos por questões legais (90 dias)</li>
+                    <li><strong>Backups:</strong> Dados em backups serão removidos no próximo ciclo</li>
+                </ul>
+            </div>
+
+            <!-- <h3>🔄 Opções Disponíveis:</h3>
+            <p>Se você acredita que esta remoção foi feita por engano ou tem motivos para contestar esta decisão, você pode:</p>
+
+            <div style="text-align: center;">
+                <a href="{{appeal_url}}" class="appeal-button">
+                    📝 Solicitar Recurso
+                </a>
+            </div>
+
+            <div class="reason-section">
+                <h3>⏰ Prazo para Recurso:</h3>
+                <p>Você tem <strong>30 dias</strong> a partir da data desta notificação para solicitar uma revisão da decisão.</p>
+                <p>Após este prazo, a remoção será considerada definitiva.</p>
+            </div> -->
+
+            <h3>🆕 Criação de Nova Conta:</h3>
+            <p>Dependendo do motivo da remoção, você pode ou não estar elegível para criar uma nova conta. Para mais informações, consulte nossos <span class="highlight">Termos de Uso</span>.</p>
+
+            <div class="contact-info">
+                <h4>📞 Contato para Recursos e Dúvidas:</h4>
+                <p><strong>📧 Email:</strong> recursos@natour.com</p>
+                <p><strong>📋 Formulário:</strong> natour.com/recurso-conta</p>
+                <p><strong>⏰ Horário:</strong> Segunda a Sexta, 9h às 17h</p>
+                <p><strong>📞 Telefone:</strong> (11) 3000-0000 (apenas para recursos)</p>
+            </div>
+
+            <p><strong>Agradecemos o tempo que você passou conosco na plataforma Natour.</strong></p>
+
+        </div>
+
+        <div class="footer">
+            <div class="legal-links">
+                <a href="{{terms_url}}">📋 Termos de Uso</a>
+                <a href="{{privacy_url}}">🔒 Política de Privacidade</a>
+                <!-- <a href="{{appeal_policy_url}}">⚖️ Política de Recursos</a> -->
+            </div>
+            <p>© 2025 Natour. Todos os direitos reservados.</p>
+            <p>Este é um email oficial sobre a remoção de conta.</p>
+            <p style="font-size: 0.8em; color: #999;">
+                Natour Tecnologia Ltda. | CNPJ: 00.000.000/0001-00<br>
+                Rua das Aventuras, 123 - São Paulo/SP - CEP: 00000-000
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
