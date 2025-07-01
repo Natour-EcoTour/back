@@ -41,21 +41,32 @@ def delete_my_account(request):
     """
     user = request.user
 
+    user.delete()
+
+    return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def delete_user_account(request, user_id):
+    """
+    Endpoint to delete a user's account by an admin.
+    """
+    target_user = get_object_or_404(CustomUser, id=user_id)
+
     html_content = render_to_string(
         'email_templates/delete_user_account.html',
         {
-            'username': user.username
+            'username': target_user.username
         }
     )
-
-    user.delete()
 
     try:
         msg = EmailMultiAlternatives(
             subject="Natour - Conta excluída",
             body="Sua conta foi excluída.",
             from_email="natourproject@gmail.com",
-            to=[user.email],
+            to=[target_user.email],
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
@@ -64,6 +75,8 @@ def delete_my_account(request):
             {"detail": f"Erro ao enviar email: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+    target_user.delete()
 
     return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
 
