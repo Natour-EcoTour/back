@@ -132,6 +132,20 @@
         .contact-info p {
             margin: 5px 0;
         }
+
+        /* Deactivation reason styling */
+        .reason-info {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+
+        .reason-info p {
+            margin: 0;
+            color: #856404;
+        }
     </style>
 </head>
 
@@ -149,6 +163,12 @@
                 <p>Nós da equipe Natour viemos por meio deste e-mail informar sobre o status da sua conta:</p>
 
                 <p>Sua conta foi: {{is_active}}</span></p>
+                
+                {% if deactivation_reason %}
+                <div class="reason-info">
+                    <p><strong>Motivo:</strong> {{deactivation_reason}}</p>
+                </div>
+                {% endif %}
             </div>
 
             <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em entrar em contato conosco.</p>

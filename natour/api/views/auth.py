@@ -2,9 +2,14 @@
 Views for user authentication and management.
 """
 
+from smtplib import SMTPException
+
 from django.utils import timezone
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
 
 from django_ratelimit.decorators import ratelimit
+
 from rest_framework.decorators import api_view
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -54,6 +59,28 @@ def create_user(request):
             user.is_staff = True
             user.is_superuser = True
             user.save(update_fields=['is_staff', 'is_superuser'])
+
+        html_content = render_to_string(
+            'email_templates/user_registration.html',
+            {
+                'username': user.username
+            }
+        )
+
+        try:
+            msg = EmailMultiAlternatives(
+                subject="Natour - Conta criada com sucesso",
+                body="Bem-vindo(a) ao Natour!",
+                from_email="natourproject@gmail.com",
+                to=[user.email],
+            )
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+        except SMTPException as e:
+            return Response(
+                {"detail": f"Erro ao enviar email: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         return Response(CreateUserSerializer(user).data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

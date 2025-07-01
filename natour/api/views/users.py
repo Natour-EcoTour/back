@@ -40,7 +40,31 @@ def delete_my_account(request):
     Endpoint to delete the authenticated user's account.
     """
     user = request.user
+
+    html_content = render_to_string(
+        'email_templates/delete_user_account.html',
+        {
+            'username': user.username
+        }
+    )
+
     user.delete()
+
+    try:
+        msg = EmailMultiAlternatives(
+            subject="Natour - Conta excluída",
+            body="Sua conta foi excluída.",
+            from_email="natourproject@gmail.com",
+            to=[user.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+    except SMTPException as e:
+        return Response(
+            {"detail": f"Erro ao enviar email: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
     return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -120,7 +144,8 @@ def change_user_status(request, user_id):
             {
                 'username': target_user.username,
                 'status_class': 'ativo' if target_user.is_active else 'inativo',
-                'is_active': 'Ativada' if target_user.is_active else 'Desativada'
+                'is_active': 'Ativada' if target_user.is_active else 'Desativada',
+                'deactivation_reason': target_user.deactivation_reason
             }
         )
 

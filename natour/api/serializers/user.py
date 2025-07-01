@@ -166,6 +166,7 @@ class AllUsersSerializer(serializers.ModelSerializer):
     #         return photo_obj.image.url
     #     return None
 
+
 class UserStatusSerializer(serializers.ModelSerializer):
     """
     Serializer for changing user status.
@@ -175,4 +176,27 @@ class UserStatusSerializer(serializers.ModelSerializer):
         Meta class for UserStatusSerializer.
         """
         model = CustomUser
-        fields = ['is_active']
+        fields = ['is_active', 'deactivation_reason']
+
+    def validate(self, attrs):
+        """
+        Validate the user status update.
+        """
+        # If is_active is being set to False, require deactivation_reason
+        # First, determine the value of is_active (either from attrs or instance)
+        is_active = attrs.get('is_active', getattr(
+            self.instance, 'is_active', True))
+        deactivation_reason = attrs.get('deactivation_reason', getattr(
+            self.instance, 'deactivation_reason', ''))
+
+        if is_active is False and not deactivation_reason:
+            raise serializers.ValidationError({
+                'deactivation_reason': 'Informe o motivo da desativação do usuário.'
+            })
+
+        # If user is being re-activated, clear deactivation_reason
+        if is_active is True:
+            # Or '' if you prefer empty string
+            attrs['deactivation_reason'] = None
+
+        return attrs

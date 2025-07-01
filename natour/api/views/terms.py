@@ -1,6 +1,8 @@
 """
 Views for terms and conditions in the Natour API.
 """
+
+import threading
 from django.views.decorators.cache import cache_page
 
 from rest_framework.decorators import api_view
@@ -12,7 +14,9 @@ from rest_framework.generics import get_object_or_404
 
 
 from natour.api.models import Terms
-from natour.api.serializers.terms import CreateTermsSerializer, GetTermsSerializer, UpadateTermsSerializer
+from natour.api.serializers.terms import (CreateTermsSerializer, GetTermsSerializer,
+                                          UpadateTermsSerializer)
+from natour.api.tasks import send_updated_terms_email
 
 
 @api_view(['POST'])
@@ -64,6 +68,7 @@ def update_terms(request, term_id):
 
     if serializer.is_valid():
         serializer.save()
+        threading.Thread(target=send_updated_terms_email, daemon=True).start()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
