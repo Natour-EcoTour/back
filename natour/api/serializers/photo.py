@@ -78,3 +78,4 @@ class PhotoIDSerializer(serializers.ModelSerializer):
         """
         model = Photo
         fields = ['id', 'public_id']
+        read_only_fields = ['id', 'public_id']

@@ -20,6 +20,7 @@ class GenericUserSerializer(serializers.ModelSerializer):
         """
         model = CustomUser
         fields = ['username', 'email', 'role', 'is_active', 'is_staff']
+        read_only_fields = fields
 
 
 class CustomUserInfoSerializer(serializers.ModelSerializer):
@@ -35,6 +36,7 @@ class CustomUserInfoSerializer(serializers.ModelSerializer):
         """
         model = CustomUser
         fields = ['username', 'email', 'photo']
+        read_only_fields = fields
 
     def get_photo(self, obj):
         """
@@ -156,6 +158,7 @@ class AllUsersSerializer(serializers.ModelSerializer):
         """
         model = CustomUser
         fields = ['username', 'email', 'is_active', 'is_staff']
+        read_only_fields = fields
 
     # def get_photo(self, obj):
     #     """

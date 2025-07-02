@@ -30,6 +30,7 @@ class GetTermsSerializer(serializers.ModelSerializer):
         """
         model = Terms
         fields = ['content', 'updated_at']
+        read_only_fields = fields
 
 
 class UpadateTermsSerializer(serializers.ModelSerializer):
