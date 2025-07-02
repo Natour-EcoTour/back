@@ -119,3 +119,20 @@ def delete_my_point(request, point_id):
 
     point.delete()
     return Response({"detail": "Ponto excluído com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def add_view(request, point_id):
+    """
+    Increment the view count of a point.
+    """
+    point = get_object_or_404(Point, id=point_id)
+
+    point.views += 1
+    point.save()
+
+    return Response({"views": point.views}, status=status.HTTP_200_OK)
+
+# Editar ponto!!!!!
+# usuário desativar ponto sem mandar email

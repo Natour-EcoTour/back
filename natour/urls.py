@@ -28,7 +28,8 @@ from .api.views.users import (get_my_info, delete_my_account, update_my_info,
 from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 from .api.views.terms import create_terms, get_terms, update_terms
 from .api.views.point import (create_point, get_point_info, get_all_points,
-                              change_point_status, delete_point, delete_my_point)
+                              change_point_status, delete_point, delete_my_point,
+                              add_view)
 
 urlpatterns = [
     # Admin URL
@@ -64,7 +65,8 @@ urlpatterns = [
          name='delete_point', view=delete_point),
     path('points/me/<int:point_id>/delete/',
          delete_my_point, name='delete_my_point'),
-
+     path('points/<int:point_id>/add_view/',
+           add_view, name='add_view'),
 
     # Terms and Conditions URLs
     path('terms/create/', create_terms, name='create_terms'),

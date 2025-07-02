@@ -110,6 +110,7 @@ class Point(models.Model):
         null=False
     )
     name = models.CharField(max_length=100, unique=False)
+    views = models.IntegerField(default=0, blank=False, null=True)
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=False, null=False)
     week_start = models.DateField(blank=False, null=False)
@@ -131,11 +132,6 @@ class Point(models.Model):
     state = models.CharField(max_length=100, blank=False, null=False)
     street = models.CharField(max_length=200, blank=False, null=False)
     number = models.CharField(max_length=20, blank=False, null=False)
-    # photos = models.ImageField(
-    #     upload_to="points_photos/",
-    #     blank=True,
-    #     null=True
-    # )
     deactivation_reason = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
