@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natour - Status do Ponto</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fd7e14 0%, #e55100 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .content h2 {
+            color: #fd7e14;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .message {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #fd7e14;
+            margin: 20px 0;
+        }
+
+        .point-details {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+
+        .point-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .info-item {
+            background-color: #f1f3f4;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #6c757d;
+        }
+
+        .info-item h4 {
+            margin: 0 0 5px 0;
+            color: #495057;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item p {
+            margin: 0;
+            font-weight: bold;
+            color: #212529;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .status.active {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status.inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content h2 {
+                font-size: 1.3em;
+            }
+
+            .point-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility improvements */
+        .btn:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Animation for status */
+        .status {
+            transition: all 0.3s ease;
+        }
+
+        /* Better text spacing */
+        p {
+            margin-bottom: 15px;
+        }
+
+        /* Contact info styling */
+        .contact-info {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #fd7e14;
+            margin: 20px 0;
+        }
+
+        .contact-info p {
+            margin: 5px 0;
+        }
+
+        /* Deactivation reason styling */
+        .reason-info {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+        }
+
+        .reason-info p {
+            margin: 0;
+            color: #856404;
+        }
+
+        .guidelines-box {
+            background-color: #e8f5e8;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 Natour</h1>
+            <div class="status-badge">
+                📍 Status do Ponto
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>📧 Alteração no Status do Ponto</h2>
+
+            <div class="message">
+                <p><strong>Olá, {{username}}!</strong></p>
+                <p>Nós da equipe Natour viemos por meio deste e-mail informar sobre uma alteração no status de um dos seus pontos:</p>
+            </div>
+
+            <div class="point-details">
+                <h3>📍 Detalhes do Ponto:</h3>
+                <div class="point-info">
+                    <div class="info-item">
+                        <h4>📌 Nome do Ponto</h4>
+                        <p>{{point_name}}</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>📍 Localização</h4>
+                        <p>{{point_location}}</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>📅 Data da Alteração</h4>
+                        <p>{{status_change_date}}</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>⚡ Novo Status</h4>
+                        <p>
+                            {% if is_active %}
+                            <span class="status active">✅ Ativo</span>
+                            {% else %}
+                            <span class="status inactive">❌ Desativado</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {% if not is_active and deactivation_reason %}
+            <div class="reason-info">
+                <p><strong>📝 Motivo da Desativação:</strong> {{deactivation_reason}}</p>
+            </div>
+            {% endif %}
+
+            {% if not is_active %}
+            <div class="warning-box">
+                <strong>⚠️ Importante:</strong> Enquanto desativado, seu ponto não aparecerá nas buscas e não poderá receber avaliações ou comentários. Para reativá-lo, você pode entrar em contato conosco ou corrigir os problemas identificados.
+            </div>
+
+            <div class="guidelines-box">
+                <h4>📋 Para Reativar seu Ponto:</h4>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li>Certifique-se de que as informações estão corretas e atualizadas</li>
+                    <li>Verifique se as fotos são apropriadas e de boa qualidade</li>
+                    <li>Confirme que a localização está precisa</li>
+                    <li>Entre em contato conosco se precisar de ajuda</li>
+                </ul>
+            </div>
+            {% else %}
+            <div class="guidelines-box">
+                <strong>🎉 Parabéns!</strong> Seu ponto foi reativado e já está disponível para outros usuários descobrirem. Continue seguindo nossas diretrizes para manter a qualidade da plataforma.
+            </div>
+            {% endif %}
+
+            <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em entrar em contato conosco.</p>
+
+            <div class="contact-info">
+                <p><strong>📞 Suporte:</strong> (11) 3000-0000</p>
+                <p><strong>📧 Email:</strong> moderacao@natour.com</p>
+                <p><strong>📋 Formulário:</strong> natour.com/suporte-ponto</p>
+                <p><strong>⏰ Horário:</strong> Segunda a Sexta, 9h às 17h</p>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Natour. Todos os direitos reservados.</p>
+            <p>Este é um e-mail automático sobre alterações em pontos.</p>
+            <p style="font-size: 0.8em; color: #999;">
+                Natour Tecnologia Ltda. | CNPJ: 00.000.000/0001-00<br>
+                Rua das Aventuras, 123 - São Paulo/SP - CEP: 00000-000
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

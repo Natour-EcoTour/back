@@ -17,6 +17,8 @@ from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerial
                                           PointStatusSerializer)
 from natour.api.models import Point
 
+# APROVAÇÃO DE DE PONTO KKKKKKKKKKKKKKKKKKK
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -96,7 +98,7 @@ def change_point_status(request, point_id):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
+# ADICIONAR EMAIL
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def delete_point(request, point_id):
@@ -150,6 +152,7 @@ def edit_point(request, point_id):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# ADICIONAR EMAIL
 # @api_view(['PUT'])
 # @permission_classes([IsAuthenticated])
 # def change_point_status_master(request, point_id):

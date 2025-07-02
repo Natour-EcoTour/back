@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natour - Ponto Removido</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #fd7e14 0%, #e55100 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .deletion-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin-top: 15px;
+            display: inline-block;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .content h2 {
+            color: #fd7e14;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+        }
+
+        .deletion-notice {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #fd7e14;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .deletion-notice .alert-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .point-details {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            border-left: 4px solid #6c757d;
+            margin: 20px 0;
+        }
+
+        .point-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-item {
+            background-color: #f1f3f4;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #6c757d;
+        }
+
+        .info-item h4 {
+            margin: 0 0 8px 0;
+            color: #495057;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item p {
+            margin: 0;
+            font-weight: bold;
+            color: #212529;
+        }
+
+        .reason-section {
+            background-color: #fff3cd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 25px 0;
+        }
+
+        .reason-section h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .guidelines-info {
+            background-color: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+            margin: 25px 0;
+        }
+
+        .guidelines-info h3 {
+            color: #0d47a1;
+            margin-top: 0;
+        }
+
+        .contact-info {
+            background-color: #e8f5e8;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+
+        .contact-info p {
+            margin: 8px 0;
+        }
+
+        .appeal-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .appeal-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        .legal-links {
+            margin: 15px 0;
+        }
+
+        .legal-links a {
+            color: #fd7e14;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        .legal-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .content h2 {
+                font-size: 1.3em;
+            }
+
+            .point-info {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Accessibility improvements */
+        .appeal-button:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        /* Better text spacing */
+        p {
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .deletion-details {
+            background-color: #f1f3f4;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .warning-box {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 Natour</h1>
+            <div class="deletion-badge">
+                📍 Ponto Removido
+            </div>
+        </div>
+
+        <div class="content">
+            <h2>⚠️ Olá, {{username}}</h2>
+
+            <div class="deletion-notice">
+                <div class="alert-icon">📍</div>
+                <h3>Seu ponto foi removido da plataforma</h3>
+                <p>Informamos que um dos seus pontos foi <strong>removido</strong> por nossa equipe de moderação.</p>
+            </div>
+
+            <div class="point-details">
+                <h3>📋 Detalhes do Ponto Removido:</h3>
+                <div class="point-info">
+                    <div class="info-item">
+                        <h4>📌 Nome do Ponto</h4>
+                        <p>{{point_name}}</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>📍 Localização</h4>
+                        <p>{{point_location}}</p>
+                    </div>
+                    <div class="info-item">
+                        <h4>📅 Data de Criação</h4>
+                        <p>{{point_creation_date}}</p>
+                    </div>
+                    <!-- <div class="info-item">
+                        <h4>🗑️ Data de Remoção</h4>
+                        <p>{{deletion_date}}</p>
+                    </div> -->
+                </div>
+            </div>
+
+            <!-- <div class="reason-section">
+                <h3>📝 Motivo da Remoção:</h3>
+                <p><strong>{{deletion_reason}}</strong></p>
+                <p>{{detailed_reason}}</p>
+            </div> -->
+
+            <div class="guidelines-info">
+                <h3>📋 Diretrizes da Comunidade:</h3>
+                <p>Pontos são removidos quando violam nossas diretrizes, incluindo:</p>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                    <li><strong>Informações incorretas:</strong> Localização ou descrição imprecisa</li>
+                    <li><strong>Conteúdo inadequado:</strong> Fotos ou descrições inapropriadas</li>
+                    <li><strong>Spam ou duplicação:</strong> Pontos repetidos ou com finalidade comercial</li>
+                    <li><strong>Localização perigosa:</strong> Áreas de risco ou propriedade privada</li>
+                    <li><strong>Violação de direitos:</strong> Uso indevido de imagens ou informações</li>
+                </ul>
+            </div>
+
+            <!-- <h3>🔄 Opções Disponíveis:</h3>
+            <p>Se você acredita que esta remoção foi feita por engano ou tem informações adicionais para compartilhar:</p>
+
+            <div style="text-align: center;">
+                <a href="{{appeal_url}}" class="appeal-button">
+                    📝 Contestar Remoção
+                </a>
+            </div>
+
+            <div class="reason-section">
+                <h3>⏰ Prazo para Contestação:</h3>
+                <p>Você tem <strong>15 dias</strong> a partir da data desta notificação para contestar a remoção.</p>
+                <p>Após este prazo, a remoção será considerada definitiva.</p>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Atenção:</strong> Múltiplas violações das diretrizes podem resultar em restrições na sua conta ou suspensão temporária da capacidade de criar novos pontos.
+            </div> -->
+
+            <h3>🆕 Criando Novos Pontos:</h3>
+            <p>Você pode continuar criando novos pontos, mas certifique-se de seguir nossas <span class="highlight">Diretrizes da Comunidade</span> para evitar futuras remoções.</p>
+
+            <div class="contact-info">
+                <h4>📞 Contato para Contestações e Dúvidas:</h4>
+                <p><strong>📧 Email:</strong> moderacao@natour.com</p>
+                <p><strong>📋 Formulário:</strong> natour.com/contestar-ponto</p>
+                <p><strong>⏰ Horário:</strong> Segunda a Sexta, 9h às 17h</p>
+                <p><strong>📞 Telefone:</strong> (11) 3000-0000 (apenas para contestações)</p>
+            </div>
+
+            <p><strong>Agradecemos sua compreensão e cooperação para manter a qualidade da plataforma Natour.</strong></p>
+
+        </div>
+
+        <div class="footer">
+            <div class="legal-links">
+                <a href="{{terms_url}}">📋 Termos de Uso</a>
+                <a href="{{privacy_url}}">🔒 Política de Privacidade</a>
+                <a href="{{guidelines_url}}">📝 Diretrizes da Comunidade</a>
+            </div>
+            <p>© 2025 Natour. Todos os direitos reservados.</p>
+            <p>Este é um email oficial sobre a remoção de ponto.</p>
+            <p style="font-size: 0.8em; color: #999;">
+                Natour Tecnologia Ltda. | CNPJ: 00.000.000/0001-00<br>
+                Rua das Aventuras, 123 - São Paulo/SP - CEP: 00000-000
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
