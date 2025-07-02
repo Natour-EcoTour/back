@@ -27,7 +27,8 @@ from .api.views.users import (get_my_info, delete_my_account, update_my_info,
                               get_user_points, get_my_points)
 from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 from .api.views.terms import create_terms, get_terms, update_terms
-from .api.views.point import create_point, get_point_info
+from .api.views.point import (create_point, get_point_info, get_all_points,
+                              change_point_status, delete_point, delete_my_point)
 
 urlpatterns = [
     # Admin URL
@@ -53,6 +54,23 @@ urlpatterns = [
     path('users/<int:user_id>/points/', get_user_points, name='get_user_points'),
     path('users/me/points/', get_my_points, name='get_my_points'),
 
+    # Point URLs
+    path('points/create/', create_point, name='create_point'),
+    path('points/<int:point_id>/', get_point_info, name='get_point_info'),
+    path('points/', get_all_points, name='get_all_points'),
+    path('points/<int:point_id>/status/',
+         change_point_status, name='change_point_status'),
+    path('points/<int:point_id>/delete/',
+         name='delete_point', view=delete_point),
+    path('points/me/<int:point_id>/delete/',
+         delete_my_point, name='delete_my_point'),
+
+
+    # Terms and Conditions URLs
+    path('terms/create/', create_terms, name='create_terms'),
+    path('terms/<int:term_id>/', get_terms, name='get_terms'),
+    path('terms/<int:term_id>/update/', update_terms, name='update_terms'),
+
     # Photo management URLs
     path('users/<int:user_id>/photo/upload/',
          create_photo, name='user-photo-upload'),
@@ -62,16 +80,6 @@ urlpatterns = [
          update_photo, name='user-photo-update'),
     path('points/<int:point_id>/photo/update/<int:photo_id>/',
          update_photo, name='point-photo-update'),
-
-    # Point URLs
-    path('points/create/', create_point, name='create_point'),
-    path('points/<int:point_id>/', get_point_info, name='get_point_info'),
-
-    # Terms and Conditions URLs
-    path('terms/create/', create_terms, name='create_terms'),
-    path('terms/<int:term_id>/', get_terms, name='get_terms'),
-    path('terms/<int:term_id>/update/', update_terms, name='update_terms'),
-
     path('photos/', get_photo, name='photo-list'),
     path('photos/delete/', delete_photo, name='photo-delete'),
 ]

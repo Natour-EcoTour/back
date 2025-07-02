@@ -122,3 +122,38 @@ class PointInfoSerializer(serializers.ModelSerializer):
         Returns a list of photo URLs associated with the point.
         """
         return [photo.image.url for photo in obj.photos.all()]
+
+
+class PointStatusSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating the status of a point.
+    """
+    class Meta:
+        """
+        Meta class for PointStatusSerializer.
+        """
+        model = Point
+        fields = ['is_active', 'deactivation_reason']
+
+    def validate(self, attrs):
+        """
+        Validate the user status update.
+        """
+        # If is_active is being set to False, require deactivation_reason
+        # First, determine the value of is_active (either from attrs or instance)
+        is_active = attrs.get('is_active', getattr(
+            self.instance, 'is_active', True))
+        deactivation_reason = attrs.get('deactivation_reason', getattr(
+            self.instance, 'deactivation_reason', ''))
+
+        if is_active is False and not deactivation_reason:
+            raise serializers.ValidationError({
+                'deactivation_reason': 'Informe o motivo da desativação do ponto.'
+            })
+
+        # If user is being re-activated, clear deactivation_reason
+        if is_active is True:
+            # Or '' if you prefer empty string
+            attrs['deactivation_reason'] = None
+
+        return attrs
