@@ -30,6 +30,7 @@ from .api.views.terms import create_terms, get_terms, update_terms
 from .api.views.point import (create_point, get_point_info, get_all_points,
                               change_point_status, delete_point, delete_my_point,
                               add_view, edit_point)
+from .api.views.review import add_review
 
 urlpatterns = [
     # Admin URL
@@ -65,14 +66,18 @@ urlpatterns = [
          name='delete_point', view=delete_point),
     path('points/me/<int:point_id>/delete/',
          delete_my_point, name='delete_my_point'),
-     path('points/<int:point_id>/add_view/',
-           add_view, name='add_view'),
-     path('points/<int:point_id>/edit/', edit_point, name='edit_point'),
+    path('points/<int:point_id>/add_view/',
+         add_view, name='add_view'),
+    path('points/<int:point_id>/edit/', edit_point, name='edit_point'),
 
     # Terms and Conditions URLs
     path('terms/create/', create_terms, name='create_terms'),
     path('terms/<int:term_id>/', get_terms, name='get_terms'),
     path('terms/<int:term_id>/update/', update_terms, name='update_terms'),
+
+    # Review URLs
+    path('points/<int:point_id>/review/',
+         add_review, name='add_review'),
 
     # Photo management URLs
     path('users/<int:user_id>/photo/upload/',

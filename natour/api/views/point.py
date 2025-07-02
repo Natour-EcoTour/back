@@ -1,5 +1,5 @@
 """
-a
+Views for managing points in the Natour API.
 """
 # pylint: disable=no-member
 
@@ -149,4 +149,23 @@ def edit_point(request, point_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# usuário desativar ponto sem mandar email
+
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def change_point_status_master(request, point_id):
+#     """
+#     Change the status of a point.
+#     """
+#     target_point = get_object_or_404(Point, id=point_id)
+
+#     target_point.is_active = not target_point.is_active
+#     serializer = PointStatusSerializer(
+#         target_point, data=request.data, partial=True)
+
+#     if serializer.is_valid():
+#         serializer.save()
+
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# ADICIONAR ENVIO DE EMAIL E VERIFICAÇÃO SE É MASTER...

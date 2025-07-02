@@ -111,6 +111,10 @@ class Point(models.Model):
     )
     name = models.CharField(max_length=100, unique=False)
     views = models.IntegerField(default=0, blank=False, null=True)
+    avg_rating = models.IntegerField(
+        default=0, blank=False, null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(5)]
+    )
     is_active = models.BooleanField(default=True)
     description = models.TextField(blank=False, null=False)
     week_start = models.DateField(blank=False, null=False)
