@@ -134,5 +134,19 @@ def add_view(request, point_id):
 
     return Response({"views": point.views}, status=status.HTTP_200_OK)
 
-# Editar ponto!!!!!
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_point(request, point_id):
+    """
+    Edit a point created by the authenticated user.
+    """
+    point = get_object_or_404(Point, id=point_id, user=request.user)
+
+    serializer = CreatePointSerializer(point, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # usuário desativar ponto sem mandar email
