@@ -33,6 +33,56 @@ def create_point(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def approve_point(request, point_id):
+    """
+    Approve a point created by a user.
+    """
+    point = get_object_or_404(Point, id=point_id)
+
+    if point.status:
+        return Response(
+            {"detail": "Este ponto já está ativo."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    point.status = True
+    point.is_active = True
+    serializer = PointStatusSerializer(point, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def reject_point(request, point_id):
+    """
+    Reject a point created by a user.
+    """
+    point = get_object_or_404(Point, id=point_id)
+
+    if not point.status:
+        return Response(
+            {"detail": "Este ponto já está inativo."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    point.status = False
+    point.is_active = False
+    serializer = PointStatusSerializer(point, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_point_info(request, point_id):
@@ -99,6 +149,8 @@ def change_point_status(request, point_id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # ADICIONAR EMAIL
+
+
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def delete_point(request, point_id):
@@ -172,3 +224,21 @@ def edit_point(request, point_id):
 
 #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # ADICIONAR ENVIO DE EMAIL E VERIFICAÇÃO SE É MASTER...
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def show_points_on_map(request):
+    """
+    Get all points to display on the map.
+    """
+    queryset = Point.objects.filter(is_active=True).order_by('name')
+
+    if not queryset.exists():
+        return Response(
+            {"detail": "Nenhum ponto ativo encontrado."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    serializer = PointInfoSerializer(queryset, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
