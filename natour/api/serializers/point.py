@@ -104,6 +104,8 @@ class PointInfoSerializer(serializers.ModelSerializer):
     """
     Serializer for getting point information.
     """
+    photos = serializers.SerializerMethodField()
+
     class Meta:
         """
         Meta class for PointInfoSerializer.
@@ -112,8 +114,11 @@ class PointInfoSerializer(serializers.ModelSerializer):
         fields = ['name', 'description', 'week_start',
                   'week_end', 'open_time', 'close_time', 'point_type',
                   'link', 'latitude', 'longitude', 'zip_code', 'city',
-                  'neighborhood', 'state', 'street', 'number']
-        read_only_fields = ['name', 'description', 'week_start',
-                            'week_end', 'open_time', 'close_time', 'point_type',
-                            'link', 'latitude', 'longitude', 'zip_code', 'city',
-                            'neighborhood', 'state', 'street', 'number']
+                  'neighborhood', 'state', 'street', 'number', 'photos']
+        read_only_fields = fields
+
+    def get_photos(self, obj):
+        """
+        Returns a list of photo URLs associated with the point.
+        """
+        return [photo.image.url for photo in obj.photos.all()]

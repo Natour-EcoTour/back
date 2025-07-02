@@ -19,6 +19,7 @@ from natour.api.pagination import CustomPagination
 from natour.api.models import CustomUser
 from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSerializer,
                                          AllUsersSerializer, UserStatusSerializer)
+from natour.api.serializers.point import PointInfoSerializer
 
 
 @cache_page(60)
@@ -180,3 +181,50 @@ def change_user_status(request, user_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@cache_page(60)
+@vary_on_headers("Authorization")
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_points(request, user_id):
+    """
+    Endpoint to get all points created by a specific user.
+    """
+    user = get_object_or_404(CustomUser, id=user_id)
+    points = user.points.all()
+
+    if not points:
+        return Response(
+            {"detail": "Nenhum ponto encontrado para este usuário."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    serializer = PointInfoSerializer(points, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@cache_page(60)
+@vary_on_headers("Authorization")
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_my_points(request):
+    """
+    Endpoint to get all points created by the authenticated user.
+    """
+
+    user = request.user
+    points = user.points.all()
+    points_amount = points.count()
+
+    if not points:
+        return Response(
+            {"detail": "Nenhum ponto encontrado."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    serializer = PointInfoSerializer(points, many=True)
+    return Response({
+        "count": points_amount,
+        "points": serializer.data
+    }, status=status.HTTP_200_OK)

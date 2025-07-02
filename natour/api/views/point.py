@@ -35,3 +35,6 @@ def get_point_info(request, point_id):
     point = get_object_or_404(Point, id=point_id)
     serializer = PointInfoSerializer(point)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# quantidade de pontos que o usuário tem e que tem como todo na plataforma

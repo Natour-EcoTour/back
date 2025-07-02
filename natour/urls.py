@@ -23,7 +23,8 @@ from django_prometheus import exports
 
 from .api.views.auth import MyTokenObtainPairView, create_user, login
 from .api.views.users import (get_my_info, delete_my_account, update_my_info,
-                              get_all_users, change_user_status, delete_user_account)
+                              get_all_users, change_user_status, delete_user_account,
+                              get_user_points, get_my_points)
 from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 from .api.views.terms import create_terms, get_terms, update_terms
 from .api.views.point import create_point, get_point_info
@@ -49,6 +50,8 @@ urlpatterns = [
     path('users/list/', get_all_users, name='get_all_users'),
     path('users/<int:user_id>/status/',
          change_user_status, name='change_user_status'),
+    path('users/<int:user_id>/points/', get_user_points, name='get_user_points'),
+    path('users/me/points/', get_my_points, name='get_my_points'),
 
     # Photo management URLs
     path('users/<int:user_id>/photo/upload/',
