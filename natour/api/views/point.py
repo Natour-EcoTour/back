@@ -61,18 +61,15 @@ def get_all_points(request):
 
     point_name = request.query_params.get('name')
     if point_name:
-        queryset = queryset.filter(point_name__istartswith=point_name)
+        queryset = queryset.filter(name__istartswith=point_name)
 
     queryset = queryset.order_by('name')
-
-    total_points = queryset.count()
 
     paginator = CustomPagination()
     page = paginator.paginate_queryset(queryset, request)
     if page:
         serializer = PointInfoSerializer(page, many=True)
         response = paginator.get_paginated_response(serializer.data)
-        response.data['total_points'] = total_points
         return response
     return Response(
         {"detail": "Nenhum resultado encontrado.", "total_points": 0},
