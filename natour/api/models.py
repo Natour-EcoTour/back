@@ -35,7 +35,7 @@ class Photo(models.Model):
     image = CloudinaryField('image')
     public_id = models.CharField(max_length=255, blank=True, null=True)
     user = models.OneToOneField('CustomUser', on_delete=models.CASCADE,
-                             related_name='photos', null=True, blank=True)
+                                related_name='photos', null=True, blank=True)
     point = models.ForeignKey(
         'Point', on_delete=models.CASCADE, related_name='photos', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -64,7 +64,7 @@ class CustomUser(AbstractUser):
     id = models.AutoField(primary_key=True)
     role = models.ForeignKey(
         Role,
-        default=1, # 1 is for 'user' role
+        default=1,  # 1 is for 'user' role
         on_delete=models.SET_NULL,
         related_name="users",
         blank=False,
@@ -118,7 +118,9 @@ class Point(models.Model):
     close_time = models.TimeField(blank=False, null=False)
     point_type = models.CharField(
         choices=PointTypes.choices,
-        default=PointTypes.OTHER
+        # default=PointTypes.OTHER,
+        blank=False,
+        null=False
     )
     link = models.URLField(blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)

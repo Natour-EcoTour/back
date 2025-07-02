@@ -26,6 +26,7 @@ from .api.views.users import (get_my_info, delete_my_account, update_my_info,
                               get_all_users, change_user_status, delete_user_account)
 from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 from .api.views.terms import create_terms, get_terms, update_terms
+from .api.views.point import create_point
 
 urlpatterns = [
     # Admin URL
@@ -58,6 +59,9 @@ urlpatterns = [
          update_photo, name='user-photo-update'),
     path('points/<int:point_id>/photo/update/<int:photo_id>/',
          update_photo, name='point-photo-update'),
+
+    # Point URLs
+    path('points/create/', create_point, name='create_point'),
 
     # Terms and Conditions URLs
     path('terms/create/', create_terms, name='create_terms'),
