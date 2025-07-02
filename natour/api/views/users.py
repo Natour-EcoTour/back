@@ -126,16 +126,19 @@ def get_all_users(request):
 
     queryset = queryset.order_by('username')
 
+    total_users = queryset.count()
+
     paginator = CustomPagination()
     page = paginator.paginate_queryset(queryset, request)
     if page:
         serializer = AllUsersSerializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-    else:
-        return Response(
-            {"detail": "Nenhm resultado encontrado."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        response = paginator.get_paginated_response(serializer.data)
+        response.data['total_users'] = total_users
+        return response
+    return Response(
+        {"detail": "Nenhm resultado encontrado.", "total_users": 0},
+        status=status.HTTP_400_BAD_REQUEST
+    )
 
 
 @api_view(['PUT'])
@@ -192,7 +195,11 @@ def get_user_points(request, user_id):
     Endpoint to get all points created by a specific user.
     """
     user = get_object_or_404(CustomUser, id=user_id)
-    points = user.points.all()
+    points = user.points.all().order_by('-created_at')
+
+    point_name = request.query_params.get('name')
+    if point_name:
+        points = points.filter(name__istartswith=point_name)
 
     if not points:
         return Response(
@@ -200,8 +207,13 @@ def get_user_points(request, user_id):
             status=status.HTTP_404_NOT_FOUND
         )
 
+    points_amount = points.count()
+
     serializer = PointInfoSerializer(points, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({
+        "count": points_amount,
+        "points": serializer.data
+    }, status=status.HTTP_200_OK)
 
 
 @cache_page(60)
@@ -214,15 +226,19 @@ def get_my_points(request):
     """
 
     user = request.user
-    points = user.points.all()
-    points_amount = points.count()
+    points = user.points.all().order_by('-created_at')
 
-    if not points:
+    point_name = request.query_params.get('name')
+    if point_name:
+        points = points.filter(name__istartswith=point_name)
+
+    if not points.exists():
         return Response(
             {"detail": "Nenhum ponto encontrado."},
             status=status.HTTP_404_NOT_FOUND
         )
 
+    points_amount = points.count()
     serializer = PointInfoSerializer(points, many=True)
     return Response({
         "count": points_amount,
