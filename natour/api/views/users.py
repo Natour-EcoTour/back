@@ -102,7 +102,7 @@ def update_my_info(request):
 @cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def get_all_users(request):
     """
     Endpoint to get a list of all users.
@@ -189,7 +189,7 @@ def change_user_status(request, user_id):
 @cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def get_user_points(request, user_id):
     """
     Endpoint to get all points created by a specific user.

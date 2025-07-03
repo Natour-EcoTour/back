@@ -23,6 +23,13 @@ def add_review(request, point_id):
     """
     point = get_object_or_404(Point, id=point_id)
 
+    existing_review = point.reviews.filter(user=request.user).first()
+    if existing_review:
+        return Response(
+            {"detail": "Você já avaliou este ponto."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     serializer = CreateReviewSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(user=request.user, point=point)

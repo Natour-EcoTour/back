@@ -160,7 +160,6 @@ class PointOnMapSerializer(serializers.ModelSerializer):
     """
     Serializer for getting point information.
     """
-    photos = serializers.SerializerMethodField()
 
     class Meta:
         """

@@ -14,7 +14,7 @@ from rest_framework.decorators import permission_classes
 
 from natour.api.pagination import CustomPagination
 from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerializer,
-                                          PointStatusSerializer, PointOnMapSerializer,
+                                          PointOnMapSerializer,
                                           PointApprovalSerializer, PointStatusUser)
 from natour.api.models import Point
 
@@ -83,7 +83,7 @@ def get_point_info(request, point_id):
 @cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminUser])
 def get_all_points(request):
     """
     Get all points created by all users.
@@ -206,7 +206,7 @@ def edit_point(request, point_id):
 
 # ADICIONAR EMAIL
 # @api_view(['PUT'])
-# @permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated, IsAdminUser])
 # def change_point_status_master(request, point_id):
 #     """
 #     Change the status of a point.
