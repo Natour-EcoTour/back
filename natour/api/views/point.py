@@ -14,10 +14,9 @@ from rest_framework.decorators import permission_classes
 
 from natour.api.pagination import CustomPagination
 from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerializer,
-                                          PointStatusSerializer)
+                                          PointStatusSerializer, PointOnMapSerializer,
+                                          PointApprovalSerializer, PointStatusUser)
 from natour.api.models import Point
-
-# APROVAÇÃO DE DE PONTO KKKKKKKKKKKKKKKKKKK
 
 
 @api_view(['POST'])
@@ -35,46 +34,33 @@ def create_point(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
-def approve_point(request, point_id):
+def point_approval(request, point_id):
     """
-    Approve a point created by a user.
-    """
-    point = get_object_or_404(Point, id=point_id)
-
-    if point.status:
-        return Response(
-            {"detail": "Este ponto já está ativo."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
-
-    point.status = True
-    point.is_active = True
-    serializer = PointStatusSerializer(point, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated, IsAdminUser])
-def reject_point(request, point_id):
-    """
-    Reject a point created by a user.
+    Approve or reject a point created by a user.
     """
     point = get_object_or_404(Point, id=point_id)
 
-    if not point.status:
+    new_status = request.data.get('status')
+    new_is_active = request.data.get('is_active')
+
+    if new_status is None or new_is_active is None:
         return Response(
-            {"detail": "Este ponto já está inativo."},
+            {"detail": "Você deve fornecer 'status' e 'is_active'."},
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    point.status = False
-    point.is_active = False
-    serializer = PointStatusSerializer(point, data=request.data, partial=True)
+    if point.status == new_status and point.is_active == new_is_active:
+        state_text = "ativo" if new_status and new_is_active else "inativo"
+        return Response(
+            {"detail": f"Este ponto já está {state_text}."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    point.status = new_status
+    point.is_active = new_is_active
+
+    serializer = PointApprovalSerializer(
+        point, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
@@ -115,6 +101,20 @@ def get_all_points(request):
     if point_name:
         queryset = queryset.filter(name__istartswith=point_name)
 
+    status_param = request.query_params.get('status')
+    if status_param is not None:
+        if status_param.lower() == 'true':
+            queryset = queryset.filter(status=True)
+        elif status_param.lower() == 'false':
+            queryset = queryset.filter(status=False)
+        elif status_param.lower() == 'null' or status_param.lower() == 'none':
+            queryset = queryset.filter(status__isnull=True)
+        else:
+            return Response(
+                {"detail": "Parâmetro 'status' deve ser 'true', 'false', 'null' ou 'none'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
     queryset = queryset.order_by('name')
 
     paginator = CustomPagination()
@@ -135,10 +135,10 @@ def change_point_status(request, point_id):
     """
     Change the status of a point.
     """
-    target_point = get_object_or_404(Point, id=point_id)
+    target_point = get_object_or_404(Point, id=point_id, user=request.user)
 
     target_point.is_active = not target_point.is_active
-    serializer = PointStatusSerializer(
+    serializer = PointStatusUser(
         target_point, data=request.data, partial=True)
 
     if serializer.is_valid():
@@ -232,7 +232,8 @@ def show_points_on_map(request):
     """
     Get all points to display on the map.
     """
-    queryset = Point.objects.filter(is_active=True).order_by('name')
+    queryset = Point.objects.filter(is_active=True).filter(
+        status=True).order_by('name')
 
     if not queryset.exists():
         return Response(
@@ -240,5 +241,5 @@ def show_points_on_map(request):
             status=status.HTTP_404_NOT_FOUND
         )
 
-    serializer = PointInfoSerializer(queryset, many=True)
+    serializer = PointOnMapSerializer(queryset, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)

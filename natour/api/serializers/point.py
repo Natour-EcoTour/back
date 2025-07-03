@@ -108,7 +108,7 @@ class PointInfoSerializer(serializers.ModelSerializer):
         Meta class for PointInfoSerializer.
         """
         model = Point
-        fields = ['name', 'views', 'rating', 'description', 'week_start',
+        fields = ['name', 'views', 'avg_rating', 'description', 'week_start',
                   'week_end', 'open_time', 'close_time', 'point_type',
                   'link', 'latitude', 'longitude', 'zip_code', 'city',
                   'neighborhood', 'state', 'street', 'number', 'photos']
@@ -154,3 +154,43 @@ class PointStatusSerializer(serializers.ModelSerializer):
             attrs['deactivation_reason'] = None
 
         return attrs
+
+
+class PointOnMapSerializer(serializers.ModelSerializer):
+    """
+    Serializer for getting point information.
+    """
+    photos = serializers.SerializerMethodField()
+
+    class Meta:
+        """
+        Meta class for PointInfoSerializer.
+        """
+        model = Point
+        fields = ['point_type', 'latitude', 'longitude', 'zip_code', 'city',
+                  'neighborhood', 'state', 'street', 'number']
+        read_only_fields = fields
+
+
+class PointApprovalSerializer(serializers.ModelSerializer):
+    """
+    Serializer for approving or rejecting a point.
+    """
+    class Meta:
+        """
+        Meta class for PointStatusSerializer.
+        """
+        model = Point
+        fields = ['is_active', 'status']
+
+
+class PointStatusUser(serializers.ModelSerializer):
+    """
+    Serializer for a user to update the status of a point.
+    """
+    class Meta:
+        """
+        Meta class for PointStatusSerializer.
+        """
+        model = Point
+        fields = ['is_active']

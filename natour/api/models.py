@@ -110,7 +110,7 @@ class Point(models.Model):
         null=False
     )
     name = models.CharField(max_length=100, unique=False)
-    status = models.BooleanField(default=False, blank=False, null=False)
+    status = models.BooleanField(default=None, blank=False, null=True)
     views = models.IntegerField(default=0, blank=False, null=True)
     avg_rating = models.IntegerField(
         default=0, blank=False, null=True,

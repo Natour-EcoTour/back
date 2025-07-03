@@ -29,7 +29,7 @@ from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 from .api.views.terms import create_terms, get_terms, update_terms
 from .api.views.point import (create_point, get_point_info, get_all_points,
                               change_point_status, delete_point, delete_my_point,
-                              add_view, edit_point, approve_point, reject_point, show_points_on_map)
+                              add_view, edit_point, point_approval, show_points_on_map)
 from .api.views.review import add_review
 
 urlpatterns = [
@@ -69,14 +69,9 @@ urlpatterns = [
     path('points/<int:point_id>/add_view/',
          add_view, name='add_view'),
     path('points/<int:point_id>/edit/', edit_point, name='edit_point'),
-
-    # colocar no postaman e testar
-    path('points/<int:point_id>/approve/',
-         approve_point, name='approve_point'),
-    path('points/<int:point_id>/reject/',
-         reject_point, name='reject_point'),
     path('points/map/', show_points_on_map, name='show_points_on_map'),
-
+    path('points/<int:point_id>/approve/',
+         point_approval, name='point_approval'),
     # Terms and Conditions URLs
     path('terms/create/', create_terms, name='create_terms'),
     path('terms/<int:term_id>/', get_terms, name='get_terms'),
