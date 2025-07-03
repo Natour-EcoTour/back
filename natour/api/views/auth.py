@@ -7,6 +7,7 @@ from smtplib import SMTPException
 from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
+from django.core.cache import cache
 
 from django_ratelimit.decorators import ratelimit
 
@@ -51,6 +52,15 @@ def create_user(request):
     """
     Endpoint to create a new user.
     """
+    email = request.data.get('email')
+    if not cache.get(f'verified_email:{email}'):
+        return Response(
+            {"detail": "Você precisa validar seu e-mail antes de criar a conta."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    cache.delete(f'verified_email:{email}')
+
     serializer = CreateUserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()

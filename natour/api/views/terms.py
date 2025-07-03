@@ -16,7 +16,7 @@ from rest_framework.generics import get_object_or_404
 from natour.api.models import Terms
 from natour.api.serializers.terms import (CreateTermsSerializer, GetTermsSerializer,
                                           UpadateTermsSerializer)
-from natour.api.tasks import send_updated_terms_email
+from natour.api.methods.send_terms_email import send_updated_terms_email
 
 
 @api_view(['POST'])

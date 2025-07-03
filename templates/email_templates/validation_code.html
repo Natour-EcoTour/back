@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Natour - Código de Recuperação de Senha</title>
+    <title>Natour - Código de Verificação</title>
     <style>
         * {
             box-sizing: border-box;
@@ -30,7 +30,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             padding: 30px;
             text-align: center;
@@ -43,7 +43,7 @@
             letter-spacing: 2px;
         }
 
-        .security-badge {
+        .welcome-badge {
             background: rgba(255, 255, 255, 0.2);
             padding: 10px 20px;
             border-radius: 25px;
@@ -57,23 +57,23 @@
         }
 
         .content h2 {
-            color: #007bff;
+            color: #28a745;
             margin-bottom: 20px;
             font-size: 1.5em;
             border-bottom: 2px solid #e9ecef;
             padding-bottom: 10px;
         }
 
-        .security-notice {
-            background: linear-gradient(135deg, #cce5ff 0%, #b3d9ff 100%);
+        .welcome-notice {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
             padding: 25px;
             border-radius: 8px;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid #28a745;
             margin: 20px 0;
             text-align: center;
         }
 
-        .security-notice .alert-icon {
+        .welcome-notice .alert-icon {
             font-size: 2.5em;
             margin-bottom: 15px;
         }
@@ -84,20 +84,20 @@
             border-radius: 10px;
             margin: 30px 0;
             text-align: center;
-            border: 2px dashed #007bff;
+            border: 2px dashed #28a745;
         }
 
         .verification-code {
             font-size: 2.2em;
             font-weight: bold;
             letter-spacing: 4px;
-            color: #007bff;
+            color: #28a745;
             background: white;
             padding: 15px 20px;
             border-radius: 8px;
             display: inline-block;
             margin: 15px 0;
-            border: 2px solid #007bff;
+            border: 2px solid #28a745;
             font-family: monospace;
             word-break: break-all;
             max-width: 100%;
@@ -129,16 +129,16 @@
             padding: 20px;
             border-radius: 8px;
             border: 1px solid #e9ecef;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid #28a745;
         }
 
         .info-icon {
             font-size: 2em;
             margin-bottom: 10px;
-            color: #007bff;
+            color: #28a745;
         }
 
-        .security-tips {
+        .benefits-section {
             background-color: #e8f5e8;
             padding: 20px;
             border-radius: 8px;
@@ -146,7 +146,7 @@
             margin: 25px 0;
         }
 
-        .security-tips h3 {
+        .benefits-section h3 {
             color: #155724;
             margin-top: 0;
         }
@@ -179,7 +179,7 @@
 
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
             color: white;
             text-decoration: none;
             padding: 15px 30px;
@@ -209,7 +209,7 @@
         }
 
         .legal-links a {
-            color: #007bff;
+            color: #28a745;
             text-decoration: none;
             margin: 0 15px;
             font-weight: bold;
@@ -288,13 +288,30 @@
             font-weight: bold;
         }
 
-        .request-details {
+        .progress-indicator {
             background-color: #f1f3f4;
             padding: 15px;
             border-radius: 5px;
             margin: 15px 0;
-            font-family: monospace;
+            text-align: center;
+        }
+
+        .step {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 0 5px;
+            border-radius: 15px;
             font-size: 0.9em;
+        }
+
+        .step.current {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .step.pending {
+            background-color: #e9ecef;
+            color: #6c757d;
         }
     </style>
 </head>
@@ -303,103 +320,64 @@
     <div class="container">
         <div class="header">
             <h1>🌿 Natour</h1>
-            <div class="security-badge">
-                🔐 Recuperação de Senha
+            <div class="welcome-badge">
+                🎉 Bem-vindo à Natour!
             </div>
         </div>
 
         <div class="content">
-            <h2>🔑 Olá, {{username}}!</h2>
+            <h2>👋 Olá, {{username}}!</h2>
 
-            <div class="security-notice">
-                <div class="alert-icon">🛡️</div>
-                <h3>Código de Verificação para Troca de Senha</h3>
-                <p>Recebemos uma solicitação para <strong>redefinir sua senha</strong>. Use o código abaixo para
-                    prosseguir.</p>
+            <div class="welcome-notice">
+                <div class="alert-icon">🌟</div>
+                <h3>Confirme seu email para criar sua conta</h3>
+                <p>Estamos quase lá! Use o código abaixo para <strong>verificar seu email</strong> e ativar sua conta na
+                    Natour.</p>
             </div>
 
             <div class="code-container">
                 <h3>📱 Seu Código de Verificação:</h3>
                 <div class="verification-code">{{verification_code}}</div>
                 <p style="margin: 10px 0; color: #6c757d;">
-                    <small>Digite este código na página de recuperação de senha</small>
+                    <small>Digite este código na página de verificação</small>
                 </p>
             </div>
 
             <div class="expiry-warning">
                 <h3>⏰ Atenção - Código Temporário</h3>
                 <p><strong>Este código expira em 3 minutos</strong></p>
-                <p>Por segurança, você precisará solicitar um novo código após este prazo.</p>
+                <p>Você pode solicitar um novo código se este expirar.</p>
             </div>
 
             <div class="info-grid">
                 <div class="info-card">
                     <div class="info-icon">🔢</div>
                     <h4>Como Usar o Código</h4>
-                    <p>Digite o código na página de recuperação onde você fez a solicitação</p>
+                    <p>Digite o código na página de verificação de email onde você se registrou</p>
                 </div>
                 <div class="info-card">
                     <div class="info-icon">⏱️</div>
-                    <h4>Validade Limitada</h4>
-                    <p>O código é válido por apenas 3 minutos por segurança</p>
+                    <h4>Validade do Código</h4>
+                    <p>O código é válido por 3 minutos por questões de segurança</p>
                 </div>
             </div>
 
             <div class="code-instructions">
                 <h3>📝 Instruções Passo a Passo:</h3>
                 <ol style="margin: 0; padding-left: 20px;">
-                    <li>Acesse a página de recuperação de senha</li>
+                    <li>Volte para a página de verificação da Natour</li>
                     <li>Digite o código <strong>{{verification_code}}</strong> no campo indicado</li>
-                    <li>Clique em "Verificar Código"</li>
-                    <li>Crie sua nova senha segura</li>
-                    <li>Confirme a nova senha e salve</li>
+                    <li>Clique em "Verificar Email"</li>
+                    <li>Complete seu perfil com suas informações</li>
+                    <li>Comece a explorar pontos turísticos incríveis!</li>
                 </ol>
             </div>
 
-            <div class="security-tips">
-                <h3>🛡️ Dicas de Segurança:</h3>
+            <div class="benefits-section">
+                <h3>🚀 O que você poderá fazer na Natour:</h3>
                 <ul style="margin: 0; padding-left: 20px;">
-                    <li><strong>Não compartilhe</strong> este código com ninguém</li>
-                    <li><strong>Use uma senha forte</strong> com pelo menos 8 caracteres</li>
-                    <li><strong>Inclua números e símbolos</strong> na sua nova senha</li>
-                    <li><strong>Evite senhas óbvias</strong> como datas de nascimento</li>
-                    <li><strong>Ative a autenticação em duas etapas</strong> quando disponível</li>
-                </ul>
-            </div>
-
-            <h3>❓ Não solicitou esta recuperação?</h3>
-            <p>Se você <span class="highlight">não solicitou</span> a redefinição de senha, ignore este email e
-                considere:</p>
-            <ul>
-                <li>Verificar se sua conta não foi comprometida</li>
-                <li>Alterar sua senha atual por precaução</li>
-                <li>Entrar em contato conosco se suspeitar de atividade suspeita</li>
-            </ul>
-
-            <div class="contact-info">
-                <h4>🆘 Precisa de Ajuda?</h4>
-                <p><strong>📧 Email:</strong> suporte@natour.com</p>
-                <p><strong>💬 WhatsApp:</strong> (11) 9999-9999</p>
-                <p><strong>⏰ Horário:</strong> 24/7 para questões de segurança</p>
-                <p><strong>🌐 Central de Ajuda:</strong> help.natour.com/recuperacao-senha</p>
-            </div>
-
-        </div>
-
-        <div class="footer">
-            <div class="legal-links">
-                <a href="{{terms_url}}">📋 Termos de Uso</a>
-                <a href="{{privacy_url}}">🔒 Política de Privacidade</a>
-                <!-- <a href="{{security_url}}">🛡️ Política de Segurança</a> -->
-            </div>
-            <p>© 2025 Natour. Todos os direitos reservados.</p>
-            <p>Este é um email automático de segurança. Não responda a este email.</p>
-            <p style="font-size: 0.8em; color: #999;">
-                Natour Tecnologia Ltda. | CNPJ: 00.000.000/0001-00<br>
-                Rua das Aventuras, 123 - São Paulo/SP - CEP: 00000-000
-            </p>
-        </div>
-    </div>
-</body>
-
-</html>
+                    <li><strong>🗺️ Descobrir</strong> pontos turísticos únicos e escondidos</li>
+                    <li><strong>📸 Compartilhar</strong> suas próprias descobertas com fotos</li>
+                    <li><strong>⭐ Avaliar</strong> e comentar sobre lugares visitados</li>
+                    <li><strong>📍 Criar</strong> seus próprios pontos turísticos</li>
+                    <li><strong>🧭 Navegar</strong>
