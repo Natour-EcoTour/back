@@ -2,6 +2,7 @@
 Views for managing verification codes in the Natour API.
 """
 # pylint: disable=no-member
+import logging
 
 from smtplib import SMTPException
 
@@ -17,6 +18,8 @@ from rest_framework.decorators import permission_classes
 
 from natour.api.methods.create_code import create_code
 
+logger = logging.getLogger("django")
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -28,11 +31,41 @@ def send_verification_code(request):
     target_username = request.data.get('username')
     target_email = request.data.get('email')
 
+    logger.info(
+        "Verification code request received.",
+        extra={
+            "action": "send_verification_code",
+            "username": target_username,
+            "email": target_email,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
+
     if not target_email or not target_username:
+        logger.warning(
+            "Verification code request missing email or username.",
+            extra={
+                "action": "send_verification_code",
+                "username": target_username,
+                "email": target_email,
+                "result": "missing_fields",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
     cache_key = f'verification_code:{target_email}'
     if cache.get(cache_key):
+        logger.warning(
+            "Verification code request too soon.",
+            extra={
+                "action": "send_verification_code",
+                "username": target_username,
+                "email": target_email,
+                "result": "rate_limited",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(
             {"detail": "Por favor espere 3 minutos para solicitar outro código."},
             status=status.HTTP_400_BAD_REQUEST
@@ -40,6 +73,18 @@ def send_verification_code(request):
 
     code = create_code()
     cache.set(cache_key, code, timeout=180)
+
+    logger.info(
+        "Verification code generated and cached.",
+        extra={
+            "action": "send_verification_code",
+            "username": target_username,
+            "email": target_email,
+            "code": code,
+            "result": "code_generated",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
 
     html_content = render_to_string(
         'email_templates/validation_code.html',
@@ -59,10 +104,34 @@ def send_verification_code(request):
         msg.attach_alternative(html_content, "text/html")
         msg.send()
     except SMTPException as e:
+        logger.error(
+            "Failed to send verification code email.",
+            extra={
+                "action": "send_verification_code",
+                "username": target_username,
+                "email": target_email,
+                "code": code,
+                "result": "email_send_failed",
+                "error": str(e),
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(
             {"detail": f"Erro ao enviar email: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+    logger.info(
+        "Verification code email sent successfully.",
+        extra={
+            "action": "send_verification_code",
+            "username": target_username,
+            "email": target_email,
+            "code": code,
+            "result": "success",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
 
     return Response({
         "detail": "Código de verificação enviado com sucesso. Verifique seu e-mail.",
@@ -78,17 +147,54 @@ def verify_code(request):
     email = request.data.get('email')
     code = request.data.get('code')
 
+    logger.info(
+        "Verification code submission received.",
+        extra={
+            "action": "verify_code",
+            "email": email,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
+
     cache_key = f'verification_code:{email}'
     cached_code = cache.get(cache_key)
 
     if not cached_code:
+        logger.warning(
+            "Verification code failed: expired or not found.",
+            extra={
+                "action": "verify_code",
+                "email": email,
+                "result": "expired_or_not_found",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response({"detail": "Código expirado ou não encontrado."},
                         status=status.HTTP_400_BAD_REQUEST)
+
     if cached_code != code:
+        logger.warning(
+            "Verification code failed: incorrect code.",
+            extra={
+                "action": "verify_code",
+                "email": email,
+                "result": "incorrect_code",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response({"detail": "Código incorreto."}, status=status.HTTP_400_BAD_REQUEST)
 
     cache.delete(cache_key)
-
     cache.set(f'verified_email:{email}', True, timeout=600)
+
+    logger.info(
+        "Verification code successful: email verified.",
+        extra={
+            "action": "verify_code",
+            "email": email,
+            "result": "success",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
 
     return Response({"detail": "Email verificado com sucesso!"}, status=status.HTTP_200_OK)

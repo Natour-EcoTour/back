@@ -2,6 +2,7 @@
 Views for managing points in the Natour API.
 """
 # pylint: disable=no-member
+import logging
 
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
@@ -18,6 +19,8 @@ from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerial
                                           PointApprovalSerializer, PointStatusUser)
 from natour.api.models import Point
 
+logger = logging.getLogger("django")
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -25,10 +28,44 @@ def create_point(request):
     """
     Create a new point.
     """
+    user = request.user
+    logger.info(
+        "Received request to create a point.",
+        extra={
+            "action": "create_point",
+            "user_id": user.id,
+            "username": user.username,
+            "ip": request.META.get("REMOTE_ADDR"),
+        }
+    )
+
     serializer = CreatePointSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(user=request.user)
+        point = serializer.save(user=user)
+        logger.info(
+            "Point created successfully.",
+            extra={
+                "action": "create_point",
+                "user_id": user.id,
+                "username": user.username,
+                "point_id": point.id,
+                "result": "success",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    logger.warning(
+        "Failed to create point due to validation errors.",
+        extra={
+            "action": "create_point",
+            "user_id": user.id,
+            "username": user.username,
+            "errors": serializer.errors,
+            "result": "validation_error",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -38,12 +75,34 @@ def point_approval(request, point_id):
     """
     Approve or reject a point created by a user.
     """
-    point = get_object_or_404(Point, id=point_id)
+    user = request.user
+    logger.info(
+        "Received request to approve/reject a point.",
+        extra={
+            "action": "point_approval",
+            "admin_user_id": user.id,
+            "admin_username": user.username,
+            "point_id": point_id,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
 
+    point = get_object_or_404(Point, id=point_id)
     new_status = request.data.get('status')
     new_is_active = request.data.get('is_active')
 
     if new_status is None or new_is_active is None:
+        logger.warning(
+            "Missing required status or is_active fields.",
+            extra={
+                "action": "point_approval",
+                "admin_user_id": user.id,
+                "admin_username": user.username,
+                "point_id": point_id,
+                "result": "missing_fields",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(
             {"detail": "Você deve fornecer 'status' e 'is_active'."},
             status=status.HTTP_400_BAD_REQUEST
@@ -51,6 +110,19 @@ def point_approval(request, point_id):
 
     if point.status == new_status and point.is_active == new_is_active:
         state_text = "ativo" if new_status and new_is_active else "inativo"
+        logger.info(
+            "Point already in requested state.",
+            extra={
+                "action": "point_approval",
+                "admin_user_id": user.id,
+                "admin_username": user.username,
+                "point_id": point_id,
+                "requested_status": new_status,
+                "requested_is_active": new_is_active,
+                "result": "no_change_needed",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(
             {"detail": f"Este ponto já está {state_text}."},
             status=status.HTTP_400_BAD_REQUEST
@@ -64,8 +136,33 @@ def point_approval(request, point_id):
 
     if serializer.is_valid():
         serializer.save()
+        logger.info(
+            "Point approval/rejection processed successfully.",
+            extra={
+                "action": "point_approval",
+                "admin_user_id": user.id,
+                "admin_username": user.username,
+                "point_id": point_id,
+                "new_status": new_status,
+                "new_is_active": new_is_active,
+                "result": "success",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    logger.warning(
+        "Point approval/rejection failed validation.",
+        extra={
+            "action": "point_approval",
+            "admin_user_id": user.id,
+            "admin_username": user.username,
+            "point_id": point_id,
+            "errors": serializer.errors,
+            "result": "validation_error",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -135,17 +232,55 @@ def change_point_status(request, point_id):
     """
     Change the status of a point.
     """
-    target_point = get_object_or_404(Point, id=point_id, user=request.user)
+    user = request.user
+    logger.info(
+        "Received request to change point status.",
+        extra={
+            "action": "change_point_status",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
+
+    target_point = get_object_or_404(Point, id=point_id, user=user)
+
+    previous_status = target_point.is_active
 
     target_point.is_active = not target_point.is_active
-    serializer = PointStatusUser(
-        target_point, data=request.data, partial=True)
+
+    serializer = PointStatusUser(target_point, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
-
+        logger.info(
+            "Point status changed successfully.",
+            extra={
+                "action": "change_point_status",
+                "user_id": user.id,
+                "username": user.username,
+                "point_id": point_id,
+                "previous_status": previous_status,
+                "new_status": target_point.is_active,
+                "result": "success",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    logger.warning(
+        "Failed to change point status due to validation errors.",
+        extra={
+            "action": "change_point_status",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "errors": serializer.errors,
+            "result": "validation_error",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # ADICIONAR EMAIL
@@ -169,9 +304,34 @@ def delete_my_point(request, point_id):
     """
     Delete a point created by the authenticated user.
     """
-    point = get_object_or_404(Point, id=point_id, user=request.user)
+    user = request.user
+    logger.info(
+        "Received request to delete a point.",
+        extra={
+            "action": "delete_my_point",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
+
+    point = get_object_or_404(Point, id=point_id, user=user)
 
     point.delete()
+
+    logger.info(
+        "Point deleted successfully.",
+        extra={
+            "action": "delete_my_point",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "result": "success",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
+
     return Response({"detail": "Ponto excluído com sucesso."}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -181,10 +341,37 @@ def add_view(request, point_id):
     """
     Increment the view count of a point.
     """
+    user = request.user
+    logger.info(
+        "Received request to increment point view count.",
+        extra={
+            "action": "add_view",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
+
     point = get_object_or_404(Point, id=point_id)
 
+    previous_views = point.views
     point.views += 1
     point.save()
+
+    logger.info(
+        "Point view count incremented successfully.",
+        extra={
+            "action": "add_view",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "previous_views": previous_views,
+            "new_views": point.views,
+            "result": "success",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
 
     return Response({"views": point.views}, status=status.HTTP_200_OK)
 
@@ -195,13 +382,48 @@ def edit_point(request, point_id):
     """
     Edit a point created by the authenticated user.
     """
-    point = get_object_or_404(Point, id=point_id, user=request.user)
+    user = request.user
+    logger.info(
+        "Received request to edit a point.",
+        extra={
+            "action": "edit_point",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
+
+    point = get_object_or_404(Point, id=point_id, user=user)
 
     serializer = CreatePointSerializer(point, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
+        logger.info(
+            "Point edited successfully.",
+            extra={
+                "action": "edit_point",
+                "user_id": user.id,
+                "username": user.username,
+                "point_id": point_id,
+                "result": "success",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    logger.warning(
+        "Failed to edit point due to validation errors.",
+        extra={
+            "action": "edit_point",
+            "user_id": user.id,
+            "username": user.username,
+            "point_id": point_id,
+            "errors": serializer.errors,
+            "result": "validation_error",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # ADICIONAR EMAIL

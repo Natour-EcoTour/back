@@ -1,6 +1,7 @@
 """
 Views for user authentication and management.
 """
+import logging
 
 from smtplib import SMTPException
 
@@ -8,6 +9,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 
 from django_ratelimit.decorators import ratelimit
 
@@ -22,6 +24,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from natour.api.serializers.user import CreateUserSerializer, GenericUserSerializer
 from natour.api.models import CustomUser
+
+logger = logging.getLogger("django")
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):  # pylint: disable=abstract-method
@@ -53,7 +57,25 @@ def create_user(request):
     Endpoint to create a new user.
     """
     email = request.data.get('email')
+    logger.info(
+        "Received user creation request.",
+        extra={
+            "email": email,
+            "action": "create_user",
+            "request_data": request.data
+        }
+    )
+
     if not cache.get(f'verified_email:{email}'):
+        logger.warning(
+            "User tried creating an account before code verification.",
+            extra={
+                "email": email,
+                "action": "create_user",
+                "result": "email_not_verified",
+                "request_data": request.data
+            }
+        )
         return Response(
             {"detail": "Você precisa validar seu e-mail antes de criar a conta."},
             status=status.HTTP_400_BAD_REQUEST
@@ -69,6 +91,17 @@ def create_user(request):
             user.is_staff = True
             user.is_superuser = True
             user.save(update_fields=['is_staff', 'is_superuser'])
+
+        logger.info(
+            "User created successfully.",
+            extra={
+                "user_id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "action": "create_user",
+                "result": "success"
+            }
+        )
 
         html_content = render_to_string(
             'email_templates/user_registration.html',
@@ -87,11 +120,33 @@ def create_user(request):
             msg.attach_alternative(html_content, "text/html")
             msg.send()
         except SMTPException as e:
+            logger.error(
+                "Failed to send user registration email.",
+                extra={
+                    "user_id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "action": "create_user",
+                    "result": "email_send_failed",
+                    "error": str(e)
+                }
+            )
             return Response(
                 {"detail": f"Erro ao enviar email: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         return Response(CreateUserSerializer(user).data, status=status.HTTP_201_CREATED)
+
+    logger.warning(
+        "User creation failed validation.",
+        extra={
+            "email": email,
+            "action": "create_user",
+            "result": "validation_error",
+            "errors": serializer.errors,
+            "request_data": request.data
+        }
+    )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -102,23 +157,71 @@ def login(request):
     """
     Endpoint for user login.
     """
+    email = request.data.get('email')
+
+    logger.info(
+        "Login attempt received.",
+        extra={
+            "action": "login",
+            "email": email,
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
     try:
-        user = CustomUser.objects.get(email=request.data['email'])
-    except CustomUser.DoesNotExist:  # pylint: disable=no-member
+        user = CustomUser.objects.get(email=email)
+    except ObjectDoesNotExist:
+        logger.warning(
+            "Login failed: user not found.",
+            extra={
+                "action": "login",
+                "email": email,
+                "result": "user_not_found",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response({"error": "E-mail ou senha incorretos."}, status=status.HTTP_404_NOT_FOUND)
 
-    if user.check_password(request.data['password']):
-        if user.is_active is False:
+    if user.check_password(request.data.get('password')):
+        if not user.is_active:
+            logger.warning(
+                "Login failed: user inactive.",
+                extra={
+                    "action": "login",
+                    "user_id": user.id,
+                    "email": user.email,
+                    "result": "inactive",
+                    "ip": request.META.get("REMOTE_ADDR")
+                }
+            )
             return Response({"error": "Conta desativada."}, status=status.HTTP_403_FORBIDDEN)
         user.last_login = timezone.now()
         user.save(update_fields=['last_login'])
         refresh = RefreshToken.for_user(user)
+
+        logger.info(
+            "Login successful.",
+            extra={
+                "action": "login",
+                "user_id": user.id,
+                "email": user.email,
+                "result": "success",
+                "ip": request.META.get("REMOTE_ADDR")
+            }
+        )
         return Response({
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "user": GenericUserSerializer(user).data
         }, status=status.HTTP_200_OK)
 
+    logger.warning(
+        "Login failed: invalid password.",
+        extra={
+            "action": "login",
+            "user_id": user.id,
+            "email": user.email,
+            "result": "invalid_password",
+            "ip": request.META.get("REMOTE_ADDR")
+        }
+    )
     return Response({"error": "E-mail ou senha incorretos."}, status=status.HTTP_401_UNAUTHORIZED)
-
-# logout
