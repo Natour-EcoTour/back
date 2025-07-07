@@ -31,7 +31,9 @@ from .api.views.point import (create_point, get_point_info, get_all_points,
                               change_point_status, delete_point, delete_my_point,
                               add_view, edit_point, point_approval, show_points_on_map)
 from .api.views.review import add_review
-from .api.views.code import send_verification_code, verify_code
+from .api.views.code import (
+    send_verification_code, verify_code, send_password_reset_code,
+    verify_password_reset_code)
 
 urlpatterns = [
     # Admin URL
@@ -62,6 +64,10 @@ urlpatterns = [
     # Code verification URL
     path('code/send/', send_verification_code, name='send_verification_code'),
     path('code/verify/', verify_code, name='verify_code'),
+    path('code/reset_password/', send_password_reset_code,
+         name='send_password_reset_code'),
+    path('code/verify_password_reset/', verify_password_reset_code,
+         name='verify_password_reset_code'),
 
     # Point URLs
     path('points/create/', create_point, name='create_point'),

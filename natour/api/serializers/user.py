@@ -160,15 +160,6 @@ class AllUsersSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'is_active', 'is_staff']
         read_only_fields = fields
 
-    # def get_photo(self, obj):
-    #     """
-    #     Get the URL of the user's photo if it exists.
-    #     """
-    #     photo_obj = getattr(obj, "photos", None)
-    #     if photo_obj and getattr(photo_obj, "image", None):
-    #         return photo_obj.image.url
-    #     return None
-
 
 class UserStatusSerializer(serializers.ModelSerializer):
     """
@@ -216,7 +207,9 @@ class UserPasswordSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['old_password', 'new_password', 'confirm_password']
 
-        write_only_fields = fields
+        extra_kwargs = {'old_password': {'write_only': True}, 'new_password': {
+            'write_only': True}, 'confirm_password': {'write_only': True}}
+
     old_password = serializers.CharField(
         write_only=True, required=True, error_messages={
             'required': 'Senha antiga é obrigatória.',
@@ -256,3 +249,26 @@ class UserPasswordSerializer(serializers.ModelSerializer):
                 {'new_password': 'Nova senha não pode ser igual à senha antiga.'})
 
         return attrs
+
+
+class NewUserPasswordSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating user password without old password.
+    """
+    class Meta:
+        """
+        Meta class for NewUserPasswordSerializer.
+        """
+        model = CustomUser
+        fields = ['password']
+
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate_password(self, value):
+        """
+        Method to validate the new password.
+        """
+        if len(value) < 8 or not re.search(r'[A-Za-z]', value) or not re.search(r'[0-9]', value):
+            raise serializers.ValidationError(
+                'Nova senha deve ter pelo menos 8 caracteres, incluindo letras e números.')
+        return value
