@@ -203,3 +203,56 @@ class UserStatusSerializer(serializers.ModelSerializer):
             attrs['deactivation_reason'] = None
 
         return attrs
+
+
+class UserPasswordSerializer(serializers.ModelSerializer):
+    """
+    Serializer for updating user password.
+    """
+    class Meta:
+        """
+        Meta class for UserPasswordSerializer.
+        """
+        model = CustomUser
+        fields = ['old_password', 'new_password', 'confirm_password']
+
+        write_only_fields = fields
+    old_password = serializers.CharField(
+        write_only=True, required=True, error_messages={
+            'required': 'Senha antiga é obrigatória.',
+            'blank': 'Senha antiga não pode estar em branco.'
+        })
+    new_password = serializers.CharField(
+        write_only=True, required=True, error_messages={
+            'required': 'Nova senha é obrigatória.',
+            'blank': 'Nova senha não pode estar em branco.'
+        })
+    confirm_password = serializers.CharField(
+        write_only=True, required=True, error_messages={
+            'required': 'Confirmação de senha é obrigatória.',
+            'blank': 'Confirmação de senha não pode estar em branco.'
+        })
+
+    def validate_new_password(self, value):
+        """
+        Method to validate the new password.
+        """
+        if len(value) < 8 or not re.search(r'[A-Za-z]', value) or not re.search(r'[0-9]', value):
+            raise serializers.ValidationError(
+                'Nova senha deve ter pelo menos 8 caracteres, incluindo letras e números.')
+        return value
+
+    def validate(self, attrs):
+        old_password = attrs.get('old_password')
+        new_password = attrs.get('new_password')
+        confirm_password = attrs.get('confirm_password')
+
+        if new_password != confirm_password:
+            raise serializers.ValidationError(
+                {'confirm_password': 'Nova senha e confirmação de senha não coincidem.'})
+
+        if old_password == new_password:
+            raise serializers.ValidationError(
+                {'new_password': 'Nova senha não pode ser igual à senha antiga.'})
+
+        return attrs

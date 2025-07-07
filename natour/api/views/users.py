@@ -20,7 +20,8 @@ from rest_framework.generics import get_object_or_404
 from natour.api.pagination import CustomPagination
 from natour.api.models import CustomUser
 from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSerializer,
-                                         AllUsersSerializer, UserStatusSerializer)
+                                         AllUsersSerializer, UserStatusSerializer,
+                                         UserPasswordSerializer)
 from natour.api.serializers.point import PointInfoSerializer
 
 logger = logging.getLogger("django")
@@ -391,3 +392,35 @@ def get_my_points(request):
         "count": points_amount,
         "points": serializer.data
     }, status=status.HTTP_200_OK)
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_my_password(request):
+    """
+    Endpoint to update the authenticated user's password.
+    """
+
+    user = request.user
+
+    serializer = UserPasswordSerializer(data=request.data)
+
+    if serializer.is_valid():
+        old_password = serializer.validated_data.get('old_password')
+
+        if not user.check_password(old_password):
+            return Response(
+                {"detail": "Senha antiga incorreta."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+        return Response(
+            {"detail": "Senha atualizada com sucesso."},
+            status=status.HTTP_200_OK
+        )
+    return Response(
+        serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST
+    )
