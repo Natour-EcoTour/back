@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from django_prometheus import exports
 
-from .api.views.auth.POST.auth import MyTokenObtainPairView, create_user, login
+from .api.views.auth import MyTokenObtainPairView, create_user, login
 from .api.views.users import (get_my_info, delete_my_account, update_my_info,
                               get_all_users, change_user_status, delete_user_account,
                               get_user_points, get_my_points)
@@ -31,7 +31,7 @@ from .api.views.point import (create_point, get_point_info, get_all_points,
                               change_point_status, delete_point, delete_my_point,
                               add_view, edit_point, point_approval, show_points_on_map)
 from .api.views.review import add_review
-from .api.views.code.POST.code import send_verification_code, verify_code
+from .api.views.code import send_verification_code, verify_code
 
 urlpatterns = [
     # Admin URL
