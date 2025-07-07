@@ -21,7 +21,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from django_prometheus import exports
 
-from .api.views.auth import MyTokenObtainPairView, create_user, login
+from .api.views.auth import MyTokenObtainPairView, create_user, login, get_refresh_token
 from .api.views.users import (get_my_info, delete_my_account, update_my_info,
                               get_all_users, change_user_status, delete_user_account,
                               get_user_points, get_my_points, update_my_password)
@@ -44,6 +44,7 @@ urlpatterns = [
     # Auth URLs
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+     path('token/get_refresh/', get_refresh_token, name='get_refresh_token'),
 
     # User management URLs
     path('users/login/', login, name='login'),

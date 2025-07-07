@@ -14,7 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django_ratelimit.decorators import ratelimit
 
 from rest_framework.decorators import api_view
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import permission_classes
@@ -225,3 +225,17 @@ def login(request):
         }
     )
     return Response({"error": "E-mail ou senha incorretos."}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def get_refresh_token(request):
+    """
+    View to obtain a new refresh token from loged in user.
+    """
+    user = request.user
+    refresh_token = RefreshToken.for_user(user)
+
+    return Response({
+        "refresh": str(refresh_token)
+    }, status=status.HTTP_200_OK)
