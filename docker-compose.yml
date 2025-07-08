@@ -29,9 +29,10 @@ services:
     restart: unless-stopped
 
   tempo:
-    image: grafana/tempo:2.4.1
+    image: grafana/tempo:2.5.0
     ports:
       - "3200:3200"
+      - "4317:4317"
     command: ["-config.file=/etc/tempo/config.yml"]
     volumes:
       - ./docker/tempo/config.yml:/etc/tempo/config.yml
