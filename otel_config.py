@@ -9,8 +9,8 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.django import DjangoInstrumentor
-
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 
 resource = Resource.create(attributes={
@@ -31,3 +31,4 @@ provider.add_span_processor(span_processor)
 
 DjangoInstrumentor().instrument()
 RequestsInstrumentor().instrument()
+Psycopg2Instrumentor().instrument()
