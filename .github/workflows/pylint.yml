@@ -45,9 +45,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Check Django health
-        run: |
-          python manage.py check
+
+      - name: Print all env vars
+        run: env
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           DB_NAME: ${{ secrets.DB_NAME }}
@@ -60,4 +60,8 @@ jobs:
           API_SECRET: ${{ secrets.API_SECRET }}
           SENDINBLUE_API_KEY: ${{ secrets.SENDINBLUE_API_KEY }}
           DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+
+      - name: Check Django health
+        run: |
+          python manage.py check
 
