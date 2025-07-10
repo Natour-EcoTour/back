@@ -14,7 +14,6 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.psycopg2 import Psycopg2Instrumentor
 
 
-
 resource = Resource.create(attributes={
     "service.name": os.environ.get("OTEL_SERVICE_NAME", "drf-api"),
 })
