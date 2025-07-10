@@ -34,6 +34,18 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.13"]
+    env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        DB_NAME: ${{ secrets.DB_NAME }}
+        DB_USER: ${{ secrets.DB_USER }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        cloud_name: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+        api_key: ${{ secrets.CLOUDINARY_API_KEY }}
+        api_secret: ${{ secrets.CLOUDINARY_API_SECRET }}
+        SENDINBLUE_API_KEY: ${{ secrets.SENDINBLUE_API_KEY }}
+        DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
