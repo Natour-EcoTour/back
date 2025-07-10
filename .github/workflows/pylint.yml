@@ -1,4 +1,4 @@
-name: Django CI
+name: CI
 
 on: [push]
 
@@ -41,11 +41,11 @@ jobs:
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         DB_HOST: ${{ secrets.DB_HOST }}
         DB_PORT: ${{ secrets.DB_PORT }}
-        cloud_name: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
-        api_key: ${{ secrets.CLOUDINARY_API_KEY }}
-        api_secret: ${{ secrets.CLOUDINARY_API_SECRET }}
+        CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+        API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+        API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
         SENDINBLUE_API_KEY: ${{ secrets.SENDINBLUE_API_KEY }}
-        DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
+        DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}        
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
