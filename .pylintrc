@@ -1,10 +1,10 @@
 [MESSAGES CONTROL]
 disable=
-    E5110   # Django was not configured.
-    C0415   # Import outside toplevel
-    R0901   # Too many ancestors
-    W0611   # Unused TestCase imported from django.test
-    R0903   # Too few public methods (1/2)
+    E5110,  # Django was not configured.
+    C0415,  # Import outside toplevel
+    R0901,  # Too many ancestors
+    W0611,  # Unused TestCase imported from django.test
+    R0903,  # Too few public methods (1/2)
     C0301,  # line-too-long
     C0114,  # missing-module-docstring
     C0103,  # invalid-name
