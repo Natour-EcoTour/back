@@ -30,6 +30,7 @@ jobs:
 
   healthcheck:
     runs-on: ubuntu-latest
+    environment: .env
     needs: lint
     strategy:
       matrix:
