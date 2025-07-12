@@ -36,24 +36,11 @@ def send_verification_code(request):
 
     logger.info(
         "Verification code request received.",
-        extra={
-            "action": "send_verification_code",
-            "username": target_username,
-            "email": target_email,
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     if not target_email or not target_username:
         logger.warning(
             "Verification code request missing email or username.",
-            extra={
-                "action": "send_verification_code",
-                "username": target_username,
-                "email": target_email,
-                "result": "missing_fields",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,13 +48,6 @@ def send_verification_code(request):
     if cache.get(cache_key):
         logger.warning(
             "Verification code request too soon.",
-            extra={
-                "action": "send_verification_code",
-                "username": target_username,
-                "email": target_email,
-                "result": "rate_limited",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response(
             {"detail": "Por favor espere 3 minutos para solicitar outro código."},
@@ -79,14 +59,6 @@ def send_verification_code(request):
 
     logger.info(
         "Verification code generated and cached.",
-        extra={
-            "action": "send_verification_code",
-            "username": target_username,
-            "email": target_email,
-            "code": code,
-            "result": "code_generated",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     html_content = render_to_string(
@@ -109,15 +81,6 @@ def send_verification_code(request):
     except SMTPException as e:
         logger.error(
             "Failed to send verification code email.",
-            extra={
-                "action": "send_verification_code",
-                "username": target_username,
-                "email": target_email,
-                "code": code,
-                "result": "email_send_failed",
-                "error": str(e),
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response(
             {"detail": f"Erro ao enviar email: {str(e)}"},
@@ -126,14 +89,6 @@ def send_verification_code(request):
 
     logger.info(
         "Verification code email sent successfully.",
-        extra={
-            "action": "send_verification_code",
-            "username": target_username,
-            "email": target_email,
-            "code": code,
-            "result": "success",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     return Response({
@@ -152,11 +107,6 @@ def verify_code(request):
 
     logger.info(
         "Verification code submission received.",
-        extra={
-            "action": "verify_code",
-            "email": email,
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     cache_key = f'verification_code:{email}'
@@ -165,12 +115,6 @@ def verify_code(request):
     if not cached_code:
         logger.warning(
             "Verification code failed: expired or not found.",
-            extra={
-                "action": "verify_code",
-                "email": email,
-                "result": "expired_or_not_found",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response({"detail": "Código expirado ou não encontrado."},
                         status=status.HTTP_400_BAD_REQUEST)
@@ -178,12 +122,6 @@ def verify_code(request):
     if cached_code != code:
         logger.warning(
             "Verification code failed: incorrect code.",
-            extra={
-                "action": "verify_code",
-                "email": email,
-                "result": "incorrect_code",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response({"detail": "Código incorreto."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -192,12 +130,6 @@ def verify_code(request):
 
     logger.info(
         "Verification code successful: email verified.",
-        extra={
-            "action": "verify_code",
-            "email": email,
-            "result": "success",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     return Response({"detail": "Email verificado com sucesso!"}, status=status.HTTP_200_OK)

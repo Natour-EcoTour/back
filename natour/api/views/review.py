@@ -26,13 +26,6 @@ def add_review(request, point_id):
     user = request.user
     logger.info(
         "Received request to add a review.",
-        extra={
-            "action": "add_review",
-            "user_id": user.id,
-            "username": user.username,
-            "point_id": point_id,
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     point = get_object_or_404(Point, id=point_id)
@@ -41,14 +34,6 @@ def add_review(request, point_id):
     if existing_review:
         logger.warning(
             "User already reviewed this point.",
-            extra={
-                "action": "add_review",
-                "user_id": user.id,
-                "username": user.username,
-                "point_id": point_id,
-                "result": "already_reviewed",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response(
             {"detail": "Você já avaliou este ponto."},
@@ -65,29 +50,10 @@ def add_review(request, point_id):
 
         logger.info(
             "Review added successfully.",
-            extra={
-                "action": "add_review",
-                "user_id": user.id,
-                "username": user.username,
-                "point_id": point_id,
-                "review_id": review.id,
-                "avg_rating": point.avg_rating,
-                "result": "success",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     logger.warning(
         "Failed to add review due to validation errors.",
-        extra={
-            "action": "add_review",
-            "user_id": user.id,
-            "username": user.username,
-            "point_id": point_id,
-            "errors": serializer.errors,
-            "result": "validation_error",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
