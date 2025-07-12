@@ -48,25 +48,12 @@ def delete_my_account(request):
     user = request.user
     logger.info(
         "Received request to delete user account.",
-        extra={
-            "action": "delete_my_account",
-            "user_id": user.id,
-            "username": user.username,
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     user.delete()
 
     logger.info(
         "User account deleted successfully.",
-        extra={
-            "action": "delete_my_account",
-            "user_id": user.id,
-            "username": user.username,
-            "result": "success",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
@@ -83,14 +70,6 @@ def delete_user_account(request, user_id):
 
     logger.info(
         "Received request to delete another user's account.",
-        extra={
-            "action": "delete_user_account",
-            "admin_user_id": admin.id,
-            "admin_username": admin.username,
-            "target_user_id": target_user.id,
-            "target_username": target_user.username,
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     html_content = render_to_string(
@@ -112,16 +91,6 @@ def delete_user_account(request, user_id):
     except SMTPException as e:
         logger.error(
             "Failed to send account deletion email.",
-            extra={
-                "action": "delete_user_account",
-                "admin_user_id": admin.id,
-                "admin_username": admin.username,
-                "target_user_id": target_user.id,
-                "target_username": target_user.username,
-                "result": "email_send_failed",
-                "error": str(e),
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response(
             {"detail": f"Erro ao enviar email: {str(e)}"},
@@ -132,15 +101,6 @@ def delete_user_account(request, user_id):
 
     logger.info(
         "User account deleted by admin successfully.",
-        extra={
-            "action": "delete_user_account",
-            "admin_user_id": admin.id,
-            "admin_username": admin.username,
-            "target_user_id": target_user.id,
-            "target_username": target_user.username,
-            "result": "success",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
@@ -155,12 +115,6 @@ def update_my_info(request):
     user = request.user
     logger.info(
         "Received request to update user profile.",
-        extra={
-            "action": "update_my_info",
-            "user_id": user.id,
-            "username": user.username,
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     serializer = UpdateUserSerializer(user, data=request.data)
@@ -169,26 +123,11 @@ def update_my_info(request):
         serializer.save()
         logger.info(
             "User profile updated successfully.",
-            extra={
-                "action": "update_my_info",
-                "user_id": user.id,
-                "username": user.username,
-                "result": "success",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     logger.warning(
         "Failed to update user profile due to validation errors.",
-        extra={
-            "action": "update_my_info",
-            "user_id": user.id,
-            "username": user.username,
-            "errors": serializer.errors,
-            "result": "validation_error",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -246,15 +185,6 @@ def change_user_status(request, user_id):
 
     logger.info(
         "Received request to change user status.",
-        extra={
-            "action": "change_user_status",
-            "admin_user_id": admin.id,
-            "admin_username": admin.username,
-            "target_user_id": target_user.id,
-            "target_username": target_user.username,
-            "old_status": target_user.is_active,
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
 
     target_user.is_active = not target_user.is_active
@@ -266,16 +196,6 @@ def change_user_status(request, user_id):
 
         logger.info(
             "User status changed successfully.",
-            extra={
-                "action": "change_user_status",
-                "admin_user_id": admin.id,
-                "admin_username": admin.username,
-                "target_user_id": target_user.id,
-                "target_username": target_user.username,
-                "new_status": target_user.is_active,
-                "result": "success",
-                "ip": request.META.get("REMOTE_ADDR")
-            }
         )
 
         html_content = render_to_string(
@@ -300,16 +220,6 @@ def change_user_status(request, user_id):
         except SMTPException as e:
             logger.error(
                 "Failed to send user status change email.",
-                extra={
-                    "action": "change_user_status",
-                    "admin_user_id": admin.id,
-                    "admin_username": admin.username,
-                    "target_user_id": target_user.id,
-                    "target_username": target_user.username,
-                    "result": "email_send_failed",
-                    "error": str(e),
-                    "ip": request.META.get("REMOTE_ADDR")
-                }
             )
             return Response(
                 {"detail": f"Erro ao enviar email: {str(e)}"},
@@ -320,16 +230,6 @@ def change_user_status(request, user_id):
 
     logger.warning(
         "Failed to change user status due to validation errors.",
-        extra={
-            "action": "change_user_status",
-            "admin_user_id": admin.id,
-            "admin_username": admin.username,
-            "target_user_id": target_user.id,
-            "target_username": target_user.username,
-            "errors": serializer.errors,
-            "result": "validation_error",
-            "ip": request.META.get("REMOTE_ADDR")
-        }
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
