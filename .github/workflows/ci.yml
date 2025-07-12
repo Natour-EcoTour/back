@@ -47,7 +47,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Print all env vars
-        run: env
+        run: echo "SECRET_KEY=${{ secrets.SECRET_KEY }}"
+        run: echo "SECRET_KEY=$SECRET_KEY"
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           
