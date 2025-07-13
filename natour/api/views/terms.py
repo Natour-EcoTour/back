@@ -19,6 +19,8 @@ from natour.api.serializers.terms import (CreateTermsSerializer, GetTermsSeriali
                                           UpadateTermsSerializer)
 from natour.api.methods.send_terms_email import send_updated_terms_email
 
+from natour.api.utils.get_ip import get_client_ip
+
 logger = logging.getLogger("django")
 
 
@@ -29,14 +31,20 @@ def create_terms(request):
     Endpoint to create new terms and conditions.
     """
     user = request.user
+    ip = get_client_ip(request)
     logger.info(
-        "Received request to create terms and conditions.",
+        "Admin '%s' (ID: %s, IP: %s) requested to create terms and conditions.",
+        user.username, user.id, ip
     )
 
     count = Terms.objects.count()
+    logger.info(
+        "Current Terms count before create attempt: %d.", count
+    )
     if count >= 2:
         logger.warning(
-            "Attempt to create terms when already at maximum count.",
+            "Admin '%s' (ID: %s) attempted to create terms, but maximum count (%d) reached.",
+            user.username, user.id, count
         )
         return Response(
             {"detail": "Termos e políticas já criados."},
@@ -47,12 +55,15 @@ def create_terms(request):
     if serializer.is_valid():
         terms = serializer.save()
         logger.info(
-            "Terms and conditions created successfully.",
+            "Terms and conditions created by admin '%s' (ID: %s). Terms ID: %s, Title: '%s'.",
+            user.username, user.id, terms.id, getattr(
+                terms, "title", "<no title>")
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     logger.warning(
-        "Failed to create terms and conditions due to validation errors.",
+        "Admin '%s' (ID: %s) failed to create terms and conditions due to validation errors: %s",
+        user.username, user.id, serializer.errors
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -76,13 +87,16 @@ def update_terms(request, term_id):
     Endpoint to update existing terms and conditions.
     """
     user = request.user
+    ip = get_client_ip(request)
     logger.info(
-        "Received request to update terms and conditions.",
+        "Admin '%s' (ID: %s, IP: %s) requested to update Terms ID: %s.",
+        user.username, user.id, ip, term_id
     )
 
     if 'content' not in request.data:
         logger.warning(
-            "Update terms request missing content field.",
+            "Admin '%s' (ID: %s) attempted to update Terms ID: %s but 'content' field is missing.",
+            user.username, user.id, term_id
         )
         return Response(
             {"detail": "Você deve fornecer o conteúdo dos termos."},
@@ -95,12 +109,17 @@ def update_terms(request, term_id):
     if serializer.is_valid():
         serializer.save()
         logger.info(
-            "Terms and conditions updated successfully.",
+            "Admin '%s' (ID: %s) successfully updated Terms ID: %s.",
+            user.username, user.id, term_id
+        )
+        logger.info(
+            "Triggering updated terms email notification for Terms ID: %s.", term_id
         )
         threading.Thread(target=send_updated_terms_email, daemon=True).start()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     logger.warning(
-        "Failed to update terms and conditions due to validation errors.",
+        "Admin '%s' (ID: %s) failed to update Terms ID: %s due to validation errors: %s",
+        user.username, user.id, term_id, serializer.errors
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

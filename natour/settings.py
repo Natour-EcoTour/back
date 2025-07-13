@@ -231,6 +231,7 @@ LOGGING = {
             "class": "logging.FileHandler",
             "filename": str(BASE_DIR / "app.log"),
             "formatter": "json",
+            "filters": ["exclude_metrics"],
         },
     },
     "loggers": {

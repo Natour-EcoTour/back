@@ -24,6 +24,8 @@ from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSer
                                          UserPasswordSerializer)
 from natour.api.serializers.point import PointInfoSerializer
 
+from natour.api.utils.get_ip import get_client_ip
+
 logger = logging.getLogger("django")
 
 
@@ -66,10 +68,13 @@ def delete_user_account(request, user_id):
     Endpoint to delete a user's account by an admin.
     """
     admin = request.user
+    ip = get_client_ip(request)
     target_user = get_object_or_404(CustomUser, id=user_id)
 
     logger.info(
-        "Received request to delete another user's account.",
+        "Admin '%s' (ID: %s, IP: %s) requested deletion of user account: '%s' (ID: %s, email: %s).",
+        admin.username, admin.id, ip,
+        target_user.username, target_user.id, target_user.email
     )
 
     html_content = render_to_string(
@@ -88,9 +93,14 @@ def delete_user_account(request, user_id):
         )
         msg.attach_alternative(html_content, "text/html")
         msg.send()
+        logger.info(
+            "Account deletion email sent to '%s' (user ID: %s).",
+            target_user.email, target_user.id
+        )
     except SMTPException as e:
         logger.error(
-            "Failed to send account deletion email.",
+            "Failed to send account deletion email to '%s' (user ID: %s). Error: %s",
+            target_user.email, target_user.id, str(e)
         )
         return Response(
             {"detail": f"Erro ao enviar email: {str(e)}"},
@@ -98,9 +108,9 @@ def delete_user_account(request, user_id):
         )
 
     target_user.delete()
-
     logger.info(
-        "User account deleted by admin successfully.",
+        "Admin '%s' (ID: %s) successfully deleted user account: '%s' (ID: %s, email: %s).",
+        admin.username, admin.id, target_user.username, target_user.id, target_user.email
     )
 
     return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
@@ -181,13 +191,21 @@ def change_user_status(request, user_id):
     Endpoint to change the status of a user.
     """
     admin = request.user
+    ip = get_client_ip(request)
     target_user = get_object_or_404(CustomUser, id=user_id)
 
+    previous_status = target_user.is_active
+    new_status = not previous_status
+
     logger.info(
-        "Received request to change user status.",
+        "Admin '%s' (ID: %s, IP: %s) requested to change status for user '%s' (ID: %s, email: %s) from %s to %s.",
+        admin.username, admin.id, ip,
+        target_user.username, target_user.id, target_user.email,
+        'active' if previous_status else 'inactive',
+        'active' if new_status else 'inactive'
     )
 
-    target_user.is_active = not target_user.is_active
+    target_user.is_active = new_status
     serializer = UserStatusSerializer(
         target_user, data=request.data, partial=True)
 
@@ -195,7 +213,10 @@ def change_user_status(request, user_id):
         serializer.save()
 
         logger.info(
-            "User status changed successfully.",
+            "Admin '%s' (ID: %s) changed status for user '%s' (ID: %s) to %s successfully.",
+            admin.username, admin.id,
+            target_user.username, target_user.id,
+            'active' if new_status else 'inactive'
         )
 
         html_content = render_to_string(
@@ -217,9 +238,14 @@ def change_user_status(request, user_id):
             )
             msg.attach_alternative(html_content, "text/html")
             msg.send()
+            logger.info(
+                "Status change email sent to user '%s' (ID: %s, email: %s).",
+                target_user.username, target_user.id, target_user.email
+            )
         except SMTPException as e:
             logger.error(
-                "Failed to send user status change email.",
+                "Failed to send user status change email to '%s' (ID: %s, email: %s). Error: %s",
+                target_user.username, target_user.id, target_user.email, str(e)
             )
             return Response(
                 {"detail": f"Erro ao enviar email: {str(e)}"},
@@ -229,7 +255,10 @@ def change_user_status(request, user_id):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     logger.warning(
-        "Failed to change user status due to validation errors.",
+        "Admin '%s' (ID: %s) failed to change status for user '%s' (ID: %s) due to validation errors: %s",
+        admin.username, admin.id,
+        target_user.username, target_user.id,
+        serializer.errors
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

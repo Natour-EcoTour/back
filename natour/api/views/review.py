@@ -14,6 +14,8 @@ from rest_framework.decorators import permission_classes
 from natour.api.serializers.review import CreateReviewSerializer
 from natour.api.models import Point
 
+from natour.api.utils.get_ip import get_client_ip
+
 logger = logging.getLogger("django")
 
 
@@ -24,8 +26,10 @@ def add_review(request, point_id):
     Add a review for a specific point.
     """
     user = request.user
+    ip = get_client_ip(request)
     logger.info(
-        "Received request to add a review.",
+        "User '%s' (ID: %s, IP: %s) requested to add a review to Point ID: %s.",
+        user.username, user.id, ip, point_id
     )
 
     point = get_object_or_404(Point, id=point_id)
@@ -33,7 +37,8 @@ def add_review(request, point_id):
     existing_review = point.reviews.filter(user=user).first()
     if existing_review:
         logger.warning(
-            "User already reviewed this point.",
+            "User '%s' (ID: %s) attempted to add a duplicate review for Point ID: %s (Review ID: %s).",
+            user.username, user.id, point_id, existing_review.id
         )
         return Response(
             {"detail": "Você já avaliou este ponto."},
@@ -49,11 +54,13 @@ def add_review(request, point_id):
         point.save(update_fields=['avg_rating'])
 
         logger.info(
-            "Review added successfully.",
+            "User '%s' (ID: %s) added Review ID: %s (Rating: %s) to Point ID: %s. New avg rating: %.2f",
+            user.username, user.id, review.id, review.rating, point_id, avg
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     logger.warning(
-        "Failed to add review due to validation errors.",
+        "User '%s' (ID: %s) failed to add review to Point ID: %s due to validation errors: %s",
+        user.username, user.id, point_id, serializer.errors
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
