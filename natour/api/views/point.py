@@ -19,6 +19,8 @@ from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerial
                                           PointApprovalSerializer, PointStatusUser)
 from natour.api.models import Point
 
+from natour.api.utils.get_ip import get_client_ip
+
 logger = logging.getLogger("django")
 
 
@@ -29,20 +31,31 @@ def create_point(request):
     Create a new point.
     """
     user = request.user
+    ip = get_client_ip(request)
     logger.info(
-        "Received request to create a point.",
+        "User '%s' (ID: %s, IP: %s) requested to create a point.",
+        user.username,
+        user.id,
+        ip,
     )
 
     serializer = CreatePointSerializer(data=request.data)
     if serializer.is_valid():
         point = serializer.save(user=user)
         logger.info(
-            "Point created successfully.",
+            "Point created successfully by user '%s' (ID: %s). Point ID: %s, Name: '%s'",
+            user.username,
+            user.id,
+            point.id,
+            getattr(point, "name", "<no name>"),
         )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     logger.warning(
-        "Failed to create point due to validation errors.",
+        "User '%s' (ID: %s) failed to create point due to validation errors: %s",
+        user.username,
+        user.id,
+        serializer.errors,
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -54,17 +67,23 @@ def point_approval(request, point_id):
     Approve or reject a point created by a user.
     """
     user = request.user
+    ip = get_client_ip(request)
     logger.info(
-        "Received request to approve/reject a point.",
+        "Admin '%s' (ID: %s, IP: %s) requested approval/rejection for Point ID: %s.",
+        user.username, user.id, ip, point_id
     )
 
     point = get_object_or_404(Point, id=point_id)
+    previous_status = point.status
+    previous_is_active = point.is_active
+
     new_status = request.data.get('status')
     new_is_active = request.data.get('is_active')
 
     if new_status is None or new_is_active is None:
         logger.warning(
-            "Missing required status or is_active fields.",
+            "Admin '%s' (ID: %s) - Missing required status or is_active fields for Point ID: %s.",
+            user.username, user.id, point_id
         )
         return Response(
             {"detail": "Você deve fornecer 'status' e 'is_active'."},
@@ -74,7 +93,8 @@ def point_approval(request, point_id):
     if point.status == new_status and point.is_active == new_is_active:
         state_text = "ativo" if new_status and new_is_active else "inativo"
         logger.info(
-            "Point already in requested state.",
+            "Admin '%s' (ID: %s) - Point ID: %s already in requested state: %s.",
+            user.username, user.id, point_id, state_text
         )
         return Response(
             {"detail": f"Este ponto já está {state_text}."},
@@ -90,12 +110,16 @@ def point_approval(request, point_id):
     if serializer.is_valid():
         serializer.save()
         logger.info(
-            "Point approval/rejection processed successfully.",
+            "Admin '%s' (ID: %s) changed Point ID: %s status from (%s, %s) to (%s, %s) successfully.",
+            user.username, user.id, point_id,
+            previous_status, previous_is_active,
+            new_status, new_is_active
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     logger.warning(
-        "Point approval/rejection failed validation.",
+        "Admin '%s' (ID: %s) failed to change Point ID: %s status. Errors: %s",
+        user.username, user.id, point_id, serializer.errors
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -167,27 +191,44 @@ def change_point_status(request, point_id):
     Change the status of a point.
     """
     user = request.user
+    ip = get_client_ip(request)
+
     logger.info(
-        "Received request to change point status.",
+        "User '%s' (ID: %s) from IP: %s requested status change for Point ID: %s.",
+        user.username,
+        user.id,
+        ip,
+        point_id
     )
 
     target_point = get_object_or_404(Point, id=point_id, user=user)
-
     previous_status = target_point.is_active
+    new_status = not previous_status
 
-    target_point.is_active = not target_point.is_active
+    target_point.is_active = new_status
 
     serializer = PointStatusUser(target_point, data=request.data, partial=True)
 
     if serializer.is_valid():
         serializer.save()
         logger.info(
-            "Point status changed successfully.",
+            "User '%s' (ID: %s) changed Point ID: %s status from %s to %s successfully.",
+            user.username,
+            user.id,
+            point_id,
+            previous_status,
+            new_status
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     logger.warning(
-        "Failed to change point status due to validation errors.",
+        "User '%s' (ID: %s) failed to change Point ID: %s status from %s to %s. Errors: %s",
+        user.username,
+        user.id,
+        point_id,
+        previous_status,
+        new_status,
+        serializer.errors
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -235,9 +276,6 @@ def add_view(request, point_id):
     Increment the view count of a point.
     """
     user = request.user
-    logger.info(
-        "Received request to increment point view count.",
-    )
 
     point = get_object_or_404(Point, id=point_id)
 
@@ -245,8 +283,16 @@ def add_view(request, point_id):
     point.views += 1
     point.save()
 
+    ip = get_client_ip(request)
+
     logger.info(
-        "Point view count incremented successfully.",
+        "User '%s' (ID: %s) from IP: %s incremented view count for Point ID: %s | Previous views: %d | New views: %d",
+        user.username,
+        user.id,
+        ip,
+        point_id,
+        previous_views,
+        point.views,
     )
 
     return Response({"views": point.views}, status=status.HTTP_200_OK)
