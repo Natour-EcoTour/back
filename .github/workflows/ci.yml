@@ -77,8 +77,9 @@ jobs:
           host:      ${{ secrets.SSH_HOST_PROD }}
           username:  deploy
           key:       ${{ secrets.SSH_KEY }}
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
           script: |
-            cd ~/apps/natour
+            cd ~/back/
 
             git pull origin main
 
