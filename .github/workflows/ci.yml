@@ -47,6 +47,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Ensure log directory exists
+        run: mkdir -p /var/log/django
+
       - name: Check Django health
         run: |
           python manage.py check
