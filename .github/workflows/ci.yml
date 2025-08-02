@@ -67,6 +67,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    environment: .env
     needs: healthcheck
     if: github.ref == 'refs/heads/main'
     steps:
