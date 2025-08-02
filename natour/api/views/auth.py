@@ -22,8 +22,9 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from natour.api.serializers.user import CreateUserSerializer, GenericUserSerializer
+from natour.api.serializers.user import CreateUserSerializer
 from natour.api.models import CustomUser
+
 
 logger = logging.getLogger("django")
 
@@ -131,7 +132,10 @@ def login(request):
         "Login attempt received.",
     )
     try:
-        user = CustomUser.objects.get(email=email)
+        user = (CustomUser.objects
+                .select_related('role')
+                .only('id', 'email', 'password', 'is_active', 'last_login', 'role__name')
+                .get(email=email))
     except ObjectDoesNotExist:
         logger.warning(
             "Login failed: user not found.",
@@ -144,8 +148,8 @@ def login(request):
                 "Login failed: user inactive.",
             )
             return Response({"error": "Conta desativada."}, status=status.HTTP_403_FORBIDDEN)
-        user.last_login = timezone.now()
-        user.save(update_fields=['last_login'])
+        # user.last_login = timezone.now()
+        # user.save(update_fields=['last_login'])
         refresh = RefreshToken.for_user(user)
 
         logger.info(
@@ -153,8 +157,13 @@ def login(request):
         )
         return Response({
             "refresh": str(refresh),
-            "access": str(refresh.access_token),
-            "user": GenericUserSerializer(user).data
+            "access":  str(refresh.access_token),
+            "user": {
+                "id":       user.id,
+                "username": user.username,
+                "email":    user.email,
+                "role":     user.role.name,
+            }
         }, status=status.HTTP_200_OK)
 
     logger.warning(

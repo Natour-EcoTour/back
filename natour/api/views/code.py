@@ -71,7 +71,7 @@ def send_verification_code(request):
 
     try:
         msg = EmailMultiAlternatives(
-            subject="Natour - Status da Conta",
+            subject="Natour - Código de Verificação",
             body="Código de verificação para sua conta Natour",
             from_email="natourproject@gmail.com",
             to=[target_email],

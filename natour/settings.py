@@ -74,8 +74,8 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=75),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": True,
 
     "ALGORITHM": "HS256",
@@ -145,6 +145,14 @@ DATABASES = {
         'PORT': config('DB_PORT', default='5432'),
     }
 }
+
+# DATABASES = {
+#   'default': {
+#     'ENGINE': 'django.db.backends.sqlite3',
+#     'NAME': BASE_DIR / 'db.sqlite3',
+#     'CONN_MAX_AGE': 600,
+#   }
+# }
 
 
 # Password validation
@@ -231,7 +239,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": str(BASE_DIR / "app.log"),
+            "filename": "/var/log/django/app.log",
             "formatter": "json",
             "filters": ["exclude_metrics"],
         },
