@@ -222,6 +222,9 @@ ANYMAIL = {
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 # Loggin
+LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -239,7 +242,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "/var/log/django/app.log",
+            "filename": str(LOG_DIR / "app.log"),
             "formatter": "json",
             "filters": ["exclude_metrics"],
         },
