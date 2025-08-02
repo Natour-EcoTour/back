@@ -64,6 +64,7 @@ jobs:
           DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
           OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
           OTEL_SERVICE_NAME: ${{ secrets.OTEL_SERVICE_NAME }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
 
   deploy:
     runs-on: ubuntu-latest
