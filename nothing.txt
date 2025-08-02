@@ -18,3 +18,7 @@ from natour.api.models import Role
 role = Role(name="user")
 role.save()
 Role.objects.all()
+
+from django.core.cache import cache
+cache.set("foo", "bar", timeout=60)
+print(cache.get("foo"))
