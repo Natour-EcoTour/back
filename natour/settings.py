@@ -33,6 +33,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('DJANGO_ALLOWED_HOSTS', "127.0.0.1").split(',')
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.natour.com.br',
+]
 
 # Application definition
 
