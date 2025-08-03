@@ -26,6 +26,8 @@ WORKDIR /app
 
 COPY --chown=appuser:appuser . .
 
+RUN python manage.py collectstatic --noinput
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
