@@ -5,7 +5,7 @@ import logging
 
 from smtplib import SMTPException
 
-from django.utils import timezone
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.core.cache import cache
@@ -124,9 +124,10 @@ def create_user(request):
 @ratelimit(key='ip', rate='5/m', block=True)
 def login(request):
     """
-    Endpoint for user login.
+    Endpoint for user login with optional 'remember me' functionality.
     """
     email = request.data.get('email')
+    remember_me = request.data.get('remember_me', False)  # Default to False
 
     logger.info(
         "Login attempt received.",
@@ -148,9 +149,22 @@ def login(request):
                 "Login failed: user inactive.",
             )
             return Response({"error": "Conta desativada."}, status=status.HTTP_403_FORBIDDEN)
+
         # user.last_login = timezone.now()
         # user.save(update_fields=['last_login'])
+
         refresh = RefreshToken.for_user(user)
+
+        if remember_me:
+            remember_me_settings = getattr(settings, 'REMEMBER_ME_JWT', {})
+            access_lifetime = remember_me_settings.get('ACCESS_TOKEN_LIFETIME')
+            refresh_lifetime = remember_me_settings.get(
+                'REFRESH_TOKEN_LIFETIME')
+
+            if access_lifetime:
+                refresh.access_token.set_exp(lifetime=access_lifetime)
+            if refresh_lifetime:
+                refresh.set_exp(lifetime=refresh_lifetime)
 
         logger.info(
             "Login successful.",
@@ -163,7 +177,8 @@ def login(request):
                 "username": user.username,
                 "email":    user.email,
                 "role":     user.role.name,
-            }
+            },
+            "remember_me": remember_me
         }, status=status.HTTP_200_OK)
 
     logger.warning(
