@@ -25,3 +25,15 @@ class CreateReviewSerializer(serializers.ModelSerializer):
             'blank': 'Avaliação não pode estar vazia.',
             'invalid': 'Avaliação deve ser um número entre 1 e 5.'
         }
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """
+    Serializer for point review information.
+    """
+    class Meta:
+        """
+        Meta Class for ReviewSerializer.
+        """
+        model = PointReview
+        fields = ['id', 'user', 'point', 'rating']

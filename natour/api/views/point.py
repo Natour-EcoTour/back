@@ -4,8 +4,13 @@ Views for managing points in the Natour API.
 # pylint: disable=no-member
 import logging
 
+from smtplib import SMTPException
+
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
+from django.views.decorators.vary import vary_on_headers
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -14,6 +19,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import permission_classes
 
 from natour.api.pagination import CustomPagination
+from natour.api.serializers import user
 from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerializer,
                                           PointOnMapSerializer,
                                           PointApprovalSerializer, PointStatusUser)
@@ -232,8 +238,6 @@ def change_point_status(request, point_id):
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# ADICIONAR EMAIL
-
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -242,6 +246,38 @@ def delete_point(request, point_id):
     Delete a point.
     """
     point = get_object_or_404(Point, id=point_id)
+    user = point.user
+
+    html_content = render_to_string(
+        'email_templates/delete_point.html',
+        {
+            'username': user.username,
+            'point_name': point.name,
+        }
+    )
+
+    try:
+        msg = EmailMultiAlternatives(
+            subject="Natour - Ponto Removido",
+            body="Seu ponto foi removido.",
+            from_email="natourproject@gmail.com",
+            to=[user.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        logger.info(
+            "Point deletion email sent to '%s' (user ID: %s).",
+            user.email, user.id
+        )
+    except SMTPException as e:
+        logger.error(
+            "Failed to send point deletion email to '%s' (user ID: %s). Error: %s",
+            user.email, user.id, str(e)
+        )
+        return Response(
+            {"detail": f"Erro ao enviar email: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
 
     point.delete()
     return Response({"detail": "Ponto excluído com sucesso."}, status=status.HTTP_204_NO_CONTENT)
@@ -324,27 +360,6 @@ def edit_point(request, point_id):
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# ADICIONAR EMAIL
-# @api_view(['PUT'])
-# @permission_classes([IsAuthenticated, IsAdminUser])
-# def change_point_status_master(request, point_id):
-#     """
-#     Change the status of a point.
-#     """
-#     target_point = get_object_or_404(Point, id=point_id)
-
-#     target_point.is_active = not target_point.is_active
-#     serializer = PointStatusSerializer(
-#         target_point, data=request.data, partial=True)
-
-#     if serializer.is_valid():
-#         serializer.save()
-
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# ADICIONAR ENVIO DE EMAIL E VERIFICAÇÃO SE É MASTER...
-
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -357,9 +372,29 @@ def show_points_on_map(request):
 
     if not queryset.exists():
         return Response(
-            {"detail": "Nenhum ponto ativo encontrado."},
+            {"detail": "Nenhum ponto encontrado."},
             status=status.HTTP_404_NOT_FOUND
         )
 
     serializer = PointOnMapSerializer(queryset, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+# TESTAR
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_point(request):
+    """
+    Search point by name.
+    """
+    queryset = Point.objects.filter(is_active=True).filter(
+        name__istartswith=request.query_params.get("name", "")
+    )
+
+    queryset = queryset.order_by('name')
+
+    serializer = PointOnMapSerializer(queryset, many=True)
+    if serializer.data:
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response({"detail": "Nenhum ponto encontrado."}, status=status.HTTP_404_NOT_FOUND)

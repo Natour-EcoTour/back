@@ -25,6 +25,7 @@ from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSer
 from natour.api.serializers.point import PointInfoSerializer
 
 from natour.api.utils.get_ip import get_client_ip
+from natour.api.methods.new_passord import create_new_password
 
 logger = logging.getLogger("django")
 
@@ -352,4 +353,53 @@ def update_my_password(request):
     return Response(
         serializer.errors,
         status=status.HTTP_400_BAD_REQUEST
+    )
+
+# Testar
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def reset_user_password(request, user_id):
+    """
+    Endpoint to reset a user's password.
+    """
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    new_password = create_new_password()
+    user.set_password(new_password)
+    user.save()
+
+    html_content = render_to_string(
+        'email_templates/change_user_password.html',
+        {
+            'username': user.username,
+            'new_password': new_password,
+        }
+    )
+
+    try:
+        msg = EmailMultiAlternatives(
+            subject="Natour - Nova senha!",
+            body="Sua foi redefinida.",
+            from_email="natourproject@gmail.com",
+            to=[user.email],
+        )
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
+        logger.info(
+            "Password change email sent to '%s' (user ID: %s).",
+            user.email, user.id
+        )
+    except SMTPException as e:
+        logger.error(
+            "Failed to send password change email to '%s' (user ID: %s). Error: %s",
+            user.email, user.id, str(e)
+        )
+        return Response(
+            {"detail": f"Erro ao enviar email: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+    return Response(
+        {"detail": "Senha redefinida com sucesso."},
+        status=status.HTTP_200_OK
     )
