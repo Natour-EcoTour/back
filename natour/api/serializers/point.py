@@ -166,9 +166,22 @@ class PointOnMapSerializer(serializers.ModelSerializer):
         Meta class for PointInfoSerializer.
         """
         model = Point
-        fields = ['point_type', 'latitude', 'longitude', 'zip_code', 'city',
+        fields = ['name', 'point_type', 'latitude', 'longitude', 'zip_code', 'city',
                   'neighborhood', 'state', 'street', 'number']
         read_only_fields = fields
+
+
+class PointMapSearchSerializer(serializers.ModelSerializer):
+    """
+    Serializer for searching a point by name.
+    """
+
+    class Meta:
+        """
+        Meta class for PointMapSearchSerializer.
+        """
+        model = Point
+        fields = ['name']
 
 
 class PointApprovalSerializer(serializers.ModelSerializer):

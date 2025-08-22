@@ -8,9 +8,10 @@ from smtplib import SMTPException
 
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
-from django.views.decorators.vary import vary_on_headers
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.db import transaction
+from django_ratelimit.decorators import ratelimit
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -22,7 +23,8 @@ from natour.api.pagination import CustomPagination
 from natour.api.serializers import user
 from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerializer,
                                           PointOnMapSerializer,
-                                          PointApprovalSerializer, PointStatusUser)
+                                          PointApprovalSerializer, PointStatusUser,
+                                          PointMapSearchSerializer)
 from natour.api.models import Point
 
 from natour.api.utils.get_ip import get_client_ip
@@ -45,16 +47,23 @@ def create_point(request):
         ip,
     )
 
+    if not request.data:
+        return Response(
+            {"detail": "Dados obrigatórios não fornecidos."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
     serializer = CreatePointSerializer(data=request.data)
     if serializer.is_valid():
-        point = serializer.save(user=user)
-        logger.info(
-            "Point created successfully by user '%s' (ID: %s). Point ID: %s, Name: '%s'",
-            user.username,
-            user.id,
-            point.id,
-            getattr(point, "name", "<no name>"),
-        )
+        with transaction.atomic():
+            point = serializer.save(user=user)
+            logger.info(
+                "Point created successfully by user '%s' (ID: %s). Point ID: %s, Name: '%s'",
+                user.username,
+                user.id,
+                point.id,
+                getattr(point, "name", "<no name>"),
+            )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     logger.warning(
@@ -79,69 +88,101 @@ def point_approval(request, point_id):
         user.username, user.id, ip, point_id
     )
 
-    point = get_object_or_404(Point, id=point_id)
-    previous_status = point.status
-    previous_is_active = point.is_active
+    if not request.data:
+        return Response(
+            {"detail": "Dados obrigatórios não fornecidos."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-    new_status = request.data.get('status')
-    new_is_active = request.data.get('is_active')
+    try:
+        with transaction.atomic():
+            point = Point.objects.select_for_update().get(id=point_id)
+            previous_status = point.status
+            previous_is_active = point.is_active
 
-    if new_status is None or new_is_active is None:
+            new_status = request.data.get('status')
+            new_is_active = request.data.get('is_active')
+
+            if new_status is None or new_is_active is None:
+                logger.warning(
+                    "Admin '%s' (ID: %s) - Missing required status or is_active fields for Point ID: %s.",
+                    user.username, user.id, point_id
+                )
+                return Response(
+                    {"detail": "Você deve fornecer 'status' e 'is_active'."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if point.status == new_status and point.is_active == new_is_active:
+                state_text = "ativo" if new_status and new_is_active else "inativo"
+                logger.info(
+                    "Admin '%s' (ID: %s) - Point ID: %s already in requested state: %s.",
+                    user.username, user.id, point_id, state_text
+                )
+                return Response(
+                    {"detail": f"Este ponto já está {state_text}."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            point.status = new_status
+            point.is_active = new_is_active
+
+            serializer = PointApprovalSerializer(
+                point, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                logger.info(
+                    "Admin '%s' (ID: %s) changed Point ID: %s status from (%s, %s) to (%s, %s) successfully.",
+                    user.username, user.id, point_id, previous_status, previous_is_active, new_status, new_is_active
+                )
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            logger.warning(
+                "Admin '%s' (ID: %s) failed to change Point ID: %s status. Errors: %s",
+                user.username, user.id, point_id, serializer.errors
+            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Point.DoesNotExist:
         logger.warning(
-            "Admin '%s' (ID: %s) - Missing required status or is_active fields for Point ID: %s.",
+            "Admin '%s' (ID: %s) attempted to update non-existent Point ID: %s.",
             user.username, user.id, point_id
         )
         return Response(
-            {"detail": "Você deve fornecer 'status' e 'is_active'."},
-            status=status.HTTP_400_BAD_REQUEST
+            {"detail": "Ponto não encontrado."},
+            status=status.HTTP_404_NOT_FOUND
         )
 
-    if point.status == new_status and point.is_active == new_is_active:
-        state_text = "ativo" if new_status and new_is_active else "inativo"
-        logger.info(
-            "Admin '%s' (ID: %s) - Point ID: %s already in requested state: %s.",
-            user.username, user.id, point_id, state_text
-        )
-        return Response(
-            {"detail": f"Este ponto já está {state_text}."},
-            status=status.HTTP_400_BAD_REQUEST
-        )
 
-    point.status = new_status
-    point.is_active = new_is_active
-
-    serializer = PointApprovalSerializer(
-        point, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        logger.info(
-            "Admin '%s' (ID: %s) changed Point ID: %s status from (%s, %s) to (%s, %s) successfully.",
-            user.username, user.id, point_id,
-            previous_status, previous_is_active,
-            new_status, new_is_active
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    logger.warning(
-        "Admin '%s' (ID: %s) failed to change Point ID: %s status. Errors: %s",
-        user.username, user.id, point_id, serializer.errors
-    )
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
+@cache_page(120)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_point_info(request, point_id):
     """
     Get information about a specific point.
     """
-    point = get_object_or_404(Point, id=point_id)
-    serializer = PointInfoSerializer(point)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    try:
+        point = (Point.objects
+                 .select_related('user')
+                 .prefetch_related('photos', 'reviews__user')
+                 .get(id=point_id))
+
+        serializer = PointInfoSerializer(point)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Point.DoesNotExist:
+        logger.warning(
+            "Attempted to retrieve non-existent Point ID: %s.",
+            point_id
+        )
+        return Response(
+            {"detail": "Ponto não encontrado."},
+            status=status.HTTP_404_NOT_FOUND
+        )
 
 
-@cache_page(60)
+@cache_page(120)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -149,14 +190,17 @@ def get_all_points(request):
     """
     Get all points created by all users.
     """
-
     if 'page' not in request.query_params:
         return Response(
             {"detail": "Você deve fornecer o parâmetro de paginação ?page=N."},
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    queryset = Point.objects.all()
+    queryset = (Point.objects
+                .select_related('user')
+                .only('id', 'name', 'description', 'latitude', 'longitude',
+                      'point_type', 'status', 'is_active', 'created_at',
+                      'avg_rating', 'user__username'))
 
     point_name = request.query_params.get('name')
     if point_name:
@@ -342,33 +386,58 @@ def edit_point(request, point_id):
     """
     user = request.user
     logger.info(
-        "Received request to edit a point.",
+        "User '%s' (ID: %s) requested to edit Point ID: %s.",
+        user.username, user.id, point_id
     )
 
-    point = get_object_or_404(Point, id=point_id, user=user)
-
-    serializer = CreatePointSerializer(point, data=request.data, partial=True)
-    if serializer.is_valid():
-        serializer.save()
-        logger.info(
-            "Point edited successfully.",
+    if not request.data:
+        return Response(
+            {"detail": "Dados obrigatórios não fornecidos."},
+            status=status.HTTP_400_BAD_REQUEST
         )
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    logger.warning(
-        "Failed to edit point due to validation errors.",
-    )
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        with transaction.atomic():
+            point = Point.objects.select_for_update().get(id=point_id, user=user)
+
+            serializer = CreatePointSerializer(
+                point, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                logger.info(
+                    "User '%s' (ID: %s) edited Point ID: %s successfully.",
+                    user.username, user.id, point_id
+                )
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            logger.warning(
+                "User '%s' (ID: %s) failed to edit Point ID: %s due to validation errors: %s",
+                user.username, user.id, point_id, serializer.errors
+            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Point.DoesNotExist:
+        logger.warning(
+            "User '%s' (ID: %s) attempted to edit non-existent or unauthorized Point ID: %s.",
+            user.username, user.id, point_id
+        )
+        return Response(
+            {"detail": "Ponto não encontrado ou você não tem permissão para editá-lo."},
+            status=status.HTTP_404_NOT_FOUND
+        )
 
 
+@cache_page(300)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def show_points_on_map(request):
     """
     Get all points to display on the map.
     """
-    queryset = Point.objects.filter(is_active=True).filter(
-        status=True).order_by('name')
+    queryset = (Point.objects
+                .filter(is_active=True, status=True)
+                .only('id', 'name', 'latitude', 'longitude', 'point_type')
+                .order_by('name'))
 
     if not queryset.exists():
         return Response(
@@ -377,24 +446,54 @@ def show_points_on_map(request):
         )
 
     serializer = PointOnMapSerializer(queryset, many=True)
+
+    logger.info(
+        "Map points retrieved successfully. Count: %d",
+        len(serializer.data)
+    )
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-# TESTAR
 
-
+@cache_page(120)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def search_point(request):
     """
     Search point by name.
     """
-    queryset = Point.objects.filter(is_active=True).filter(
-        name__istartswith=request.query_params.get("name", "")
-    )
+    search_name = request.query_params.get("name", "").strip()
 
-    queryset = queryset.order_by('name')
+    if not search_name:
+        return Response(
+            {"detail": "Parâmetro 'name' é obrigatório para a busca."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-    serializer = PointOnMapSerializer(queryset, many=True)
+    if len(search_name) < 2:
+        return Response(
+            {"detail": "Nome deve ter pelo menos 2 caracteres."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    queryset = (Point.objects
+                .filter(is_active=True, name__icontains=search_name)
+                .only('id', 'name', 'latitude', 'longitude', 'point_type')
+                .order_by('name'))
+
+    serializer = PointMapSearchSerializer(queryset, many=True)
+
     if serializer.data:
+        logger.info(
+            "Point search for '%s' returned %d results.",
+            search_name, len(serializer.data)
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response({"detail": "Nenhum ponto encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+    logger.info(
+        "Point search for '%s' returned no results.",
+        search_name
+    )
+    return Response(
+        {"detail": "Nenhum ponto encontrado."},
+        status=status.HTTP_404_NOT_FOUND
+    )

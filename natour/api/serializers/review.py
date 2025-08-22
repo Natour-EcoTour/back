@@ -31,9 +31,12 @@ class ReviewSerializer(serializers.ModelSerializer):
     """
     Serializer for point review information.
     """
+    username = serializers.CharField(source='user.username', read_only=True)
+    point_name = serializers.CharField(source='point.name', read_only=True)
+
     class Meta:
         """
         Meta Class for ReviewSerializer.
         """
         model = PointReview
-        fields = ['id', 'user', 'point', 'rating']
+        fields = ['username', 'point_name', 'rating']

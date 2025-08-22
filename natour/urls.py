@@ -22,15 +22,23 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from django_prometheus import exports
 
 from .api.views.auth import MyTokenObtainPairView, create_user, login, get_refresh_token
+
 from .api.views.users import (get_my_info, delete_my_account, update_my_info,
                               get_all_users, change_user_status, delete_user_account,
-                              get_user_points, get_my_points, update_my_password)
+                              get_user_points, get_my_points, update_my_password,
+                              reset_user_password)
+
 from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
+
 from .api.views.terms import create_terms, get_terms, update_terms
+
 from .api.views.point import (create_point, get_point_info, get_all_points,
                               change_point_status, delete_point, delete_my_point,
-                              add_view, edit_point, point_approval, show_points_on_map)
-from .api.views.review import add_review
+                              add_view, edit_point, point_approval, show_points_on_map,
+                              search_point)
+
+from .api.views.review import add_review, get_user_reviews
+
 from .api.views.code import (
     send_verification_code, verify_code, send_password_reset_code,
     verify_password_reset_code)
@@ -44,7 +52,7 @@ urlpatterns = [
     # Auth URLs
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-     path('token/get_refresh/', get_refresh_token, name='get_refresh_token'),
+    path('token/get_refresh/', get_refresh_token, name='get_refresh_token'),
 
     # User management URLs
     path('users/login/', login, name='login'),
@@ -61,6 +69,8 @@ urlpatterns = [
     path('users/me/points/', get_my_points, name='get_my_points'),
     path('users/me/update/password/',
          update_my_password, name='update_my_password'),
+    path('users/<int:user_id>/update/password/',
+         reset_user_password, name='update_user_password'),
 
     # Code verification URL
     path('code/send/', send_verification_code, name='send_verification_code'),
@@ -86,6 +96,8 @@ urlpatterns = [
     path('points/map/', show_points_on_map, name='show_points_on_map'),
     path('points/<int:point_id>/approve/',
          point_approval, name='point_approval'),
+    path('points/search/', search_point, name='search_point'),
+
     # Terms and Conditions URLs
     path('terms/create/', create_terms, name='create_terms'),
     path('terms/<int:term_id>/', get_terms, name='get_terms'),
@@ -94,6 +106,8 @@ urlpatterns = [
     # Review URLs
     path('points/<int:point_id>/review/',
          add_review, name='add_review'),
+    path('points/reviews/',
+         get_user_reviews, name='get_user_reviews'),
 
     # Photo management URLs
     path('users/<int:user_id>/photo/upload/',

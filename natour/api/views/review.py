@@ -13,7 +13,7 @@ from rest_framework.decorators import permission_classes
 
 from natour.api.pagination import CustomPagination
 from natour.api.serializers.review import CreateReviewSerializer, ReviewSerializer
-from natour.api.models import Point
+from natour.api.models import Point, PointReview
 
 from natour.api.utils.get_ip import get_client_ip
 
@@ -66,7 +66,7 @@ def add_review(request, point_id):
     )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Testar
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def get_user_reviews(request):
@@ -79,13 +79,14 @@ def get_user_reviews(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    user = request.user
-    reviews = user.reviews.all()
+    reviews = PointReview.objects.select_related('user', 'point').all()
+
     paginator = CustomPagination()
     page = paginator.paginate_queryset(reviews, request)
     if page:
         serializer = ReviewSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
     return Response(
         {"detail": "Nenhuma avaliação encontrada."},
         status=status.HTTP_404_NOT_FOUND
