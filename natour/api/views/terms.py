@@ -18,12 +18,18 @@ from natour.api.models import Terms
 from natour.api.serializers.terms import (CreateTermsSerializer, GetTermsSerializer,
                                           UpadateTermsSerializer)
 from natour.api.methods.send_terms_email import send_updated_terms_email
+from natour.api.schemas.terms_schemas import (
+    create_terms_schema,
+    get_terms_schema,
+    update_terms_schema
+)
 
 from natour.api.utils.get_ip import get_client_ip
 
 logger = logging.getLogger("django")
 
 
+@create_terms_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 @ratelimit(key='user', rate='5/h', block=True)
@@ -77,6 +83,7 @@ def create_terms(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@get_terms_schema
 @cache_page(300)
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -106,6 +113,7 @@ def get_terms(request, term_id):
         )
 
 
+@update_terms_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 @ratelimit(key='user', rate='10/h', block=True)

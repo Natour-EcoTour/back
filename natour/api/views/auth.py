@@ -28,6 +28,11 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from natour.api.serializers.user import CreateUserSerializer
 from natour.api.models import CustomUser
 from natour.api.utils.get_ip import get_client_ip
+from natour.api.schemas.auth_schemas import (
+    login_schema,
+    create_user_schema,
+    get_refresh_token_schema
+)
 
 
 logger = logging.getLogger("django")
@@ -55,6 +60,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
+@create_user_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_user(request):
@@ -163,6 +169,7 @@ def create_user(request):
         )
 
 
+@login_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @ratelimit(key='ip', rate='5/m', block=True)
@@ -268,6 +275,7 @@ def login(request):
     )
 
 
+@get_refresh_token_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def get_refresh_token(request):

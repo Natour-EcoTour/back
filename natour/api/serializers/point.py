@@ -3,6 +3,7 @@ Serializers for point-related models.
 """
 
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 from natour.api.models import Point
 
@@ -114,6 +115,7 @@ class PointInfoSerializer(serializers.ModelSerializer):
                   'neighborhood', 'state', 'street', 'number', 'photos']
         read_only_fields = fields
 
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
     def get_photos(self, obj):
         """
         Returns a list of photo URLs associated with the point.

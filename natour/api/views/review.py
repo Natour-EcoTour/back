@@ -14,12 +14,17 @@ from rest_framework.decorators import permission_classes
 from natour.api.pagination import CustomPagination
 from natour.api.serializers.review import CreateReviewSerializer, ReviewSerializer
 from natour.api.models import Point, PointReview
+from natour.api.schemas.review_schemas import (
+    add_review_schema,
+    get_user_reviews_schema
+)
 
 from natour.api.utils.get_ip import get_client_ip
 
 logger = logging.getLogger("django")
 
 
+@add_review_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def add_review(request, point_id):
@@ -67,6 +72,7 @@ def add_review(request, point_id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@get_user_reviews_schema
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def get_user_reviews(request):

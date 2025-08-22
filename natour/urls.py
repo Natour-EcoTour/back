@@ -21,6 +21,8 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from django_prometheus import exports
 
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+
 from .api.views.auth import MyTokenObtainPairView, create_user, login, get_refresh_token
 
 from .api.views.users import (get_my_info, delete_my_account, update_my_info,
@@ -46,6 +48,11 @@ from .api.views.code import (
 urlpatterns = [
     # Admin URL
     path('admin/', admin.site.urls),
+
+    # API Documentation URLs
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     path("metrics", exports.ExportToDjangoView, name="metrics"),
 

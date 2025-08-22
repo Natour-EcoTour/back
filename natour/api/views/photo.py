@@ -12,8 +12,15 @@ from cloudinary.exceptions import Error as CloudinaryError
 
 from natour.api.models import Photo, CustomUser, Point
 from natour.api.serializers.photo import PhotoSerializer, PhotoIDSerializer
+from natour.api.schemas.photo_schemas import (
+    create_photo_schema,
+    update_photo_schema,
+    get_photo_schema,
+    delete_photo_schema
+)
 
 
+@create_photo_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def create_photo(request, user_id=None, point_id=None):
@@ -35,6 +42,7 @@ def create_photo(request, user_id=None, point_id=None):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@update_photo_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_photo(request, photo_id, user_id=None, point_id=None):
@@ -67,6 +75,7 @@ def update_photo(request, photo_id, user_id=None, point_id=None):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@get_photo_schema
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def get_photo(request):
@@ -98,6 +107,7 @@ def get_photo(request):
     return Response(serializer.data)
 
 
+@delete_photo_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_photo(request):

@@ -24,6 +24,18 @@ from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSer
                                          AllUsersSerializer, UserStatusSerializer,
                                          UserPasswordSerializer)
 from natour.api.serializers.point import PointInfoSerializer
+from natour.api.schemas.user_schemas import (
+    get_my_info_schema,
+    update_my_info_schema,
+    get_all_users_schema,
+    change_user_status_schema,
+    update_my_password_schema,
+    delete_my_account_schema,
+    delete_user_account_schema,
+    get_user_points_schema,
+    get_my_points_schema,
+    reset_user_password_schema
+)
 
 from natour.api.utils.get_ip import get_client_ip
 from natour.api.methods.new_passord import create_new_password
@@ -31,6 +43,7 @@ from natour.api.methods.new_passord import create_new_password
 logger = logging.getLogger("django")
 
 
+@get_my_info_schema
 @cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
@@ -43,6 +56,7 @@ def get_my_info(request):
     return Response(CustomUserInfoSerializer(user).data, status=status.HTTP_200_OK)
 
 
+@delete_my_account_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 @ratelimit(key='user', rate='3/h', block=True)
@@ -64,6 +78,7 @@ def delete_my_account(request):
     return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
 
 
+@delete_user_account_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def delete_user_account(request, user_id):
@@ -119,6 +134,7 @@ def delete_user_account(request, user_id):
     return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
 
 
+@update_my_info_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_my_info(request):
@@ -145,6 +161,7 @@ def update_my_info(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@get_all_users_schema
 @cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
@@ -189,6 +206,7 @@ def get_all_users(request):
     )
 
 
+@change_user_status_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def change_user_status(request, user_id):
@@ -266,6 +284,7 @@ def change_user_status(request, user_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@get_user_points_schema
 @cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
@@ -302,6 +321,7 @@ def get_user_points(request, user_id):
     }, status=status.HTTP_200_OK)
 
 
+@get_my_points_schema
 @cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
@@ -337,6 +357,7 @@ def get_my_points(request):
     }, status=status.HTTP_200_OK)
 
 
+@update_my_password_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @ratelimit(key='user', rate='10/h', block=True)
@@ -390,6 +411,7 @@ def update_my_password(request):
     )
 
 
+@reset_user_password_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def reset_user_password(request, user_id):

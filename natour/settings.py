@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'natour.api',
     'anymail',
     'django_prometheus',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -72,7 +73,17 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Natour EcoTour API',
+    'DESCRIPTION': 'API for Natour - An eco-tourism platform for discovering and sharing natural points of interest',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'POSTPROCESSING_HOOKS': [],
+    'DISABLE_ERRORS_AND_WARNINGS': False,
 }
 
 SIMPLE_JWT = {

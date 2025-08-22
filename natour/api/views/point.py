@@ -26,12 +26,26 @@ from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerial
                                           PointApprovalSerializer, PointStatusUser,
                                           PointMapSearchSerializer)
 from natour.api.models import Point
+from natour.api.schemas.point_schemas import (
+    create_point_schema,
+    get_point_info_schema,
+    get_all_points_schema,
+    show_points_on_map_schema,
+    point_approval_schema,
+    search_point_schema,
+    change_point_status_schema,
+    delete_point_schema,
+    delete_my_point_schema,
+    add_view_schema,
+    edit_point_schema
+)
 
 from natour.api.utils.get_ip import get_client_ip
 
 logger = logging.getLogger("django")
 
 
+@create_point_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_point(request):
@@ -75,6 +89,7 @@ def create_point(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@point_approval_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def point_approval(request, point_id):
@@ -155,6 +170,7 @@ def point_approval(request, point_id):
         )
 
 
+@get_point_info_schema
 @cache_page(120)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -182,6 +198,7 @@ def get_point_info(request, point_id):
         )
 
 
+@get_all_points_schema
 @cache_page(120)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
@@ -234,6 +251,7 @@ def get_all_points(request):
     )
 
 
+@change_point_status_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def change_point_status(request, point_id):
@@ -283,6 +301,7 @@ def change_point_status(request, point_id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@delete_point_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
 def delete_point(request, point_id):
@@ -327,6 +346,7 @@ def delete_point(request, point_id):
     return Response({"detail": "Ponto excluído com sucesso."}, status=status.HTTP_204_NO_CONTENT)
 
 
+@delete_my_point_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_my_point(request, point_id):
@@ -349,6 +369,7 @@ def delete_my_point(request, point_id):
     return Response({"detail": "Ponto excluído com sucesso."}, status=status.HTTP_204_NO_CONTENT)
 
 
+@add_view_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def add_view(request, point_id):
@@ -378,6 +399,7 @@ def add_view(request, point_id):
     return Response({"views": point.views}, status=status.HTTP_200_OK)
 
 
+@edit_point_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def edit_point(request, point_id):
@@ -427,6 +449,7 @@ def edit_point(request, point_id):
         )
 
 
+@show_points_on_map_schema
 @cache_page(300)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -454,6 +477,7 @@ def show_points_on_map(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+@search_point_schema
 @cache_page(120)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

@@ -20,10 +20,17 @@ from rest_framework.decorators import permission_classes
 from natour.api.methods.create_code import create_code
 from natour.api.models import CustomUser
 from natour.api.serializers.user import NewUserPasswordSerializer
+from natour.api.schemas.code_schemas import (
+    send_verification_code_schema,
+    verify_code_schema,
+    send_password_reset_code_schema,
+    verify_password_reset_code_schema
+)
 
 logger = logging.getLogger("django")
 
 
+@send_verification_code_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @ratelimit(key='ip', rate='5/m', block=True)
@@ -96,6 +103,7 @@ def send_verification_code(request):
     }, status=status.HTTP_200_OK)
 
 
+@verify_code_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def verify_code(request):
@@ -135,6 +143,7 @@ def verify_code(request):
     return Response({"detail": "Email verificado com sucesso!"}, status=status.HTTP_200_OK)
 
 
+@send_password_reset_code_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def send_password_reset_code(request):
@@ -177,6 +186,7 @@ def send_password_reset_code(request):
         )
 
 
+@verify_password_reset_code_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def verify_password_reset_code(request):
