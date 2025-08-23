@@ -170,9 +170,5 @@ def delete_photo(request):
         deleted_public_ids.append(public_id)
 
     return Response(
-        {
-            'deleted_ids': deleted_ids,
-            'deleted_public_ids': deleted_public_ids
-        },
         status=status.HTTP_204_NO_CONTENT
     )
