@@ -70,9 +70,9 @@ def create_terms(request):
         if serializer.is_valid():
             terms = serializer.save()
             logger.info(
-                "Terms and conditions created by admin '%s' (ID: %s). Terms ID: %s, Title: '%s'.",
+                "Terms and conditions created by admin '%s' (ID: %s). Terms ID: %s, content: '%s'.",
                 user.username, user.id, terms.id, getattr(
-                    terms, "title", "<no title>")
+                    terms, "content", "<no content>")
             )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -93,7 +93,7 @@ def get_terms(request, term_id):
     """
     try:
         terms = Terms.objects.only(
-            'id', 'title', 'content', 'created_at', 'updated_at').get(id=term_id)
+            'id', 'content', 'content', 'created_at', 'updated_at').get(id=term_id)
         serializer = GetTermsSerializer(terms)
 
         logger.info(
