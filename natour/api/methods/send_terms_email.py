@@ -29,5 +29,4 @@ def send_updated_terms_email():
             msg.attach_alternative(html_content, "text/html")
             msg.send()
         except SMTPException as e:
-            # You might want to log this, but don't return a response from here
             print(f"Erro ao enviar email para {user.email}: {str(e)}")

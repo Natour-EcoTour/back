@@ -1,6 +1,5 @@
 [MESSAGES CONTROL]
 disable=
-    E5110,  # Django was not configured.
     C0415,  # Import outside toplevel
     R0901,  # Too many ancestors
     W0611,  # Unused TestCase imported from django.test
@@ -9,6 +8,7 @@ disable=
     C0114,  # missing-module-docstring
     C0103,  # invalid-name
     R0801,  # duplicate-code
+    W0613,  # unused-argument
 
 [MASTER]
 ignore=migrations
