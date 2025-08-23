@@ -217,7 +217,7 @@ def get_all_points(request):
                 .select_related('user')
                 .only('id', 'name', 'description', 'latitude', 'longitude',
                       'point_type', 'status', 'is_active', 'created_at',
-                      'avg_rating', 'user__username'))
+                      'avg_rating', 'user_id', 'user__username'))
 
     point_name = request.query_params.get('name')
     if point_name:
@@ -444,7 +444,7 @@ def edit_point(request, point_id):
             user.username, user.id, point_id
         )
         return Response(
-            {"detail": "Ponto não encontrado ou você não tem permissão para editá-lo."},
+            {"detail": "Ponto não encontrado."},
             status=status.HTTP_404_NOT_FOUND
         )
 

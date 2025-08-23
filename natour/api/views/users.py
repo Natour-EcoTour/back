@@ -296,7 +296,6 @@ def get_user_points(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
 
     points = (user.points
-              .select_related('user')
               .prefetch_related('photos', 'reviews')
               .only('id', 'name', 'description', 'latitude', 'longitude',
                     'point_type', 'is_active', 'created_at', 'avg_rating')
@@ -333,7 +332,6 @@ def get_my_points(request):
     user = request.user
 
     points = (user.points
-              .select_related('user')
               .prefetch_related('photos', 'reviews')
               .only('id', 'name', 'description', 'latitude', 'longitude',
                     'point_type', 'is_active', 'created_at', 'avg_rating')
