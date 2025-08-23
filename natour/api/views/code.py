@@ -155,6 +155,9 @@ def send_password_reset_code(request):
     if not target_email:
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
+    if not CustomUser.objects.filter(email=target_email).exists():
+        return Response({'detail': 'ok'}, status=status.HTTP_200_OK)
+
     cache_key = f'verification_code:{target_email}'
     code = create_code()
     cache.set(cache_key, code, timeout=180)
