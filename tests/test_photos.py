@@ -75,9 +75,6 @@ class PhotoTests(APITestCase):
         data = {'image': image_file}
         response = self.client.post(url, data, format='multipart')
 
-        if response.status_code != status.HTTP_201_CREATED:
-            self.skipTest("Cloudinary not configured for tests")
-
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(Photo.objects.filter(user=self.test_user).exists())
 
@@ -93,9 +90,6 @@ class PhotoTests(APITestCase):
 
         data = {'image': image_file}
         response = self.client.post(url, data, format='multipart')
-
-        if response.status_code != status.HTTP_201_CREATED:
-            self.skipTest("Cloudinary not configured for tests")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(Photo.objects.filter(point=self.test_point).exists())
@@ -164,8 +158,7 @@ class PhotoTests(APITestCase):
         data = {'image': image_file}
         response = self.client.put(url, data, format='multipart')
 
-        if response.status_code not in [status.HTTP_200_OK, status.HTTP_500_INTERNAL_SERVER_ERROR]:
-            self.skipTest("Cloudinary not configured for tests")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def tearDown(self):
         """

@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 from decouple import config
@@ -166,6 +166,9 @@ DATABASES = {
     }
 }
 
+# Check if we're running tests
+TESTING = 'test' in sys.argv or 'pytest' in sys.modules
+
 # DATABASES = {
 #   'default': {
 #     'ENGINE': 'django.db.backends.sqlite3',
@@ -231,7 +234,14 @@ CLOUDINARY_STORAGE = {
     'API_KEY': config('API_KEY', default='test_key'),
     'API_SECRET': config('API_SECRET', default='test_secret')
 }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Use regular file storage for testing to avoid Cloudinary API calls
+if TESTING:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    MEDIA_ROOT = BASE_DIR / 'test_media'
+    MEDIA_URL = '/test_media/'
+else:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Email settings for Brevo
 EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
