@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='test-key-only-for-testing')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -158,9 +158,9 @@ AUTH_USER_MODEL = 'api.CustomUser'
 DATABASES = {
     'default': {
         'ENGINE': config('DATABASE_ENGINE', default='django.db.backends.postgresql'),
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
+        'NAME': config('DB_NAME', default='natour_db'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD', default=''),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
     }
@@ -221,15 +221,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 cloudinary.config(
-    cloud_name=config('CLOUD_NAME'),
-    api_key=config('API_KEY'),
-    api_secret=config('API_SECRET')
+    cloud_name=config('CLOUD_NAME', default='test_cloud'),
+    api_key=config('API_KEY', default='test_key'),
+    api_secret=config('API_SECRET', default='test_secret')
 )
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': config('CLOUD_NAME'),
-    'API_KEY': config('API_KEY'),
-    'API_SECRET': config('API_SECRET')
+    'CLOUD_NAME': config('CLOUD_NAME', default='test_cloud'),
+    'API_KEY': config('API_KEY', default='test_key'),
+    'API_SECRET': config('API_SECRET', default='test_secret')
 }
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -237,10 +237,10 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
 
 ANYMAIL = {
-    "SENDINBLUE_API_KEY": config('SENDINBLUE_API_KEY'),
+    "SENDINBLUE_API_KEY": config('SENDINBLUE_API_KEY', default='test_sendinblue_key'),
 }
 
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='test@example.com')
 
 # Loggin
 LOG_DIR = BASE_DIR / 'logs'
@@ -277,13 +277,13 @@ LOGGING = {
     },
 }
 
-OTEL_EXPORTER_OTLP_ENDPOINT = "http://localhost:4317"
-OTEL_SERVICE_NAME = "drf-api"
+OTEL_EXPORTER_OTLP_ENDPOINT = config('OTEL_EXPORTER_OTLP_ENDPOINT', default='http://localhost:4317')
+OTEL_SERVICE_NAME = config('OTEL_SERVICE_NAME', default='drf-api')
 
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": config('REDIS_URL'),
+        "LOCATION": config('REDIS_URL', default='redis://localhost:6379/0'),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
