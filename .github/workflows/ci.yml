@@ -69,6 +69,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     needs: healthcheck
+    environment: .env
     strategy:
       matrix:
         python-version: ["3.13"]
