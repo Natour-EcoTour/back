@@ -2,6 +2,7 @@
 Photo Serializer
 """
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 from natour.api.models import Photo
 
 
@@ -26,6 +27,7 @@ class PhotoSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_image_url(self, obj):
         """
         Returns the URL of the image if it exists.
@@ -34,6 +36,7 @@ class PhotoSerializer(serializers.ModelSerializer):
             return obj.image.url
         return None
 
+    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_image_public_id(self, obj):
         """
         Returns the public ID of the image if it exists.

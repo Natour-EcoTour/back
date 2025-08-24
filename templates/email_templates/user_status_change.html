@@ -146,6 +146,21 @@
             margin: 0;
             color: #856404;
         }
+
+        .legal-links {
+            margin: 15px 0;
+        }
+
+        .legal-links a {
+            color: #fd7e14;
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: bold;
+        }
+
+        .legal-links a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -163,7 +178,7 @@
                 <p>Nós da equipe Natour viemos por meio deste e-mail informar sobre o status da sua conta:</p>
 
                 <p>Sua conta foi: {{is_active}}</span></p>
-                
+
                 {% if deactivation_reason %}
                 <div class="reason-info">
                     <p><strong>Motivo:</strong> {{deactivation_reason}}</p>
@@ -173,17 +188,15 @@
 
             <p>Se você tiver alguma dúvida ou precisar de assistência, não hesite em entrar em contato conosco.</p>
 
-            <div class="contact-info">
-                <p><strong>📞 Suporte:</strong> (11) 9999-9999</p>
-                <p><strong>📧 Email:</strong> suporte@natour.com</p>
-                <p><strong>⏰ Horário:</strong> Segunda a Sexta, 8h às 18h</p>
-            </div>
-
         </div>
 
         <div class="footer">
+            <div class="legal-links">
+                <a href="https://natour.com.br/terms/termos-de-uso">Termos de Uso</a>
+                <a href="https://natour.com.br/terms/politica-de-privacidade">Política de Privacidade</a>
+            </div>
             <p>© 2025 Natour. Todos os direitos reservados.</p>
-            <p>Este é um e-mail automático, por favor não responda.</p>
+            <p>Este é um email obrigatório sobre alterações em sua conta.</p>
         </div>
     </div>
 </body>

@@ -1,0 +1,1209 @@
+{
+	"info": {
+		"_postman_id": "6220a731-3291-4873-863f-8db8748c918e",
+		"name": "App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34715871",
+		"_collection_link": "https://crimson-sunset-793491.postman.co/workspace/Natour~45be223a-1410-42a1-9bf6-e97727dc2ce0/collection/34715871-6220a731-3291-4873-863f-8db8748c918e?action=share&source=collection_link&creator=34715871"
+	},
+	"item": [
+		{
+			"name": "Perfil",
+			"item": [
+				{
+					"name": "Fotos",
+					"item": [
+						{
+							"name": "Editar foto✅",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "postman-cloud:///1f017b3a-5406-4110-9125-46a43dbf8ee1"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{apiUrl}}users/20/photo/update/19/",
+									"host": [
+										"{{apiUrl}}users"
+									],
+									"path": [
+										"20",
+										"photo",
+										"update",
+										"19",
+										""
+									]
+								},
+								"description": "### Update User Photo\n\nThis endpoint allows you to update the photo of a specific user identified by their user ID.\n\n#### Request\n\n- **Method**: PUT\n    \n- **URL**: `http://127.0.0.1:8000/users/{userId}/photo/update/{photoId}/`\n    \n\n#### Request Body\n\nThe request body should be sent as form-data and must include the following parameter:\n\n- **image** (file): The new photo file to be uploaded for the user.\n    \n\n#### Response\n\nThe expected response will indicate the success or failure of the photo update operation. Typically, a successful response will include a status message confirming the update, while an error response may provide details about what went wrong.\n\n#### Notes\n\n- Ensure that the user ID and photo ID in the URL are valid and correspond to an existing user and photo, respectively.\n    \n- The file uploaded must meet any specified requirements regarding format and size, which may not be detailed in this documentation."
+							},
+							"response": []
+						},
+						{
+							"name": "Adicionar foto✅",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "postman-cloud:///1f017b3a-5406-4110-9125-46a43dbf8ee1"
+										},
+										{
+											"key": "user",
+											"value": "21",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{apiUrl}}users/1/photo/upload/",
+									"host": [
+										"{{apiUrl}}users"
+									],
+									"path": [
+										"1",
+										"photo",
+										"upload",
+										""
+									]
+								},
+								"description": "## Upload User Photo\n\nThis endpoint allows you to upload a photo for a specific user identified by their user ID.\n\n### HTTP Method\n\n`POST`\n\n### Endpoint\n\n`http://127.0.0.1:8000/users/{user_id}/photo/upload/`\n\n### Request Parameters\n\nThe request must include the following parameter in the form-data body:\n\n- **image** (file): The image file to be uploaded for the user.\n    \n\n### Expected Response Format\n\nUpon a successful upload, the server will respond with a confirmation message and may include additional details about the uploaded photo, such as its URL or ID. The response will typically be in JSON format.\n\n### Example\n\nTo upload a photo for the user with ID 20, the request would be sent to:\n\n```\nPOST http://127.0.0.1:8000/users/20/photo/upload/\n\n ```\n\nWith the form-data containing the `image` file."
+							},
+							"response": []
+						},
+						{
+							"name": "IDs fotos✅",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}photos/?user_id=1",
+									"host": [
+										"{{apiUrl}}photos"
+									],
+									"path": [
+										""
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "1"
+										}
+									]
+								},
+								"description": "## Get Photos by User ID\n\nThis endpoint retrieves a list of photos associated with a specific user identified by their `user_id`.\n\n### Request Parameters\n\n- **user_id** (query parameter, required): The unique identifier of the user whose photos you want to retrieve. This should be a numeric value.\n    \n\n### Example Request\n\n```\nGET http://127.0.0.1:8000/photos/?user_id=2\n\n ```\n\n### Expected Response\n\nOn a successful request, the server will return a JSON array containing the photos related to the specified user. Each photo object in the response may include details such as photo ID, title, URL, and other relevant metadata.\n\n### Notes\n\n- Ensure that the `user_id` provided corresponds to an existing user in the system to receive valid results.\n    \n- If the `user_id` does not exist or if there are no photos associated with the user, the response may return an empty array or an appropriate error message."
+							},
+							"response": []
+						},
+						{
+							"name": "Apagar fotos✅",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"ids\": [1],\r\n  \"public_ids\": [\"skzpqy59dydyyaqhm8qj\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}photos/delete/",
+									"host": [
+										"{{apiUrl}}photos"
+									],
+									"path": [
+										"delete",
+										""
+									]
+								},
+								"description": "## Delete Photos Endpoint\n\nThis endpoint is used to delete photos from the server based on their unique identifiers. It allows users to remove one or more photos by specifying their IDs and public IDs.\n\n### Request\n\n**Method:** DELETE  \n**URL:** `http://127.0.0.1:8000/photos/delete/`\n\n#### Request Body\n\nThe request body must be in JSON format and should include the following parameters:\n\n- `ids` (Array of integers): A list of unique identifiers for the photos that you want to delete. Each ID corresponds to a specific photo in the database.\n    \n- `public_ids` (Array of strings): A list of public identifiers for the photos. These identifiers are used to reference photos that may be accessible publicly.\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"ids\": [7],\n  \"public_ids\": [\"ng4fnofszjzpiqhive1o\"]\n}\n\n ```\n\n### Response\n\nThe response from this endpoint will indicate the success or failure of the delete operation. The structure of the response will typically include:\n\n- `success` (Boolean): Indicates whether the delete operation was successful.\n    \n- `message` (String): A message providing additional context about the operation, such as confirmation of deletion or an error message if the operation failed.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"success\": true,\n  \"message\": \"Photos deleted successfully.\"\n}\n\n ```\n\n### Notes\n\n- Ensure that the IDs and public IDs provided in the request body correspond to existing photos in the database.\n    \n- This operation is irreversible; once a photo is deleted, it cannot be recovered."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Minhas informações✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}users/me/",
+							"host": [
+								"{{apiUrl}}users"
+							],
+							"path": [
+								"me",
+								""
+							]
+						},
+						"description": "### GET /users/me/\n\nThis endpoint retrieves the details of the currently authenticated user. It is typically used to access user-specific information such as profile details, preferences, and settings.\n\n#### Request Parameters\n\nThis endpoint does not require any additional input parameters in the request.\n\n#### Response Structure\n\nThe response will contain a JSON object with the following fields:\n\n- **id**: Unique identifier for the user.\n    \n- **username**: The username of the user.\n    \n- **email**: The email address associated with the user account.\n    \n- **first_name**: The first name of the user.\n    \n- **last_name**: The last name of the user.\n    \n- **created_at**: Timestamp indicating when the user account was created.\n    \n- **updated_at**: Timestamp indicating when the user account details were last updated.\n    \n\n#### Example Response\n\n``` json\n{\n  \"id\": \"123\",\n  \"username\": \"exampleUser\",\n  \"email\": \"user@example.com\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"created_at\": \"2023-01-01T00:00:00Z\",\n  \"updated_at\": \"2023-01-02T00:00:00Z\"\n}\n\n ```\n\nThis endpoint is essential for applications that require user-specific data to customize the user experience."
+					},
+					"response": []
+				},
+				{
+					"name": "Editar conta✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"VitorRobertin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}users/me/update/",
+							"host": [
+								"{{apiUrl}}users"
+							],
+							"path": [
+								"me",
+								"update",
+								""
+							]
+						},
+						"description": "### Update User Information\n\nThis endpoint allows the authenticated user to update their account information, specifically the username.\n\n#### Request\n\n- **Method**: `PUT`\n    \n- **URL**: `http://127.0.0.1:8000/users/me/update/`\n    \n- **Body**: The request body must be in JSON format and include the following parameter:\n    \n    - `username` (string): The new username for the user account.\n        \n\n#### Example Request Body\n\n``` json\n{\n  \"username\": \"editado\"\n}\n\n ```\n\n#### Response\n\nUpon a successful update, the server will respond with a JSON object containing the updated user information. The structure of the response will typically include the following fields:\n\n- `username` (string): The updated username.\n    \n- Additional user-related fields may be included depending on the implementation.\n    \n\n#### Notes\n\nEnsure that the request is made with proper authentication, as this endpoint requires the user to be logged in to update their information."
+					},
+					"response": []
+				},
+				{
+					"name": "Apagar conta",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}users/me/delete/",
+							"host": [
+								"{{apiUrl}}users"
+							],
+							"path": [
+								"me",
+								"delete",
+								""
+							]
+						},
+						"description": "# Delete User Account\n\nThis endpoint allows authenticated users to delete their own user account from the system.\n\n## Request\n\n- **Method**: DELETE\n    \n- **URL**: `http://127.0.0.1:8000/users/me/delete/`\n    \n\n### Request Parameters\n\nThis endpoint does not require any additional request parameters in the body. However, ensure that the user is authenticated and has the necessary permissions to perform this action.\n\n## Response\n\nUpon a successful account deletion, the server will respond with a status code indicating the result of the operation.\n\n### Expected Response\n\n- **Status Code**: `204 No Content`\n    \n    - Indicates that the user account has been successfully deleted.\n        \n- **Error Responses**:\n    \n    - `403 Forbidden`: If the user is not authorized to delete the account.\n        \n    - `404 Not Found`: If the user account does not exist.\n        \n\n## Notes\n\n- This action is irreversible; once the account is deleted, all associated data will be permanently removed.\n    \n- Ensure that you have backed up any important information before proceeding with the deletion."
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar senha✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"old_password\": \"Aa12345678!!\",\r\n    \"new_password\": \"Aa12345678!\",\r\n    \"confirm_password\": \"Aa12345678!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}users/me/update/password/",
+							"host": [
+								"{{apiUrl}}users"
+							],
+							"path": [
+								"me",
+								"update",
+								"password",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Pontos",
+			"item": [
+				{
+					"name": "Fotos",
+					"item": [
+						{
+							"name": "Editar foto",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "postman-cloud:///1f017b3a-5406-4110-9125-46a43dbf8ee1"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{apiUrl}}users/20/photo/update/19/",
+									"host": [
+										"{{apiUrl}}users"
+									],
+									"path": [
+										"20",
+										"photo",
+										"update",
+										"19",
+										""
+									]
+								},
+								"description": "### Update User Photo\n\nThis endpoint allows you to update the photo of a specific user identified by their user ID.\n\n#### Request\n\n- **Method**: PUT\n    \n- **URL**: `http://127.0.0.1:8000/users/{userId}/photo/update/{photoId}/`\n    \n\n#### Request Body\n\nThe request body should be sent as form-data and must include the following parameter:\n\n- **image** (file): The new photo file to be uploaded for the user.\n    \n\n#### Response\n\nThe expected response will indicate the success or failure of the photo update operation. Typically, a successful response will include a status message confirming the update, while an error response may provide details about what went wrong.\n\n#### Notes\n\n- Ensure that the user ID and photo ID in the URL are valid and correspond to an existing user and photo, respectively.\n    \n- The file uploaded must meet any specified requirements regarding format and size, which may not be detailed in this documentation."
+							},
+							"response": []
+						},
+						{
+							"name": "Adicionar foto",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "postman-cloud:///1f017b3a-5406-4110-9125-46a43dbf8ee1"
+										},
+										{
+											"key": "user",
+											"value": "21",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": {
+									"raw": "{{apiUrl}}users/20/photo/upload/",
+									"host": [
+										"{{apiUrl}}users"
+									],
+									"path": [
+										"20",
+										"photo",
+										"upload",
+										""
+									]
+								},
+								"description": "## Upload User Photo\n\nThis endpoint allows you to upload a photo for a specific user identified by their user ID.\n\n### HTTP Method\n\n`POST`\n\n### Endpoint\n\n`http://127.0.0.1:8000/users/{user_id}/photo/upload/`\n\n### Request Parameters\n\nThe request must include the following parameter in the form-data body:\n\n- **image** (file): The image file to be uploaded for the user.\n    \n\n### Expected Response Format\n\nUpon a successful upload, the server will respond with a confirmation message and may include additional details about the uploaded photo, such as its URL or ID. The response will typically be in JSON format.\n\n### Example\n\nTo upload a photo for the user with ID 20, the request would be sent to:\n\n```\nPOST http://127.0.0.1:8000/users/20/photo/upload/\n\n ```\n\nWith the form-data containing the `image` file."
+							},
+							"response": []
+						},
+						{
+							"name": "IDs fotos",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}photos/?user_id=2",
+									"host": [
+										"{{apiUrl}}photos"
+									],
+									"path": [
+										""
+									],
+									"query": [
+										{
+											"key": "user_id",
+											"value": "2"
+										}
+									]
+								},
+								"description": "## Get Photos by User ID\n\nThis endpoint retrieves a list of photos associated with a specific user identified by their `user_id`.\n\n### Request Parameters\n\n- **user_id** (query parameter, required): The unique identifier of the user whose photos you want to retrieve. This should be a numeric value.\n    \n\n### Example Request\n\n```\nGET http://127.0.0.1:8000/photos/?user_id=2\n\n ```\n\n### Expected Response\n\nOn a successful request, the server will return a JSON array containing the photos related to the specified user. Each photo object in the response may include details such as photo ID, title, URL, and other relevant metadata.\n\n### Notes\n\n- Ensure that the `user_id` provided corresponds to an existing user in the system to receive valid results.\n    \n- If the `user_id` does not exist or if there are no photos associated with the user, the response may return an empty array or an appropriate error message."
+							},
+							"response": []
+						},
+						{
+							"name": "Apagar fotos",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"ids\": [7],\r\n  \"public_ids\": [\"ng4fnofszjzpiqhive1o\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{apiUrl}}photos/delete/",
+									"host": [
+										"{{apiUrl}}photos"
+									],
+									"path": [
+										"delete",
+										""
+									]
+								},
+								"description": "## Delete Photos Endpoint\n\nThis endpoint is used to delete photos from the server based on their unique identifiers. It allows users to remove one or more photos by specifying their IDs and public IDs.\n\n### Request\n\n**Method:** DELETE  \n**URL:** `http://127.0.0.1:8000/photos/delete/`\n\n#### Request Body\n\nThe request body must be in JSON format and should include the following parameters:\n\n- `ids` (Array of integers): A list of unique identifiers for the photos that you want to delete. Each ID corresponds to a specific photo in the database.\n    \n- `public_ids` (Array of strings): A list of public identifiers for the photos. These identifiers are used to reference photos that may be accessible publicly.\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"ids\": [7],\n  \"public_ids\": [\"ng4fnofszjzpiqhive1o\"]\n}\n\n ```\n\n### Response\n\nThe response from this endpoint will indicate the success or failure of the delete operation. The structure of the response will typically include:\n\n- `success` (Boolean): Indicates whether the delete operation was successful.\n    \n- `message` (String): A message providing additional context about the operation, such as confirmation of deletion or an error message if the operation failed.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"success\": true,\n  \"message\": \"Photos deleted successfully.\"\n}\n\n ```\n\n### Notes\n\n- Ensure that the IDs and public IDs provided in the request body correspond to existing photos in the database.\n    \n- This operation is irreversible; once a photo is deleted, it cannot be recovered."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Meus Pontos✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}users/me/points/",
+							"host": [
+								"{{apiUrl}}users"
+							],
+							"path": [
+								"me",
+								"points",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "C",
+									"disabled": true
+								}
+							]
+						},
+						"description": "## Get User List\n\nThis endpoint retrieves a list of users from the system. It is a `GET` request and does not require any request parameters.\n\n### Request\n\n- **Method:** GET\n    \n- **URL:** `http://127.0.0.1:8000/users/list/`\n    \n\n### Response\n\nThe expected response is a JSON object containing an array of user objects. Each user object may include various fields such as:\n\n- `id`: Unique identifier for the user.\n    \n- `name`: The name of the user.\n    \n- `email`: The email address of the user.\n    \n- Additional user-related attributes may also be included.\n    \n\n### Notes\n\n- Ensure that you have the necessary permissions to access the user list.\n    \n- The response may vary based on the current users in the database."
+					},
+					"response": []
+				},
+				{
+					"name": "Apagar Meu Ponto✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}points/me/3/delete/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"me",
+								"3",
+								"delete",
+								""
+							]
+						},
+						"description": "# Delete User Account\n\nThis endpoint allows authenticated users to delete their own user account from the system.\n\n## Request\n\n- **Method**: DELETE\n    \n- **URL**: `http://127.0.0.1:8000/users/me/delete/`\n    \n\n### Request Parameters\n\nThis endpoint does not require any additional request parameters in the body. However, ensure that the user is authenticated and has the necessary permissions to perform this action.\n\n## Response\n\nUpon a successful account deletion, the server will respond with a status code indicating the result of the operation.\n\n### Expected Response\n\n- **Status Code**: `204 No Content`\n    \n    - Indicates that the user account has been successfully deleted.\n        \n- **Error Responses**:\n    \n    - `403 Forbidden`: If the user is not authorized to delete the account.\n        \n    - `404 Not Found`: If the user account does not exist.\n        \n\n## Notes\n\n- This action is irreversible; once the account is deleted, all associated data will be permanently removed.\n    \n- Ensure that you have backed up any important information before proceeding with the deletion."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Ponto✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"a\",\r\n    \"description\": \"\",\r\n    \"week_start\": \"\",\r\n    \"week_end\": \"\",\r\n    \"open_time\": \"\",\r\n    \"close_time\": \"0\",\r\n    \"point_type\": \"\",                                // trail, water_fall, park, farm, other\r\n    \"link\": \"https://trilhascachoeiras.com\",         // Opcional: link para o ponto\r\n    \"latitude\": -23.55052,                           // Opcional: latitude geográfica\r\n    \"longitude\": -46.633308,                         // Opcional: longitude geográfica\r\n    \"zip_code\": \"\",\r\n    \"city\": \"\",\r\n    \"neighborhood\": \"\",\r\n    \"state\": \"\",\r\n    \"street\": \"\",\r\n    \"number\": \"\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}points/create/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"create",
+								""
+							]
+						},
+						"description": "## Create User Endpoint\n\nThis endpoint allows you to create a new user in the system. It accepts user details such as username, email, role, and password, and returns the created user's information.\n\n### Request\n\n**Method:** POST  \n**URL:** `http://127.0.0.1:8000/users/create/`\n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- **username** (string): The desired username for the new user.\n    \n- **email** (string): The email address of the new user.\n    \n- **role** (integer): The role identifier for the user (e.g., 1 for admin, 2 for regular user).\n    \n- **password** (string): The password for the new user. It should meet security requirements (e.g., minimum length, complexity).\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2,\n  \"password\": \"Aa12345678!\"\n}\n\n ```\n\n### Response\n\nUpon successful creation of the user, the server will respond with a JSON object containing the details of the created user. The structure of the response typically includes:\n\n- **id** (integer): The unique identifier of the newly created user.\n    \n- **username** (string): The username of the created user.\n    \n- **email** (string): The email address of the created user.\n    \n- **role** (integer): The role identifier of the created user.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"id\": 1,\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2\n}\n\n ```\n\n### Notes\n\n- Ensure that the username and email are unique and not already in use.\n    \n- The password should comply with the security policies set by the application.\n    \n\nThis endpoint is essential for user management and should be used to register new users in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Editar Ponto✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"arroz\",\r\n    \"description\": \"Uma bela cachoeira localizada na Serra da Mantiqueira, com uma queda d'água de aproximadamente 15 metros. Ideal para caminhadas e contemplação da natureza.\",\r\n    \"week_start\": \"2025-07-07\",\r\n    \"week_end\": \"2025-07-13\", \r\n    \"open_time\": \"08:00\",\r\n    \"close_time\": \"17:00\",\r\n    \"point_type\": \"water_fall\",\r\n    \"link\": \"https://trilhascachoeiras.com/veu-da-noiva\",\r\n    \"latitude\": -22.736889,\r\n    \"longitude\": -45.593056,\r\n    \"zip_code\": \"12460-000\",\r\n    \"city\": \"Campos do Jordão\",\r\n    \"neighborhood\": \"Vila Capivari\",\r\n    \"state\": \"São Paulo\",\r\n    \"street\": \"Estrada do Horto Florestal\",\r\n    \"number\": \"1500\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}points/1/edit/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"1",
+								"edit",
+								""
+							]
+						},
+						"description": "## Create User Endpoint\n\nThis endpoint allows you to create a new user in the system. It accepts user details such as username, email, role, and password, and returns the created user's information.\n\n### Request\n\n**Method:** POST  \n**URL:** `http://127.0.0.1:8000/users/create/`\n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- **username** (string): The desired username for the new user.\n    \n- **email** (string): The email address of the new user.\n    \n- **role** (integer): The role identifier for the user (e.g., 1 for admin, 2 for regular user).\n    \n- **password** (string): The password for the new user. It should meet security requirements (e.g., minimum length, complexity).\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2,\n  \"password\": \"Aa12345678!\"\n}\n\n ```\n\n### Response\n\nUpon successful creation of the user, the server will respond with a JSON object containing the details of the created user. The structure of the response typically includes:\n\n- **id** (integer): The unique identifier of the newly created user.\n    \n- **username** (string): The username of the created user.\n    \n- **email** (string): The email address of the created user.\n    \n- **role** (integer): The role identifier of the created user.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"id\": 1,\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2\n}\n\n ```\n\n### Notes\n\n- Ensure that the username and email are unique and not already in use.\n    \n- The password should comply with the security policies set by the application.\n    \n\nThis endpoint is essential for user management and should be used to register new users in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar Status User✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}points/2/status/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"2",
+								"status",
+								""
+							]
+						},
+						"description": "### Update User Status\n\nThis endpoint allows you to update the status of a specific user identified by their unique ID. The request modifies the user's current status information.\n\n#### Request Parameters\n\nThe request must be sent as a JSON object in the body. The following parameters are expected:\n\n- **status** (string): The new status to be assigned to the user. This parameter is required.\n    \n\n#### Response Structure\n\nUpon a successful update, the server will return a JSON object containing the following information:\n\n- **id** (integer): The ID of the user whose status has been updated.\n    \n- **status** (string): The updated status of the user.\n    \n- **message** (string): A confirmation message indicating the status has been successfully updated.\n    \n\n#### Example Request\n\n``` http\nPUT /users/23/status/\nContent-Type: application/json\n{\n    \"status\": \"active\"\n}\n\n ```\n\n#### Example Response\n\n``` json\n{\n    \"id\": 23,\n    \"status\": \"active\",\n    \"message\": \"User status updated successfully.\"\n}\n\n ```\n\nMake sure to replace the user ID in the URL with the appropriate ID of the user whose status you wish to update."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Mapa",
+			"item": [
+				{
+					"name": "Avaliar Ponto✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"rating\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}points/2/review/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"2",
+								"review",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detalhes Ponto✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}points/2/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"2",
+								""
+							]
+						},
+						"description": "## Create User Endpoint\n\nThis endpoint allows you to create a new user in the system. It accepts user details such as username, email, role, and password, and returns the created user's information.\n\n### Request\n\n**Method:** POST  \n**URL:** `http://127.0.0.1:8000/users/create/`\n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- **username** (string): The desired username for the new user.\n    \n- **email** (string): The email address of the new user.\n    \n- **role** (integer): The role identifier for the user (e.g., 1 for admin, 2 for regular user).\n    \n- **password** (string): The password for the new user. It should meet security requirements (e.g., minimum length, complexity).\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2,\n  \"password\": \"Aa12345678!\"\n}\n\n ```\n\n### Response\n\nUpon successful creation of the user, the server will respond with a JSON object containing the details of the created user. The structure of the response typically includes:\n\n- **id** (integer): The unique identifier of the newly created user.\n    \n- **username** (string): The username of the created user.\n    \n- **email** (string): The email address of the created user.\n    \n- **role** (integer): The role identifier of the created user.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"id\": 1,\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2\n}\n\n ```\n\n### Notes\n\n- Ensure that the username and email are unique and not already in use.\n    \n- The password should comply with the security policies set by the application.\n    \n\nThis endpoint is essential for user management and should be used to register new users in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Procurar ponto✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}points/search/?name=piscina",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "piscina"
+								}
+							]
+						},
+						"description": "## Create User Endpoint\n\nThis endpoint allows you to create a new user in the system. It accepts user details such as username, email, role, and password, and returns the created user's information.\n\n### Request\n\n**Method:** POST  \n**URL:** `http://127.0.0.1:8000/users/create/`\n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- **username** (string): The desired username for the new user.\n    \n- **email** (string): The email address of the new user.\n    \n- **role** (integer): The role identifier for the user (e.g., 1 for admin, 2 for regular user).\n    \n- **password** (string): The password for the new user. It should meet security requirements (e.g., minimum length, complexity).\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2,\n  \"password\": \"Aa12345678!\"\n}\n\n ```\n\n### Response\n\nUpon successful creation of the user, the server will respond with a JSON object containing the details of the created user. The structure of the response typically includes:\n\n- **id** (integer): The unique identifier of the newly created user.\n    \n- **username** (string): The username of the created user.\n    \n- **email** (string): The email address of the created user.\n    \n- **role** (integer): The role identifier of the created user.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"id\": 1,\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2\n}\n\n ```\n\n### Notes\n\n- Ensure that the username and email are unique and not already in use.\n    \n- The password should comply with the security policies set by the application.\n    \n\nThis endpoint is essential for user management and should be used to register new users in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Pontos Mapa✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}points/map/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"map",
+								""
+							]
+						},
+						"description": "## Create User Endpoint\n\nThis endpoint allows you to create a new user in the system. It accepts user details such as username, email, role, and password, and returns the created user's information.\n\n### Request\n\n**Method:** POST  \n**URL:** `http://127.0.0.1:8000/users/create/`\n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- **username** (string): The desired username for the new user.\n    \n- **email** (string): The email address of the new user.\n    \n- **role** (integer): The role identifier for the user (e.g., 1 for admin, 2 for regular user).\n    \n- **password** (string): The password for the new user. It should meet security requirements (e.g., minimum length, complexity).\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2,\n  \"password\": \"Aa12345678!\"\n}\n\n ```\n\n### Response\n\nUpon successful creation of the user, the server will respond with a JSON object containing the details of the created user. The structure of the response typically includes:\n\n- **id** (integer): The unique identifier of the newly created user.\n    \n- **username** (string): The username of the created user.\n    \n- **email** (string): The email address of the created user.\n    \n- **role** (integer): The role identifier of the created user.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"id\": 1,\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2\n}\n\n ```\n\n### Notes\n\n- Ensure that the username and email are unique and not already in use.\n    \n- The password should comply with the security policies set by the application.\n    \n\nThis endpoint is essential for user management and should be used to register new users in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Adicionar visualização✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}points/1/add_view/",
+							"host": [
+								"{{apiUrl}}points"
+							],
+							"path": [
+								"1",
+								"add_view",
+								""
+							]
+						},
+						"description": "## Create User Endpoint\n\nThis endpoint allows you to create a new user in the system. It accepts user details such as username, email, role, and password, and returns the created user's information.\n\n### Request\n\n**Method:** POST  \n**URL:** `http://127.0.0.1:8000/users/create/`\n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- **username** (string): The desired username for the new user.\n    \n- **email** (string): The email address of the new user.\n    \n- **role** (integer): The role identifier for the user (e.g., 1 for admin, 2 for regular user).\n    \n- **password** (string): The password for the new user. It should meet security requirements (e.g., minimum length, complexity).\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2,\n  \"password\": \"Aa12345678!\"\n}\n\n ```\n\n### Response\n\nUpon successful creation of the user, the server will respond with a JSON object containing the details of the created user. The structure of the response typically includes:\n\n- **id** (integer): The unique identifier of the newly created user.\n    \n- **username** (string): The username of the created user.\n    \n- **email** (string): The email address of the created user.\n    \n- **role** (integer): The role identifier of the created user.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"id\": 1,\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2\n}\n\n ```\n\n### Notes\n\n- Ensure that the username and email are unique and not already in use.\n    \n- The password should comply with the security policies set by the application.\n    \n\nThis endpoint is essential for user management and should be used to register new users in the system."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cadastro",
+			"item": [
+				{
+					"name": "Enviar código✅",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"flamingolindo3@gmail.com\",\r\n    \"username\": \"Flamingo3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}code/send/",
+							"host": [
+								"{{apiUrl}}code"
+							],
+							"path": [
+								"send",
+								""
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"description": "buhcuhruh1@gmail.com",
+									"disabled": true
+								}
+							]
+						},
+						"description": "## User Login API\n\nThis endpoint allows users to authenticate themselves by logging into their account.\n\n### Request Method\n\n- **POST**\n    \n\n### Endpoint\n\n- `http://127.0.0.1:8000/users/login/`\n    \n\n### Request Parameters\n\nThe request body must be a JSON object containing the following parameters:\n\n- **email** (string): The email address associated with the user account.\n    \n- **password** (string): The password for the user account.\n    \n\n### Example Request Body\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password\"\n}\n\n ```\n\n### Expected Response Format\n\nUpon successful login, the server will respond with a JSON object containing user authentication details, such as a token or user information. The exact structure of the response will depend on the implementation but typically includes:\n\n- **token** (string): A token that can be used for subsequent authenticated requests.\n    \n- **user** (object): An object containing user details such as ID, name, and email.\n    \n\n### Example Response\n\n``` json\n{\n  \"token\": \"your_auth_token\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\"\n  }\n}\n\n ```\n\n### Notes\n\nEnsure that the email and password are correctly formatted and valid for successful authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Validar código✅",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"flamingolindo3@gmail.com\",\r\n    \"code\": \"0vckc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}code/verify/",
+							"host": [
+								"{{apiUrl}}code"
+							],
+							"path": [
+								"verify",
+								""
+							]
+						},
+						"description": "## User Login API\n\nThis endpoint allows users to authenticate themselves by logging into their account.\n\n### Request Method\n\n- **POST**\n    \n\n### Endpoint\n\n- `http://127.0.0.1:8000/users/login/`\n    \n\n### Request Parameters\n\nThe request body must be a JSON object containing the following parameters:\n\n- **email** (string): The email address associated with the user account.\n    \n- **password** (string): The password for the user account.\n    \n\n### Example Request Body\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password\"\n}\n\n ```\n\n### Expected Response Format\n\nUpon successful login, the server will respond with a JSON object containing user authentication details, such as a token or user information. The exact structure of the response will depend on the implementation but typically includes:\n\n- **token** (string): A token that can be used for subsequent authenticated requests.\n    \n- **user** (object): An object containing user details such as ID, name, and email.\n    \n\n### Example Response\n\n``` json\n{\n  \"token\": \"your_auth_token\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\"\n  }\n}\n\n ```\n\n### Notes\n\nEnsure that the email and password are correctly formatted and valid for successful authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Criar conta✅",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"{{$randomFirstName}}\",\r\n    \"email\": \"flamingolindo3@gmail.com\",\r\n    \"password\": \"Aa12345678!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}users/create/",
+							"host": [
+								"{{apiUrl}}users"
+							],
+							"path": [
+								"create",
+								""
+							]
+						},
+						"description": "## Create User Endpoint\n\nThis endpoint allows you to create a new user in the system. It accepts user details such as username, email, role, and password, and returns the created user's information.\n\n### Request\n\n**Method:** POST  \n**URL:** `http://127.0.0.1:8000/users/create/`\n\n#### Request Body\n\nThe request body must be in JSON format and include the following parameters:\n\n- **username** (string): The desired username for the new user.\n    \n- **email** (string): The email address of the new user.\n    \n- **role** (integer): The role identifier for the user (e.g., 1 for admin, 2 for regular user).\n    \n- **password** (string): The password for the new user. It should meet security requirements (e.g., minimum length, complexity).\n    \n\n**Example Request Body:**\n\n``` json\n{\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2,\n  \"password\": \"Aa12345678!\"\n}\n\n ```\n\n### Response\n\nUpon successful creation of the user, the server will respond with a JSON object containing the details of the created user. The structure of the response typically includes:\n\n- **id** (integer): The unique identifier of the newly created user.\n    \n- **username** (string): The username of the created user.\n    \n- **email** (string): The email address of the created user.\n    \n- **role** (integer): The role identifier of the created user.\n    \n\n**Example Response:**\n\n``` json\n{\n  \"id\": 1,\n  \"username\": \"JohnDoe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": 2\n}\n\n ```\n\n### Notes\n\n- Ensure that the username and email are unique and not already in use.\n    \n- The password should comply with the security policies set by the application.\n    \n\nThis endpoint is essential for user management and should be used to register new users in the system."
+					},
+					"response": []
+				},
+				{
+					"name": "Mostrar Termos/Política✅",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}terms/1/",
+							"host": [
+								"{{apiUrl}}terms"
+							],
+							"path": [
+								"1",
+								""
+							]
+						},
+						"description": "## API Endpoint: Retrieve Terms\n\n### Description\n\nThis endpoint retrieves the details of a specific term based on the provided term ID. It is useful for fetching information about a term in the system, which may include definitions, usage examples, and related information.\n\n### Request\n\n- **Method**: GET\n    \n- **URL**: `http://127.0.0.1:8000/terms/{id}/`\n    \n- **Path Parameter**:\n    \n    - `id` (integer): The unique identifier for the term you wish to retrieve. In this example, the term ID is `1`.\n        \n\n### Response\n\nThe response will contain the details of the requested term in a structured format. The expected structure of the response includes:\n\n- `id`: The unique identifier of the term.\n    \n- `name`: The name of the term.\n    \n- `definition`: A detailed explanation of the term.\n    \n- `examples`: A list of usage examples for the term.\n    \n- `related_terms`: A list of terms that are related to the requested term.\n    \n\n### Example Response Structure\n\n``` json\n{\n  \"id\": 1,\n  \"name\": \"Sample Term\",\n  \"definition\": \"This is a sample definition of the term.\",\n  \"examples\": [\n    \"Example usage of the term in a sentence.\"\n  ],\n  \"related_terms\": [\n    \"Related Term 1\",\n    \"Related Term 2\"\n  ]\n}\n\n ```\n\nThis endpoint is essential for applications that require term information for display or processing."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Autenticação",
+			"item": [
+				{
+					"name": "Login ✅",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const res = pm.response.json();\r",
+									"const { access } = res;\r",
+									"pm.environment.set('access', access); "
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"vitorantunes2003@gmail.com\",\r\n    \"password\": \"Aa12345678!\",\r\n    \"remember_me\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}users/login/",
+							"host": [
+								"{{apiUrl}}users"
+							],
+							"path": [
+								"login",
+								""
+							]
+						},
+						"description": "## User Login API\n\nThis endpoint allows users to authenticate themselves by logging into their account.\n\n### Request Method\n\n- **POST**\n    \n\n### Endpoint\n\n- `http://127.0.0.1:8000/users/login/`\n    \n\n### Request Parameters\n\nThe request body must be a JSON object containing the following parameters:\n\n- **email** (string): The email address associated with the user account.\n    \n- **password** (string): The password for the user account.\n    \n\n### Example Request Body\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password\"\n}\n\n ```\n\n### Expected Response Format\n\nUpon successful login, the server will respond with a JSON object containing user authentication details, such as a token or user information. The exact structure of the response will depend on the implementation but typically includes:\n\n- **token** (string): A token that can be used for subsequent authenticated requests.\n    \n- **user** (object): An object containing user details such as ID, name, and email.\n    \n\n### Example Response\n\n``` json\n{\n  \"token\": \"your_auth_token\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\"\n  }\n}\n\n ```\n\n### Notes\n\nEnsure that the email and password are correctly formatted and valid for successful authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token✅",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}token/get_refresh/",
+							"host": [
+								"{{apiUrl}}token"
+							],
+							"path": [
+								"get_refresh",
+								""
+							]
+						},
+						"description": "## User Login API\n\nThis endpoint allows users to authenticate themselves by logging into their account.\n\n### Request Method\n\n- **POST**\n    \n\n### Endpoint\n\n- `http://127.0.0.1:8000/users/login/`\n    \n\n### Request Parameters\n\nThe request body must be a JSON object containing the following parameters:\n\n- **email** (string): The email address associated with the user account.\n    \n- **password** (string): The password for the user account.\n    \n\n### Example Request Body\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password\"\n}\n\n ```\n\n### Expected Response Format\n\nUpon successful login, the server will respond with a JSON object containing user authentication details, such as a token or user information. The exact structure of the response will depend on the implementation but typically includes:\n\n- **token** (string): A token that can be used for subsequent authenticated requests.\n    \n- **user** (object): An object containing user details such as ID, name, and email.\n    \n\n### Example Response\n\n``` json\n{\n  \"token\": \"your_auth_token\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\"\n  }\n}\n\n ```\n\n### Notes\n\nEnsure that the email and password are correctly formatted and valid for successful authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Esqueci a senha - enviar código✅",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"vitorantunes2003@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}code/reset_password/",
+							"host": [
+								"{{apiUrl}}code"
+							],
+							"path": [
+								"reset_password",
+								""
+							]
+						},
+						"description": "## User Login API\n\nThis endpoint allows users to authenticate themselves by logging into their account.\n\n### Request Method\n\n- **POST**\n    \n\n### Endpoint\n\n- `http://127.0.0.1:8000/users/login/`\n    \n\n### Request Parameters\n\nThe request body must be a JSON object containing the following parameters:\n\n- **email** (string): The email address associated with the user account.\n    \n- **password** (string): The password for the user account.\n    \n\n### Example Request Body\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password\"\n}\n\n ```\n\n### Expected Response Format\n\nUpon successful login, the server will respond with a JSON object containing user authentication details, such as a token or user information. The exact structure of the response will depend on the implementation but typically includes:\n\n- **token** (string): A token that can be used for subsequent authenticated requests.\n    \n- **user** (object): An object containing user details such as ID, name, and email.\n    \n\n### Example Response\n\n``` json\n{\n  \"token\": \"your_auth_token\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\"\n  }\n}\n\n ```\n\n### Notes\n\nEnsure that the email and password are correctly formatted and valid for successful authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Alterar senha✅",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"vitorantunes2003@gmail.com\",\r\n    \"code\": \"j9ddc\",\r\n    \"password\": \"Aa12345678!!\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{apiUrl}}code/verify_password_reset/",
+							"host": [
+								"{{apiUrl}}code"
+							],
+							"path": [
+								"verify_password_reset",
+								""
+							]
+						},
+						"description": "## User Login API\n\nThis endpoint allows users to authenticate themselves by logging into their account.\n\n### Request Method\n\n- **POST**\n    \n\n### Endpoint\n\n- `http://127.0.0.1:8000/users/login/`\n    \n\n### Request Parameters\n\nThe request body must be a JSON object containing the following parameters:\n\n- **email** (string): The email address associated with the user account.\n    \n- **password** (string): The password for the user account.\n    \n\n### Example Request Body\n\n``` json\n{\n  \"email\": \"user@example.com\",\n  \"password\": \"your_password\"\n}\n\n ```\n\n### Expected Response Format\n\nUpon successful login, the server will respond with a JSON object containing user authentication details, such as a token or user information. The exact structure of the response will depend on the implementation but typically includes:\n\n- **token** (string): A token that can be used for subsequent authenticated requests.\n    \n- **user** (object): An object containing user details such as ID, name, and email.\n    \n\n### Example Response\n\n``` json\n{\n  \"token\": \"your_auth_token\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"email\": \"user@example.com\"\n  }\n}\n\n ```\n\n### Notes\n\nEnsure that the email and password are correctly formatted and valid for successful authentication."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
