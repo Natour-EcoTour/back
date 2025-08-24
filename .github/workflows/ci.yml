@@ -74,6 +74,31 @@ jobs:
       matrix:
         python-version: ["3.13"]
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: test_natour_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -89,17 +114,18 @@ jobs:
         run: |
           python manage.py test
         env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
-          API_KEY: ${{ secrets.API_KEY }}
-          API_SECRET: ${{ secrets.API_SECRET }}
-          SENDINBLUE_API_KEY: ${{ secrets.SENDINBLUE_API_KEY }}
-          DEFAULT_FROM_EMAIL: ${{ secrets.DEFAULT_FROM_EMAIL }}
-          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
-          OTEL_SERVICE_NAME: ${{ secrets.OTEL_SERVICE_NAME }}
-          REDIS_URL: ${{ secrets.REDIS_URL }}
+          SECRET_KEY: test-secret-key-for-ci-testing-only
+          DEBUG: false
+          DB_NAME: test_natour_db
+          DB_USER: test_user
+          DB_PASSWORD: test_password
+          DB_HOST: localhost
+          DB_PORT: 5432
+          CLOUD_NAME: test_cloud
+          API_KEY: test_api_key
+          API_SECRET: test_api_secret
+          SENDINBLUE_API_KEY: test_sendinblue_key
+          DEFAULT_FROM_EMAIL: test@example.com
+          OTEL_EXPORTER_OTLP_ENDPOINT: http://localhost:4317
+          OTEL_SERVICE_NAME: drf-api-test
+          REDIS_URL: redis://localhost:6379/0
