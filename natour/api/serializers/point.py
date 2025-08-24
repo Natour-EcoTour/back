@@ -3,7 +3,6 @@ Serializers for point-related models.
 """
 
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field
 
 from natour.api.models import Point
 
@@ -97,6 +96,41 @@ class CreatePointSerializer(serializers.ModelSerializer):
             'blank': 'Número não pode estar vazio.',
         }
 
+    def validate(self, attrs):
+        """
+        Validate coordinates and other business rules.
+        """
+        latitude = attrs.get('latitude')
+        longitude = attrs.get('longitude')
+        
+        # Validate coordinates are within Brazil
+        if latitude is not None and not (-35 <= latitude <= 5):
+            raise serializers.ValidationError(
+                "Latitude deve estar entre -35 e 5 graus (território brasileiro)"
+            )
+        if longitude is not None and not (-75 <= longitude <= -30):
+            raise serializers.ValidationError(
+                "Longitude deve estar entre -75 e -30 graus (território brasileiro)"
+            )
+
+        # Validate time ranges
+        week_start = attrs.get('week_start')
+        week_end = attrs.get('week_end')
+        open_time = attrs.get('open_time')
+        close_time = attrs.get('close_time')
+
+        if week_start and week_end and week_start > week_end:
+            raise serializers.ValidationError(
+                "Data de início deve ser anterior à data de fim"
+            )
+
+        if open_time and close_time and open_time >= close_time:
+            raise serializers.ValidationError(
+                "Horário de abertura deve ser anterior ao de fechamento"
+            )
+
+        return attrs
+
 
 class PointInfoSerializer(serializers.ModelSerializer):
     """
@@ -115,7 +149,6 @@ class PointInfoSerializer(serializers.ModelSerializer):
                   'neighborhood', 'state', 'street', 'number', 'photos']
         read_only_fields = fields
 
-    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
     def get_photos(self, obj):
         """
         Returns a list of photo URLs associated with the point.

@@ -6,7 +6,6 @@ import re
 
 from django.core.validators import EmailValidator, RegexValidator
 from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field
 
 from natour.api.models import CustomUser
 
@@ -39,7 +38,6 @@ class CustomUserInfoSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'photo']
         read_only_fields = fields
 
-    @extend_schema_field(serializers.CharField(allow_null=True))
     def get_photo(self, obj):
         """
         Get the URL of the user's photo if it exists.
@@ -139,7 +137,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         Meta class for UpdateUserSerializer.
         """
         model = CustomUser
-        fields = ['username']
+        fields = ['username', 'first_name', 'last_name']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
