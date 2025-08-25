@@ -243,7 +243,7 @@ ANYMAIL = {
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 # Loggin
-LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR = Path('/var/log/django') if os.path.exists('/var/log/django') else BASE_DIR / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 
 LOGGING = {
@@ -270,6 +270,11 @@ LOGGING = {
     },
     "loggers": {
         "django": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "natour": {
             "handlers": ["file"],
             "level": "DEBUG",
             "propagate": True,

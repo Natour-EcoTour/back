@@ -34,7 +34,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./logs:/var/log/django
+      - django_logs:/var/log/django
 
   prometheus:
     image: prom/prometheus
