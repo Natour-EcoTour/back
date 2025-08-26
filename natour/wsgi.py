@@ -14,7 +14,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'natour.settings')
 
-import otel_config  # Do this after sys.path and os.environ
+import otel_config
 
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
