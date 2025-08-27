@@ -102,7 +102,7 @@ class CreatePointSerializer(serializers.ModelSerializer):
         """
         latitude = attrs.get('latitude')
         longitude = attrs.get('longitude')
-        
+
         # Validate coordinates are within Brazil
         if latitude is not None and not (-35 <= latitude <= 5):
             raise serializers.ValidationError(
@@ -143,7 +143,7 @@ class PointInfoSerializer(serializers.ModelSerializer):
         Meta class for PointInfoSerializer.
         """
         model = Point
-        fields = ['name', 'views', 'avg_rating', 'description', 'week_start',
+        fields = ['id', 'name', 'views', 'avg_rating', 'description', 'week_start',
                   'week_end', 'open_time', 'close_time', 'point_type',
                   'link', 'latitude', 'longitude', 'zip_code', 'city',
                   'neighborhood', 'state', 'street', 'number', 'photos']
@@ -165,7 +165,7 @@ class PointStatusSerializer(serializers.ModelSerializer):
         Meta class for PointStatusSerializer.
         """
         model = Point
-        fields = ['is_active', 'deactivation_reason']
+        fields = ['id', 'is_active', 'deactivation_reason']
 
     def validate(self, attrs):
         """
@@ -201,7 +201,7 @@ class PointOnMapSerializer(serializers.ModelSerializer):
         Meta class for PointInfoSerializer.
         """
         model = Point
-        fields = ['name', 'point_type', 'latitude', 'longitude', 'zip_code', 'city',
+        fields = ['id', 'name', 'point_type', 'latitude', 'longitude', 'zip_code', 'city',
                   'neighborhood', 'state', 'street', 'number']
         read_only_fields = fields
 
@@ -216,7 +216,7 @@ class PointMapSearchSerializer(serializers.ModelSerializer):
         Meta class for PointMapSearchSerializer.
         """
         model = Point
-        fields = ['name']
+        fields = ['id', 'name']
 
 
 class PointApprovalSerializer(serializers.ModelSerializer):
@@ -228,7 +228,7 @@ class PointApprovalSerializer(serializers.ModelSerializer):
         Meta class for PointStatusSerializer.
         """
         model = Point
-        fields = ['is_active', 'status']
+        fields = ['id', 'is_active', 'status']
 
 
 class PointStatusUser(serializers.ModelSerializer):
@@ -240,4 +240,4 @@ class PointStatusUser(serializers.ModelSerializer):
         Meta class for PointStatusSerializer.
         """
         model = Point
-        fields = ['is_active']
+        fields = ['id', 'is_active']

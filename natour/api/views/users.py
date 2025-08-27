@@ -75,7 +75,7 @@ def delete_my_account(request):
         "User account deleted successfully.",
     )
 
-    return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @delete_user_account_schema
@@ -131,7 +131,7 @@ def delete_user_account(request, user_id):
         admin.username, admin.id, target_user.username, target_user.id, target_user.email
     )
 
-    return Response({"detail": "Conta deletada com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @update_my_info_schema

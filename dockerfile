@@ -26,7 +26,9 @@ COPY --chown=appuser:appuser . .
 RUN python manage.py collectstatic --noinput
 
 RUN mkdir -p /app/logs \
- && chown -R appuser:appuser /app/logs
+ && chown -R appuser:appuser /app/logs \
+ && mkdir -p /var/log/django \
+ && chown -R appuser:appuser /var/log/django
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1

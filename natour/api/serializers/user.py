@@ -19,7 +19,7 @@ class GenericUserSerializer(serializers.ModelSerializer):
         Meta class for GenericUserSerializer.
         """
         model = CustomUser
-        fields = ['username', 'email', 'role', 'is_active', 'is_staff']
+        fields = ['id', 'username', 'email', 'role', 'is_active', 'is_staff']
         read_only_fields = fields
 
 
@@ -35,7 +35,7 @@ class CustomUserInfoSerializer(serializers.ModelSerializer):
         Meta class for CustomUserInfoSerializer.
         """
         model = CustomUser
-        fields = ['username', 'email', 'photo']
+        fields = ['id', 'username', 'email', 'photo']
         read_only_fields = fields
 
     def get_photo(self, obj):
@@ -137,7 +137,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         Meta class for UpdateUserSerializer.
         """
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name']
+        fields = ['username']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -157,7 +157,7 @@ class AllUsersSerializer(serializers.ModelSerializer):
         Meta class for AllUsersSerializer.
         """
         model = CustomUser
-        fields = ['username', 'email', 'is_active', 'is_staff']
+        fields = ['id', 'username', 'email', 'is_active', 'is_staff']
         read_only_fields = fields
 
 
@@ -170,7 +170,7 @@ class UserStatusSerializer(serializers.ModelSerializer):
         Meta class for UserStatusSerializer.
         """
         model = CustomUser
-        fields = ['is_active', 'deactivation_reason']
+        fields = ['id', 'is_active', 'deactivation_reason']
 
     def validate(self, attrs):
         """
