@@ -137,7 +137,7 @@ class UpdateUserSerializer(serializers.ModelSerializer):
         Meta class for UpdateUserSerializer.
         """
         model = CustomUser
-        fields = ['username', 'first_name', 'last_name']
+        fields = ['username']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
