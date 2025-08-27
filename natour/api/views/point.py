@@ -343,7 +343,7 @@ def delete_point(request, point_id):
         )
 
     point.delete()
-    return Response({"detail": "Ponto excluído com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @delete_my_point_schema
@@ -366,7 +366,7 @@ def delete_my_point(request, point_id):
         "Point deleted successfully.",
     )
 
-    return Response({"detail": "Ponto excluído com sucesso."}, status=status.HTTP_204_NO_CONTENT)
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @add_view_schema
