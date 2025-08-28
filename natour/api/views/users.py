@@ -341,6 +341,20 @@ def get_my_points(request):
     if point_name:
         points = points.filter(name__istartswith=point_name)
 
+    status_param = request.query_params.get('status')
+    if status_param is not None:
+        if status_param.lower() == 'true':
+            points = points.filter(status=True)
+        elif status_param.lower() == 'false':
+            points = points.filter(status=False)
+        elif status_param.lower() == 'null' or status_param.lower() == 'none':
+            points = points.filter(status__isnull=True)
+        else:
+            return Response(
+                {"detail": "Parâmetro 'status' deve ser 'true', 'false', 'null' ou 'none'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
     if not points.exists():
         return Response(
             {"detail": "Nenhum ponto encontrado."},
