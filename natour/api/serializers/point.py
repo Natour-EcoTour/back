@@ -143,7 +143,7 @@ class PointInfoSerializer(serializers.ModelSerializer):
         Meta class for PointInfoSerializer.
         """
         model = Point
-        fields = ['id', 'name', 'views', 'avg_rating', 'description', 'week_start',
+        fields = ['id', 'is_active', 'name', 'views', 'avg_rating', 'description', 'week_start',
                   'week_end', 'open_time', 'close_time', 'point_type',
                   'link', 'latitude', 'longitude', 'zip_code', 'city',
                   'neighborhood', 'state', 'street', 'number', 'photos']
