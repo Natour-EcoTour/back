@@ -42,4 +42,4 @@ class UpadateTermsSerializer(serializers.ModelSerializer):
         Meta class for UpdateTermsSerializer.
         """
         model = Terms
-        fields = ['content', 'updated_at']
+        fields = ['id', 'content', 'updated_at']

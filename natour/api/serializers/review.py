@@ -39,4 +39,4 @@ class ReviewSerializer(serializers.ModelSerializer):
         Meta Class for ReviewSerializer.
         """
         model = PointReview
-        fields = ['username', 'point_name', 'rating']
+        fields = ['id', 'username', 'point_name', 'rating']
