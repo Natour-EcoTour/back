@@ -84,7 +84,7 @@ def create_terms(request):
 
 
 @get_terms_schema
-@cache_page(300)
+@cache_page(60)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_terms(request, term_id):

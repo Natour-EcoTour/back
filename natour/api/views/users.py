@@ -321,7 +321,6 @@ def get_user_points(request, user_id):
 
 
 @get_my_points_schema
-@cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
