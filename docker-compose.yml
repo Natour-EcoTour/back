@@ -27,7 +27,6 @@ services:
       DATABASE_ENGINE: django.db.backends.postgresql
       DATABASE_NAME: ${DB_NAME}
       DATABASE_USERNAME: ${DB_USER}
-  
       DATABASE_PASSWORD: ${DB_PASSWORD}
       DATABASE_HOST: ${DB_HOST}
       DATABASE_PORT: ${DB_PORT}
@@ -35,6 +34,10 @@ services:
       - .env
     volumes:
       - django_logs:/var/log/django
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 --workers 3 natour.wsgi:application"
 
   prometheus:
     image: prom/prometheus
