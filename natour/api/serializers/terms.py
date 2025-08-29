@@ -17,7 +17,8 @@ class CreateTermsSerializer(serializers.ModelSerializer):
         Meta class for CreateTermsSerializer.
         """
         model = Terms
-        fields = ['content']
+        fields = ['id', 'content']
+        read_only_fields = ['id']
 
 
 class GetTermsSerializer(serializers.ModelSerializer):
@@ -29,11 +30,11 @@ class GetTermsSerializer(serializers.ModelSerializer):
         Meta class for GetTermsSerializer.
         """
         model = Terms
-        fields = ['content', 'updated_at']
+        fields = ['id', 'content', 'updated_at']
         read_only_fields = fields
 
 
-class UpadateTermsSerializer(serializers.ModelSerializer):
+class UpdateTermsSerializer(serializers.ModelSerializer):
     """
     Serializer for updating terms and conditions.
     """
@@ -43,3 +44,4 @@ class UpadateTermsSerializer(serializers.ModelSerializer):
         """
         model = Terms
         fields = ['id', 'content', 'updated_at']
+        read_only_fields = ['id']

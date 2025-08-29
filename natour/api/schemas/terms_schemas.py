@@ -4,7 +4,7 @@ Schema definitions for Terms views.
 from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from drf_spectacular.openapi import OpenApiParameter
 
-from natour.api.serializers.terms import CreateTermsSerializer, GetTermsSerializer, UpadateTermsSerializer
+from natour.api.serializers.terms import CreateTermsSerializer, GetTermsSerializer, UpdateTermsSerializer
 
 
 # Create terms schema
@@ -68,7 +68,7 @@ update_terms_schema = extend_schema(
     tags=['Terms'],
     summary='Update terms and conditions',
     description='Update existing terms and conditions. Admin access required.',
-    request=UpadateTermsSerializer,
+    request=UpdateTermsSerializer,
     parameters=[
         OpenApiParameter(
             name='term_id',

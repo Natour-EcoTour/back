@@ -78,7 +78,8 @@ class CreateUserSerializer(serializers.ModelSerializer):
         Meta class for CreateUserSerializer.
         """
         model = CustomUser
-        fields = ['username', 'email', 'password', 'role']
+        fields = ['id', 'username', 'email', 'password', 'role']
+        read_only_fields = ['id']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -171,6 +172,7 @@ class UserStatusSerializer(serializers.ModelSerializer):
         """
         model = CustomUser
         fields = ['id', 'is_active', 'deactivation_reason']
+        read_only_fields = ['id']
 
     def validate(self, attrs):
         """
