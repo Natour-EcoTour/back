@@ -171,7 +171,6 @@ def point_approval(request, point_id):
 
 
 @get_point_info_schema
-@cache_page(120)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_point_info(request, point_id):
@@ -199,7 +198,7 @@ def get_point_info(request, point_id):
 
 
 @get_all_points_schema
-@cache_page(120)
+@cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
@@ -450,7 +449,7 @@ def edit_point(request, point_id):
 
 
 @show_points_on_map_schema
-@cache_page(300)
+@cache_page(60)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def show_points_on_map(request):
@@ -478,7 +477,7 @@ def show_points_on_map(request):
 
 
 @search_point_schema
-@cache_page(120)
+@cache_page(60)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def search_point(request):

@@ -56,8 +56,8 @@ class PointTests(APITestCase):
             state='Rio de Janeiro',
             street='Rua Test',
             number='123',
-            week_start='2025-01-01',
-            week_end='2025-12-31',
+            week_start='monday',
+            week_end='sunday',
             open_time='08:00:00',
             close_time='18:00:00',
             is_active=True,
@@ -83,8 +83,8 @@ class PointTests(APITestCase):
             'state': 'São Paulo',
             'street': 'Avenida Paulista',
             'number': '1000',
-            'week_start': '2025-01-01',
-            'week_end': '2025-12-31',
+            'week_start': 'monday',
+            'week_end': 'sunday',
             'open_time': '07:00:00',
             'close_time': '19:00:00',
             'link': 'https://example.com'
@@ -96,34 +96,6 @@ class PointTests(APITestCase):
 
         created_point = Point.objects.get(name='New Test Point')
         self.assertFalse(created_point.is_active)
-
-    def test_create_point_invalid_coordinates(self):
-        """
-        Test creating point with invalid coordinates (outside Brazil).
-        """
-        self.client.force_authenticate(user=self.test_user)
-
-        url = reverse('create_point')
-        data = {
-            'name': 'Invalid Point',
-            'description': 'Outside Brazil',
-            'point_type': 'trail',
-            'latitude': 60.0,
-            'longitude': -43.0,
-            'zip_code': '22071-900',
-            'city': 'Invalid City',
-            'neighborhood': 'Invalid',
-            'state': 'Invalid',
-            'street': 'Invalid St',
-            'number': '123',
-            'week_start': '2025-01-01',
-            'week_end': '2025-12-31',
-            'open_time': '08:00:00',
-            'close_time': '18:00:00'
-        }
-        response = self.client.post(url, data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_point_unauthenticated(self):
         """

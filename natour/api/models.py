@@ -97,6 +97,19 @@ class PointTypes(models.TextChoices):
     OTHER = 'other', 'Outro'
 
 
+class WeekDays(models.TextChoices):
+    """
+    Enum representing week days.
+    """
+    MONDAY = 'monday', 'Segunda-feira'
+    TUESDAY = 'tuesday', 'Terça-feira'
+    WEDNESDAY = 'wednesday', 'Quarta-feira'
+    THURSDAY = 'thursday', 'Quinta-feira'
+    FRIDAY = 'friday', 'Sexta-feira'
+    SATURDAY = 'saturday', 'Sábado'
+    SUNDAY = 'sunday', 'Domingo'
+
+
 class Point(models.Model):
     """
     Model representing a point in the system.
@@ -118,8 +131,16 @@ class Point(models.Model):
     )
     is_active = models.BooleanField(default=False)
     description = models.TextField(blank=False, null=False)
-    week_start = models.DateField(blank=False, null=False)
-    week_end = models.DateField(blank=False, null=False)
+    week_start = models.CharField(
+        choices=WeekDays.choices,
+        blank=False,
+        null=False,
+    )
+    week_end = models.CharField(
+        choices=WeekDays.choices,
+        blank=False,
+        null=False,
+    )
     open_time = models.TimeField(blank=False, null=False)
     close_time = models.TimeField(blank=False, null=False)
     point_type = models.CharField(
@@ -131,12 +152,12 @@ class Point(models.Model):
     link = models.URLField(blank=True, null=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
-    zip_code = models.CharField(max_length=20, blank=False, null=False)
-    city = models.CharField(max_length=100, blank=False, null=False)
-    neighborhood = models.CharField(max_length=100, blank=False, null=False)
-    state = models.CharField(max_length=100, blank=False, null=False)
-    street = models.CharField(max_length=200, blank=False, null=False)
-    number = models.CharField(max_length=20, blank=False, null=False)
+    zip_code = models.CharField(max_length=20, blank=True, null=True)
+    city = models.CharField(max_length=100, blank=True, null=True)
+    neighborhood = models.CharField(max_length=100, blank=True, null=True)
+    state = models.CharField(max_length=100, blank=True, null=True)
+    street = models.CharField(max_length=200, blank=True, null=True)
+    number = models.CharField(max_length=20, blank=True, null=True)
     deactivation_reason = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
