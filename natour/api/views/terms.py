@@ -16,7 +16,7 @@ from rest_framework.decorators import permission_classes
 
 from natour.api.models import Terms
 from natour.api.serializers.terms import (CreateTermsSerializer, GetTermsSerializer,
-                                          UpadateTermsSerializer)
+                                          UpdateTermsSerializer)
 from natour.api.methods.send_terms_email import send_updated_terms_email
 from natour.api.schemas.terms_schemas import (
     create_terms_schema,
@@ -149,7 +149,7 @@ def update_terms(request, term_id):
             terms = Terms.objects.select_for_update().get(id=term_id)
             old_content = terms.content
 
-            serializer = UpadateTermsSerializer(
+            serializer = UpdateTermsSerializer(
                 terms, data=request.data, partial=True)
 
             if serializer.is_valid():

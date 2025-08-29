@@ -16,7 +16,8 @@ class CreateReviewSerializer(serializers.ModelSerializer):
         Meta class for CreateReviewSerializer.
         """
         model = PointReview
-        fields = ['rating']
+        fields = ['id', 'rating']
+        read_only_fields = ['id']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -40,3 +41,4 @@ class ReviewSerializer(serializers.ModelSerializer):
         """
         model = PointReview
         fields = ['id', 'username', 'point_name', 'rating']
+        read_only_fields = fields

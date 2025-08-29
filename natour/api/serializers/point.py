@@ -16,10 +16,11 @@ class CreatePointSerializer(serializers.ModelSerializer):
         Meta class for CreatePointSerializer.
         """
         model = Point
-        fields = ['name', 'description', 'week_start',
+        fields = ['id', 'name', 'description', 'week_start',
                   'week_end', 'open_time', 'close_time', 'point_type',
                   'link', 'latitude', 'longitude', 'zip_code', 'city',
                   'neighborhood', 'state', 'street', 'number']
+        read_only_fields = ['id']
 
     def __init__(self, *args, **kwargs):
         """
@@ -101,6 +102,7 @@ class PointStatusSerializer(serializers.ModelSerializer):
         """
         model = Point
         fields = ['id', 'is_active', 'deactivation_reason']
+        read_only_fields = ['id']
 
     def validate(self, attrs):
         """
@@ -152,6 +154,7 @@ class PointMapSearchSerializer(serializers.ModelSerializer):
         """
         model = Point
         fields = ['id', 'name']
+        read_only_fields = fields
 
 
 class PointApprovalSerializer(serializers.ModelSerializer):
@@ -164,6 +167,7 @@ class PointApprovalSerializer(serializers.ModelSerializer):
         """
         model = Point
         fields = ['id', 'is_active', 'status']
+        read_only_fields = fields
 
 
 class PointStatusUser(serializers.ModelSerializer):
@@ -176,3 +180,4 @@ class PointStatusUser(serializers.ModelSerializer):
         """
         model = Point
         fields = ['id', 'is_active']
+        read_only_fields = ['id']

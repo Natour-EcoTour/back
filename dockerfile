@@ -23,8 +23,6 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 COPY --chown=appuser:appuser . .
 
-RUN python manage.py collectstatic --noinput
-
 RUN mkdir -p /app/logs \
  && chown -R appuser:appuser /app/logs \
  && mkdir -p /var/log/django \
