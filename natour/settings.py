@@ -70,6 +70,14 @@ MIDDLEWARE = [
     'django_prometheus.middleware.PrometheusAfterMiddleware'
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://natour.com.br",
+    "https://www.natour.com.br",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -243,7 +251,8 @@ ANYMAIL = {
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 # Loggin
-LOG_DIR = Path('/var/log/django') if os.path.exists('/var/log/django') else BASE_DIR / 'logs'
+LOG_DIR = Path(
+    '/var/log/django') if os.path.exists('/var/log/django') else BASE_DIR / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
 
 LOGGING = {
