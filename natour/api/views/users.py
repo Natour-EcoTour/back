@@ -23,7 +23,7 @@ from natour.api.pagination import CustomPagination
 from natour.api.models import CustomUser
 from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSerializer,
                                          AllUsersSerializer, UserStatusSerializer,
-                                         UserPasswordSerializer)
+                                         UserPasswordSerializer, UserDetailsSerializer)
 from natour.api.serializers.point import PointInfoSerializer, UserPointSerializer
 from natour.api.schemas.user_schemas import (
     get_my_info_schema,
@@ -285,6 +285,18 @@ def change_user_status(request, user_id):
             serializer.errors
         )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsAdminUser])
+def get_user_details(request, user_id):
+    """
+    Endpoint to get detailed information about a specific user.
+    """
+    user = get_object_or_404(
+        CustomUser.objects.select_related('role'), id=user_id)
+    serializer = UserDetailsSerializer(user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @get_user_points_schema

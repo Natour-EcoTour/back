@@ -23,6 +23,21 @@ class GenericUserSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
+class UserDetailsSerializer(serializers.ModelSerializer):
+    """
+    Serializer for detailed user information.
+    """
+
+    class Meta:
+        """
+        Meta class for UserDetailsSerializer.
+        """
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'is_active',
+                  'created_at', 'updated_at']
+        read_only_fields = fields
+
+
 class CustomUserInfoSerializer(serializers.ModelSerializer):
     """
     Serializer for CustomUser model with additional fields.
