@@ -28,7 +28,7 @@ from .api.views.auth import MyTokenObtainPairView, create_user, login, get_refre
 from .api.views.users import (get_my_info, delete_my_account, update_my_info,
                               get_all_users, change_user_status, delete_user_account,
                               get_user_points, get_my_points, update_my_password,
-                              reset_user_password)
+                              reset_user_password, get_user_details)
 
 from .api.views.photo import create_photo, update_photo, get_photo, delete_photo
 
@@ -51,8 +51,10 @@ urlpatterns = [
 
     # API Documentation URLs
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('api/schema/swagger-ui/',
+         SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/schema/redoc/',
+         SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     path("metrics", exports.ExportToDjangoView, name="metrics"),
 
@@ -78,6 +80,7 @@ urlpatterns = [
          update_my_password, name='update_my_password'),
     path('users/<int:user_id>/update/password/',
          reset_user_password, name='update_user_password'),
+    path('users/<int:user_id>/', get_user_details, name='get_user_details'),
 
     # Code verification URL
     path('code/send/', send_verification_code, name='send_verification_code'),
