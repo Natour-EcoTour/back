@@ -92,6 +92,20 @@ class PointInfoSerializer(serializers.ModelSerializer):
         return [photo.image.url for photo in obj.photos.all()]
 
 
+class UserPointSerializer(serializers.ModelSerializer):
+    """
+    Serializer for retrieving points created by a specific user.
+    """
+    class Meta:
+        """
+        Meta class for UserPointSerializer.
+        """
+        model = Point
+        fields = ['id', 'name', 'is_active', 'created_at',
+                  'point_type', 'avg_rating', 'views']
+        read_only_fields = fields
+
+
 class PointStatusSerializer(serializers.ModelSerializer):
     """
     Serializer for updating the status of a point.
