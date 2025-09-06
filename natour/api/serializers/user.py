@@ -153,12 +153,14 @@ class AllUsersSerializer(serializers.ModelSerializer):
     """
     Serializer for retriving all users.
     """
+    points = serializers.IntegerField(source='points_count', read_only=True)
+
     class Meta:
         """
         Meta class for AllUsersSerializer.
         """
         model = CustomUser
-        fields = ['id', 'username', 'email', 'is_active', 'is_staff']
+        fields = ['id', 'username', 'email', 'is_active', 'is_staff', 'points']
         read_only_fields = fields
 
 

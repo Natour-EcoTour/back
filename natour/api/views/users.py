@@ -9,6 +9,7 @@ from django.views.decorators.vary import vary_on_headers
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.db import transaction
+from django.db.models import Count
 
 from django_ratelimit.decorators import ratelimit
 from rest_framework.decorators import api_view
@@ -23,7 +24,7 @@ from natour.api.models import CustomUser
 from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSerializer,
                                          AllUsersSerializer, UserStatusSerializer,
                                          UserPasswordSerializer)
-from natour.api.serializers.point import PointInfoSerializer
+from natour.api.serializers.point import PointInfoSerializer, UserPointSerializer
 from natour.api.schemas.user_schemas import (
     get_my_info_schema,
     update_my_info_schema,
@@ -176,7 +177,9 @@ def get_all_users(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    queryset = CustomUser.objects.select_related('role').only(
+    queryset = CustomUser.objects.select_related('role').annotate(
+        points_count=Count('points')
+    ).only(
         'id', 'username', 'email', 'is_active', 'created_at', 'role__name'
     )
 
@@ -199,10 +202,10 @@ def get_all_users(request):
         serializer = AllUsersSerializer(page, many=True)
         response = paginator.get_paginated_response(serializer.data)
         response.data['total_users'] = total_users
-        return response
+        return Response(response.data, status=status.HTTP_200_OK)
     return Response(
-        {"detail": "Nenhm resultado encontrado.", "total_users": 0},
-        status=status.HTTP_400_BAD_REQUEST
+        {"detail": "Nenhum resultado encontrado.", "total_users": 0},
+        status=status.HTTP_204_NO_CONTENT
     )
 
 
@@ -296,9 +299,7 @@ def get_user_points(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
 
     points = (user.points
-              .prefetch_related('photos', 'reviews')
-              .only('id', 'name', 'description', 'latitude', 'longitude',
-                    'point_type', 'is_active', 'created_at', 'avg_rating')
+              .only('id', 'name', 'point_type', 'is_active', 'created_at', 'avg_rating', 'views')
               .order_by('-created_at'))
 
     point_name = request.query_params.get('name')
@@ -313,7 +314,7 @@ def get_user_points(request, user_id):
 
     points_amount = points.count()
 
-    serializer = PointInfoSerializer(points, many=True)
+    serializer = UserPointSerializer(points, many=True)
     return Response({
         "count": points_amount,
         "points": serializer.data
