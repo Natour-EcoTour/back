@@ -28,14 +28,24 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     Serializer for detailed user information.
     """
 
+    photo = serializers.SerializerMethodField()
+
     class Meta:
         """
         Meta class for UserDetailsSerializer.
         """
         model = CustomUser
-        fields = ['id', 'username', 'email', 'is_active',
+        fields = ['id', 'photo', 'username', 'email', 'is_active',
                   'created_at', 'updated_at']
         read_only_fields = fields
+
+    def get_photo(self, obj):
+        """
+        Get the URL of the user's photo if it exists.
+        """
+        if hasattr(obj, 'photos') and obj.photos:
+            return obj.photos.image.url
+        return None
 
 
 class CustomUserInfoSerializer(serializers.ModelSerializer):

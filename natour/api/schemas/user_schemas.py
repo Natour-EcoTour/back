@@ -5,9 +5,9 @@ from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiExample
 from drf_spectacular.openapi import OpenApiParameter
 
 from natour.api.serializers.user import (
-    CustomUserInfoSerializer, 
+    CustomUserInfoSerializer,
     UpdateUserSerializer,
-    AllUsersSerializer, 
+    AllUsersSerializer,
     UserStatusSerializer,
     UserPasswordSerializer
 )
