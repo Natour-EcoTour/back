@@ -198,7 +198,6 @@ def get_point_info(request, point_id):
 
 
 @get_all_points_schema
-@cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
