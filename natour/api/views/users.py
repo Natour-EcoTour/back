@@ -163,7 +163,6 @@ def update_my_info(request):
 
 
 @get_all_users_schema
-@cache_page(60)
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
