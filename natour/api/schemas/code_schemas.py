@@ -13,9 +13,10 @@ send_verification_code_schema = extend_schema(
         'application/json': {
             'type': 'object',
             'properties': {
+                'username': {'type': 'string', 'description': 'Username for the account'},
                 'email': {'type': 'string', 'format': 'email', 'description': 'Email address to send code to'}
             },
-            'required': ['email']
+            'required': ['username', 'email']
         }
     },
     responses={
@@ -24,7 +25,7 @@ send_verification_code_schema = extend_schema(
             examples=[
                 OpenApiExample(
                     'Success',
-                    value={'detail': 'Código de verificação enviado com sucesso.'}
+                    value={'detail': 'Código de verificação enviado com sucesso. Verifique seu e-mail.'}
                 )
             ]
         ),
