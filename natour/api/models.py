@@ -44,10 +44,10 @@ class Photo(models.Model):
     def clean(self):
         if not self.user and not self.point:
             raise ValidationError(
-                "Foto deve ser atribuida a um usuário ou a um ponto.")
+                "Foto deve ser atribuída a um usuário ou a um ponto.")
         if self.user and self.point:
             raise ValidationError(
-                "Foto só pode ser atribuida a um usuário ou a um ponto, não aos dois.")
+                "Foto só pode ser atribuída a um usuário ou a um ponto, não aos dois.")
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -214,7 +214,7 @@ class PointReview(models.Model):
 
 class Terms(models.Model):
     """
-    Model representing the terms and policy of the plataform.
+    Model representing the terms and policy of the platform.
     """
     id = models.AutoField(primary_key=True)
     content = models.TextField(blank=False, null=False)

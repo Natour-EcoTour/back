@@ -39,7 +39,7 @@ from natour.api.schemas.user_schemas import (
 )
 
 from natour.api.utils.get_ip import get_client_ip
-from natour.api.methods.new_passord import create_new_password
+from natour.api.methods.new_password import create_new_password
 
 logger = logging.getLogger("django")
 

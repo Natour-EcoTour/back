@@ -32,7 +32,7 @@ login_schema = extend_schema(
                         'refresh': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
                         'user': {
                             'id': 1,
-                            'username': 'johndoe',
+                            'username': 'Johnie',
                             'email': 'john@example.com'
                         }
                     }
