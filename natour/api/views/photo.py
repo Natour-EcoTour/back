@@ -1,6 +1,7 @@
 """
 Views for handling photo uploads in the Natour API.
 """
+import logging
 
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
@@ -12,6 +13,7 @@ from cloudinary.exceptions import Error as CloudinaryError
 
 from natour.api.models import Photo, CustomUser, Point
 from natour.api.serializers.photo import PhotoSerializer, PhotoIDSerializer
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.schemas.photo_schemas import (
     create_photo_schema,
     update_photo_schema,
@@ -20,9 +22,13 @@ from natour.api.schemas.photo_schemas import (
 )
 
 
+logger = logging.getLogger("django")
+
+
 @create_photo_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
+@api_logger("photo_creation")
 def create_photo(request, user_id=None, point_id=None):
     """
     Endpoint to upload a photo.
@@ -35,16 +41,20 @@ def create_photo(request, user_id=None, point_id=None):
     elif point_id:
         get_object_or_404(Point, id=point_id)
         data['point'] = point_id
+    
     serializer = PhotoSerializer(data=data)
     if serializer.is_valid():
         photo = serializer.save()
         return Response(PhotoSerializer(photo).data, status=status.HTTP_201_CREATED)
+    
+    log_validation_error("photo_creation", request, serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @update_photo_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+@api_logger("photo_update")
 def update_photo(request, photo_id, user_id=None, point_id=None):
     """Endpoint to update a photo.
     Must provide image + (user or point, not both).
@@ -64,23 +74,34 @@ def update_photo(request, photo_id, user_id=None, point_id=None):
     if new_image:
         # Deleta a imagem antiga do Cloudinary
         if photo.image:
-            # Extrai o public_id do Cloudinary
-            public_id = photo.image.public_id
-            destroy(public_id)
+            try:
+                # Extrai o public_id do Cloudinary
+                public_id = photo.image.public_id
+                destroy(public_id)
+                logger.info("Successfully deleted old image for photo ID %s", photo_id)
+            except CloudinaryError as e:
+                logger.error("Failed to delete old image for photo ID %s: %s", photo_id, str(e))
+                return Response(
+                    {"detail": "Erro ao deletar imagem antiga do Cloudinary."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
 
     serializer = PhotoSerializer(photo, data=data, partial=True)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    log_validation_error("photo_update", request, serializer.errors)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @get_photo_schema
 @api_view(['GET'])
 @permission_classes([IsAuthenticatedOrReadOnly])
+@api_logger("photo_retrieval")
 def get_photo(request):
     """
-    Endpoint
+    Endpoint to retrieve photos by user_id or point_id.
     """
     user_id = request.query_params.get('user_id')
     point_id = request.query_params.get('point_id')
@@ -110,6 +131,7 @@ def get_photo(request):
 @delete_photo_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
+@api_logger("photo_deletion")
 def delete_photo(request):
     """
     Deletes multiple photos from Cloudinary and the database.
@@ -153,22 +175,26 @@ def delete_photo(request):
             )
 
     # All valid: proceed to delete
-    deleted_ids = []
-    deleted_public_ids = []
-
     for photo_id, public_id in zip(ids, public_ids):
         photo = photo_map[photo_id]
         try:
             destroy(public_id)
+            logger.info("Successfully deleted image from Cloudinary: photo_id=%s", photo_id)
         except CloudinaryError as e:
+            logger.error("Failed to delete image from Cloudinary for photo ID %s: %s", photo_id, str(e))
             return Response(
                 {'detail': f'Error deleting Cloudinary image for ID {photo_id}: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        photo.delete()
-        deleted_ids.append(photo_id)
-        deleted_public_ids.append(public_id)
+        
+        try:
+            photo.delete()
+            logger.info("Successfully deleted photo from database: ID=%s", photo_id)
+        except Exception as e:
+            logger.error("Failed to delete photo from database: ID=%s: %s", photo_id, str(e))
+            return Response(
+                {'detail': f'Error deleting photo from database for ID {photo_id}: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
-    return Response(
-        status=status.HTTP_204_NO_CONTENT
-    )
+    return Response(status=status.HTTP_204_NO_CONTENT)

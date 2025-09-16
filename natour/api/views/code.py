@@ -19,6 +19,7 @@ from rest_framework.decorators import permission_classes
 
 from natour.api.methods.create_code import create_code
 from natour.api.models import CustomUser
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.serializers.user import NewUserPasswordSerializer
 from natour.api.schemas.code_schemas import (
     send_verification_code_schema,

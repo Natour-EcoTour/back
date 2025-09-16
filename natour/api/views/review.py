@@ -12,6 +12,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import permission_classes
 
 from natour.api.pagination import CustomPagination
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.serializers.review import CreateReviewSerializer, ReviewSerializer
 from natour.api.models import Point, PointReview
 from natour.api.schemas.review_schemas import (
@@ -27,6 +28,7 @@ logger = logging.getLogger("django")
 @add_review_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@api_logger("review_creation")
 def add_review(request, point_id):
     """
     Add a review for a specific point.

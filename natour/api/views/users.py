@@ -21,6 +21,7 @@ from rest_framework.generics import get_object_or_404
 
 from natour.api.pagination import CustomPagination
 from natour.api.models import CustomUser
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.serializers.user import (CustomUserInfoSerializer, UpdateUserSerializer,
                                          AllUsersSerializer, UserStatusSerializer,
                                          UserPasswordSerializer, UserDetailsSerializer)
@@ -49,6 +50,7 @@ logger = logging.getLogger("django")
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@api_logger("get_user_info")
 def get_my_info(request):
     """
     Endpoint to get the authenticated user's information.
@@ -138,6 +140,7 @@ def delete_user_account(request, user_id):
 @update_my_info_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+@api_logger("update_user_info")
 def update_my_info(request):
     """
     Endpoint to update the authenticated user's information.

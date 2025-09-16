@@ -27,6 +27,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from natour.api.serializers.user import CreateUserSerializer
 from natour.api.models import CustomUser
 from natour.api.utils.get_ip import get_client_ip
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.schemas.auth_schemas import (
     login_schema,
     create_user_schema,
@@ -62,6 +63,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @create_user_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@api_logger("user_creation")
 def create_user(request):
     """
     Endpoint to create a new user.
@@ -172,6 +174,7 @@ def create_user(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @ratelimit(key='ip', rate='5/m', block=True)
+@api_logger("user_login")
 def login(request):
     """
     Endpoint for user login with optional 'remember me' functionality.
@@ -276,6 +279,7 @@ def login(request):
 @get_refresh_token_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@api_logger("refresh_token_generation")
 def get_refresh_token(request):
     """
     View to obtain a new refresh token from logged in user.

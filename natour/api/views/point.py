@@ -20,6 +20,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import permission_classes
 
 from natour.api.pagination import CustomPagination
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.serializers import user
 from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerializer,
                                           PointOnMapSerializer,

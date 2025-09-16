@@ -15,6 +15,7 @@ from rest_framework import status
 from rest_framework.decorators import permission_classes
 
 from natour.api.models import Terms
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.serializers.terms import (CreateTermsSerializer, GetTermsSerializer,
                                           UpdateTermsSerializer)
 from natour.api.methods.send_terms_email import send_updated_terms_email
