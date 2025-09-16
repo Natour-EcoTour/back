@@ -14,11 +14,11 @@ login_schema = extend_schema(
         'application/json': {
             'type': 'object',
             'properties': {
-                'username': {'type': 'string', 'description': 'Username or email'},
+                'email': {'type': 'string', 'format': 'email', 'description': 'User email'},
                 'password': {'type': 'string', 'description': 'User password'},
                 'remember_me': {'type': 'boolean', 'description': 'Extended token lifetime'}
             },
-            'required': ['username', 'password']
+            'required': ['email', 'password']
         }
     },
     responses={
@@ -32,9 +32,11 @@ login_schema = extend_schema(
                         'refresh': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...',
                         'user': {
                             'id': 1,
-                            'username': 'johndoe',
-                            'email': 'john@example.com'
-                        }
+                            'username': 'Johnie',
+                            'email': 'john@example.com',
+                            'role': 'user'
+                        },
+                        'remember_me': False
                     }
                 )
             ]
@@ -44,7 +46,7 @@ login_schema = extend_schema(
             examples=[
                 OpenApiExample(
                     'Invalid credentials',
-                    value={'detail': 'Credenciais inválidas.'}
+                    value={'error': 'E-mail ou senha incorretos.'}
                 )
             ]
         )
@@ -62,12 +64,9 @@ create_user_schema = extend_schema(
             'properties': {
                 'username': {'type': 'string', 'description': 'Unique username'},
                 'email': {'type': 'string', 'format': 'email', 'description': 'User email'},
-                'password': {'type': 'string', 'description': 'User password'},
-                'password_confirm': {'type': 'string', 'description': 'Password confirmation'},
-                'first_name': {'type': 'string', 'description': 'First name'},
-                'last_name': {'type': 'string', 'description': 'Last name'}
+                'password': {'type': 'string', 'description': 'User password'}
             },
-            'required': ['username', 'email', 'password', 'password_confirm']
+            'required': ['username', 'email', 'password']
         }
     },
     responses={
@@ -77,8 +76,10 @@ create_user_schema = extend_schema(
                 OpenApiExample(
                     'Success',
                     value={
-                        'detail': 'Usuário criado com sucesso.',
-                        'user_id': 1
+                        'id': 1,
+                        'username': 'newuser',
+                        'email': 'user@example.com',
+                        'role': 1
                     }
                 )
             ]
@@ -91,8 +92,8 @@ create_user_schema = extend_schema(
                     value={'username': ['A user with that username already exists.']}
                 ),
                 OpenApiExample(
-                    'Password mismatch',
-                    value={'password_confirm': ['Passwords do not match.']}
+                    'Password validation error',
+                    value={'password': ['Senha deve ter pelo menos 8 caracteres, incluindo letras e números.']}
                 )
             ]
         )

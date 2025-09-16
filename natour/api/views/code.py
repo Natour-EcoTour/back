@@ -19,6 +19,7 @@ from rest_framework.decorators import permission_classes
 
 from natour.api.methods.create_code import create_code
 from natour.api.models import CustomUser
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.serializers.user import NewUserPasswordSerializer
 from natour.api.schemas.code_schemas import (
     send_verification_code_schema,
@@ -34,6 +35,7 @@ logger = logging.getLogger("django")
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @ratelimit(key='ip', rate='5/m', block=True)
+@api_logger("verification_code_send")
 def send_verification_code(request):
     """
     View to send a verification code to a user's email.
@@ -41,21 +43,11 @@ def send_verification_code(request):
     target_username = request.data.get('username')
     target_email = request.data.get('email')
 
-    logger.info(
-        "Verification code request received.",
-    )
-
     if not target_email or not target_username:
-        logger.warning(
-            "Verification code request missing email or username.",
-        )
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
     cache_key = f'verification_code:{target_email}'
     if cache.get(cache_key):
-        logger.warning(
-            "Verification code request too soon.",
-        )
         return Response(
             {"detail": "Por favor espere 3 minutos para solicitar outro código."},
             status=status.HTTP_400_BAD_REQUEST
@@ -63,10 +55,6 @@ def send_verification_code(request):
 
     code = create_code()
     cache.set(cache_key, code, timeout=180)
-
-    logger.info(
-        "Verification code generated and cached.",
-    )
 
     html_content = render_to_string(
         'email_templates/validation_code.html',
@@ -94,10 +82,6 @@ def send_verification_code(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-    logger.info(
-        "Verification code email sent successfully.",
-    )
-
     return Response({
         "detail": "Código de verificação enviado com sucesso. Verifique seu e-mail.",
     }, status=status.HTTP_200_OK)
@@ -106,6 +90,7 @@ def send_verification_code(request):
 @verify_code_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@api_logger("verification_code_verify")
 def verify_code(request):
     """
     View to verify the code sent to the user's email.
@@ -113,32 +98,18 @@ def verify_code(request):
     email = request.data.get('email')
     code = request.data.get('code')
 
-    logger.info(
-        "Verification code submission received.",
-    )
-
     cache_key = f'verification_code:{email}'
     cached_code = cache.get(cache_key)
 
     if not cached_code:
-        logger.warning(
-            "Verification code failed: expired or not found.",
-        )
         return Response({"detail": "Código expirado ou não encontrado."},
                         status=status.HTTP_400_BAD_REQUEST)
 
     if cached_code != code:
-        logger.warning(
-            "Verification code failed: incorrect code.",
-        )
         return Response({"detail": "Código incorreto."}, status=status.HTTP_400_BAD_REQUEST)
 
     cache.delete(cache_key)
     cache.set(f'verified_email:{email}', True, timeout=600)
-
-    logger.info(
-        "Verification code successful: email verified.",
-    )
 
     return Response({"detail": "Email verificado com sucesso!"}, status=status.HTTP_200_OK)
 
@@ -146,6 +117,7 @@ def verify_code(request):
 @send_password_reset_code_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@api_logger("password_reset_code_send")
 def send_password_reset_code(request):
     """
     View to send a password reset code to the user's email.
@@ -192,6 +164,7 @@ def send_password_reset_code(request):
 @verify_password_reset_code_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@api_logger("password_reset_code_verify")
 def verify_password_reset_code(request):
     """
     View to verify the password reset code sent to the user's email.

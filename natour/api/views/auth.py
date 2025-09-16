@@ -12,7 +12,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.utils import timezone
 
 from django_ratelimit.decorators import ratelimit
 
@@ -28,6 +27,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from natour.api.serializers.user import CreateUserSerializer
 from natour.api.models import CustomUser
 from natour.api.utils.get_ip import get_client_ip
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.schemas.auth_schemas import (
     login_schema,
     create_user_schema,
@@ -63,17 +63,12 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @create_user_schema
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@api_logger("user_creation")
 def create_user(request):
     """
     Endpoint to create a new user.
     """
     email = request.data.get('email')
-    ip = get_client_ip(request)
-
-    logger.info(
-        "User creation request received for email: %s from IP: %s.",
-        email, ip
-    )
 
     if not request.data:
         return Response(
@@ -88,10 +83,6 @@ def create_user(request):
         )
 
     if not cache.get(f'verified_email:{email}'):
-        logger.warning(
-            "User with email %s (IP: %s) tried creating account before email verification.",
-            email, ip
-        )
         return Response(
             {"detail": "Você precisa validar seu e-mail antes de criar a conta."},
             status=status.HTTP_400_BAD_REQUEST
@@ -109,11 +100,6 @@ def create_user(request):
                     user.is_staff = True
                     user.is_superuser = True
                     user.save(update_fields=['is_staff', 'is_superuser'])
-
-                logger.info(
-                    "User created successfully: %s (ID: %s, IP: %s).",
-                    user.username, user.id, ip
-                )
 
                 try:
                     html_content = render_to_string(
@@ -152,17 +138,9 @@ def create_user(request):
 
                 return Response(CreateUserSerializer(user).data, status=status.HTTP_201_CREATED)
 
-            logger.warning(
-                "User creation failed validation for email %s (IP: %s): %s",
-                email, ip, serializer.errors
-            )
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     except Exception as e:
-        logger.error(
-            "User creation failed for email %s (IP: %s): %s",
-            email, ip, str(e)
-        )
         return Response(
             {"detail": "Erro interno do servidor."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -173,6 +151,7 @@ def create_user(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @ratelimit(key='ip', rate='5/m', block=True)
+@api_logger("user_login")
 def login(request):
     """
     Endpoint for user login with optional 'remember me' functionality.
@@ -182,11 +161,6 @@ def login(request):
     remember_me = request.data.get('remember_me', False)
     ip = get_client_ip(request)
 
-    logger.info(
-        "Login attempt received for email: %s from IP: %s.",
-        email, ip
-    )
-
     if not request.data:
         return Response(
             {"detail": "Dados obrigatórios não fornecidos."},
@@ -194,10 +168,6 @@ def login(request):
         )
 
     if not email or not password:
-        logger.warning(
-            "Login attempt with missing credentials from IP: %s.",
-            ip
-        )
         return Response(
             {"error": "E-mail e senha são obrigatórios."},
             status=status.HTTP_400_BAD_REQUEST
@@ -206,14 +176,10 @@ def login(request):
     try:
         user = (CustomUser.objects
                 .select_related('role')
-                .only('id', 'username', 'email', 'password', 'is_active', 'last_login', 'role__name')
+                .only('id', 'username', 'email', 'is_active', 'last_login', 'role__name')
                 .get(email=email))
 
     except ObjectDoesNotExist:
-        logger.warning(
-            "Login failed: user not found for email %s (IP: %s).",
-            email, ip
-        )
         return Response(
             {"error": "E-mail ou senha incorretos."},
             status=status.HTTP_401_UNAUTHORIZED
@@ -221,21 +187,16 @@ def login(request):
 
     if user.check_password(password):
         if not user.is_active:
-            logger.warning(
-                "Login failed: user %s (ID: %s) is inactive (IP: %s).",
-                user.username, user.id, ip
-            )
             return Response(
                 {"error": "Conta desativada."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        user.save(update_fields=['last_login'])
+
+        refresh = RefreshToken.for_user(user)
+
         with transaction.atomic():
-            user.last_login = timezone.now()
-            user.save(update_fields=['last_login'])
-
-            refresh = RefreshToken.for_user(user)
-
             if remember_me:
                 remember_me_settings = getattr(settings, 'REMEMBER_ME_JWT', {})
                 access_lifetime = remember_me_settings.get(
@@ -247,11 +208,6 @@ def login(request):
                     refresh.access_token.set_exp(lifetime=access_lifetime)
                 if refresh_lifetime:
                     refresh.set_exp(lifetime=refresh_lifetime)
-
-        logger.info(
-            "Login successful for user %s (ID: %s, IP: %s). Remember me: %s",
-            user.username, user.id, ip, remember_me
-        )
 
         return Response({
             "refresh": str(refresh),
@@ -265,10 +221,6 @@ def login(request):
             "remember_me": remember_me
         }, status=status.HTTP_200_OK)
 
-    logger.warning(
-        "Login failed: invalid password for email %s (IP: %s).",
-        email, ip
-    )
     return Response(
         {"error": "E-mail ou senha incorretos."},
         status=status.HTTP_401_UNAUTHORIZED
@@ -278,6 +230,7 @@ def login(request):
 @get_refresh_token_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@api_logger("refresh_token_generation")
 def get_refresh_token(request):
     """
     View to obtain a new refresh token from logged in user.
@@ -285,17 +238,8 @@ def get_refresh_token(request):
     user = request.user
     ip = get_client_ip(request)
 
-    logger.info(
-        "Refresh token request from user %s (ID: %s, IP: %s).",
-        user.username, user.id, ip
-    )
-
     try:
         if not user.is_active:
-            logger.warning(
-                "Refresh token denied: user %s (ID: %s) is inactive (IP: %s).",
-                user.username, user.id, ip
-            )
             return Response(
                 {"detail": "Conta desativada."},
                 status=status.HTTP_403_FORBIDDEN
@@ -303,21 +247,12 @@ def get_refresh_token(request):
 
         refresh_token = RefreshToken.for_user(user)
 
-        logger.info(
-            "Refresh token generated successfully for user %s (ID: %s, IP: %s).",
-            user.username, user.id, ip
-        )
-
         return Response({
             "refresh": str(refresh_token),
             "access": str(refresh_token.access_token)
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
-        logger.error(
-            "Failed to generate refresh token for user %s (ID: %s, IP: %s): %s",
-            user.username, user.id, ip, str(e)
-        )
         return Response(
             {"detail": "Erro interno do servidor."},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR

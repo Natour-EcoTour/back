@@ -20,6 +20,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.decorators import permission_classes
 
 from natour.api.pagination import CustomPagination
+from natour.api.utils.logging_decorators import api_logger, log_validation_error
 from natour.api.serializers import user
 from natour.api.serializers.point import (CreatePointSerializer, PointInfoSerializer,
                                           PointOnMapSerializer,
@@ -48,18 +49,13 @@ logger = logging.getLogger("django")
 @create_point_schema
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+@api_logger("point_creation")
 def create_point(request):
     """
     Create a new point.
     """
     user = request.user
     ip = get_client_ip(request)
-    logger.info(
-        "User '%s' (ID: %s, IP: %s) requested to create a point.",
-        user.username,
-        user.id,
-        ip,
-    )
 
     if not request.data:
         return Response(
@@ -71,37 +67,21 @@ def create_point(request):
     if serializer.is_valid():
         with transaction.atomic():
             point = serializer.save(user=user)
-            logger.info(
-                "Point created successfully by user '%s' (ID: %s). Point ID: %s, Name: '%s'",
-                user.username,
-                user.id,
-                point.id,
-                getattr(point, "name", "<no name>"),
-            )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    logger.warning(
-        "User '%s' (ID: %s) failed to create point due to validation errors: %s",
-        user.username,
-        user.id,
-        serializer.errors,
-    )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @point_approval_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("point_approval")
 def point_approval(request, point_id):
     """
     Approve or reject a point created by a user.
     """
     user = request.user
     ip = get_client_ip(request)
-    logger.info(
-        "Admin '%s' (ID: %s, IP: %s) requested approval/rejection for Point ID: %s.",
-        user.username, user.id, ip, point_id
-    )
 
     if not request.data:
         return Response(
@@ -173,6 +153,7 @@ def point_approval(request, point_id):
 @get_point_info_schema
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@api_logger("point_info_retrieval")
 def get_point_info(request, point_id):
     """
     Get information about a specific point.
@@ -201,6 +182,7 @@ def get_point_info(request, point_id):
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("all_points_retrieval")
 def get_all_points(request):
     """
     Get all points created by all users.
@@ -252,6 +234,7 @@ def get_all_points(request):
 @change_point_status_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+@api_logger("point_status_change")
 def change_point_status(request, point_id):
     """
     Change the status of a point.
@@ -302,6 +285,7 @@ def change_point_status(request, point_id):
 @delete_point_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("point_deletion")
 def delete_point(request, point_id):
     """
     Delete a point.
@@ -347,6 +331,7 @@ def delete_point(request, point_id):
 @delete_my_point_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
+@api_logger("my_point_deletion")
 def delete_my_point(request, point_id):
     """
     Delete a point created by the authenticated user.
@@ -370,6 +355,7 @@ def delete_my_point(request, point_id):
 @add_view_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+@api_logger("point_view_increment")
 def add_view(request, point_id):
     """
     Increment the view count of a point.
@@ -400,6 +386,7 @@ def add_view(request, point_id):
 @edit_point_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
+@api_logger("point_editing")
 def edit_point(request, point_id):
     """
     Edit a point created by the authenticated user.
@@ -451,6 +438,7 @@ def edit_point(request, point_id):
 @cache_page(60)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@api_logger("points_map_view")
 def show_points_on_map(request):
     """
     Get all points to display on the map.
@@ -479,6 +467,7 @@ def show_points_on_map(request):
 @cache_page(60)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@api_logger("point_search")
 def search_point(request):
     """
     Search point by name.

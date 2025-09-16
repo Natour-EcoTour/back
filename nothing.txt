@@ -5,17 +5,12 @@ py manage.py runserver
 
 python manage.py createsuperuser --username admin --email <admin@example.com>
 
-pylint --load-plugins=pylint_django natour
-
-docker run -p 3000:3000 -p 9090:9090 -p 4317:4317 -p 4318:4318 --rm -ti grafana/otel-lgtm
-
-python manage.py runserver 0.0.0.0:8000
-
-
 python3 manage.py shell
 
 from natour.api.models import Role
 role = Role(name="user")
+role.save()
+role = Role(name="master")
 role.save()
 Role.objects.all()
 

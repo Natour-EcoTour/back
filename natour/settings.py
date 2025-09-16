@@ -250,7 +250,7 @@ ANYMAIL = {
 
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
-# Loggin
+# Logging
 LOG_DIR = Path(
     '/var/log/django') if os.path.exists('/var/log/django') else BASE_DIR / 'logs'
 LOG_DIR.mkdir(exist_ok=True)
