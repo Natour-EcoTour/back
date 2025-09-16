@@ -36,7 +36,13 @@
         "appuser",
         "opentelemetry",
         "otlp",
-        "Instrumentor"
+        "Instrumentor",
+        "corsheaders",
+        "authtoken",
+        "anymail",
+        "Brevo",
+        "sendinblue",
+        "levelname"
     ],
     "ignoreWords": [],
     "import": [],

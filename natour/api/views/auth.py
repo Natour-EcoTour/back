@@ -12,7 +12,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from django.utils import timezone
 
 from django_ratelimit.decorators import ratelimit
 
@@ -206,7 +205,7 @@ def login(request):
     try:
         user = (CustomUser.objects
                 .select_related('role')
-                .only('id', 'username', 'email', 'password', 'is_active', 'last_login', 'role__name')
+                .only('id', 'username', 'email', 'is_active', 'last_login', 'role__name')
                 .get(email=email))
 
     except ObjectDoesNotExist:
@@ -230,12 +229,11 @@ def login(request):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        user.save(update_fields=['last_login'])
+
+        refresh = RefreshToken.for_user(user)
+
         with transaction.atomic():
-            user.last_login = timezone.now()
-            user.save(update_fields=['last_login'])
-
-            refresh = RefreshToken.for_user(user)
-
             if remember_me:
                 remember_me_settings = getattr(settings, 'REMEMBER_ME_JWT', {})
                 access_lifetime = remember_me_settings.get(

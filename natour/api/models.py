@@ -69,7 +69,7 @@ class CustomUser(AbstractUser):
         related_name="users",
         blank=False,
         null=True)
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, db_index=True)
     deactivation_reason = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
