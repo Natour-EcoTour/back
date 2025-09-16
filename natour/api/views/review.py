@@ -35,19 +35,11 @@ def add_review(request, point_id):
     """
     user = request.user
     ip = get_client_ip(request)
-    logger.info(
-        "User '%s' (ID: %s, IP: %s) requested to add a review to Point ID: %s.",
-        user.username, user.id, ip, point_id
-    )
 
     point = get_object_or_404(Point, id=point_id)
 
     existing_review = point.reviews.filter(user=user).first()
     if existing_review:
-        logger.warning(
-            "User '%s' (ID: %s) attempted to add a duplicate review for Point ID: %s (Review ID: %s).",
-            user.username, user.id, point_id, existing_review.id
-        )
         return Response(
             {"detail": "Você já avaliou este ponto."},
             status=status.HTTP_400_BAD_REQUEST
@@ -61,22 +53,15 @@ def add_review(request, point_id):
         point.avg_rating = round(avg)
         point.save(update_fields=['avg_rating'])
 
-        logger.info(
-            "User '%s' (ID: %s) added Review ID: %s (Rating: %s) to Point ID: %s. New avg rating: %.2f",
-            user.username, user.id, review.id, review.rating, point_id, avg
-        )
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    logger.warning(
-        "User '%s' (ID: %s) failed to add review to Point ID: %s due to validation errors: %s",
-        user.username, user.id, point_id, serializer.errors
-    )
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @get_user_reviews_schema
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("user_reviews_retrieval")
 def get_user_reviews(request):
     """
     Gets reviews created by users.

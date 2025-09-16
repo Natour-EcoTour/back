@@ -1,0 +1,160 @@
+@startuml Natour Project - Class Diagram
+!theme plain
+skinparam linetype ortho
+skinparam roundcorner 5
+skinparam classAttributeIconSize 0
+
+' Define colors for different types
+skinparam class {
+    BackgroundColor<<Entity>> LightBlue
+    BackgroundColor<<Enum>> LightYellow
+    BackgroundColor<<Abstract>> LightGray
+    BorderColor Black
+}
+
+' Abstract User from Django
+abstract class AbstractUser <<Abstract>> {
+    + id: AutoField
+    + username: CharField
+    + first_name: CharField
+    + last_name: CharField
+    + email: EmailField
+    + is_staff: BooleanField
+    + is_active: BooleanField
+    + is_superuser: BooleanField
+    + last_login: DateTimeField
+    + date_joined: DateTimeField
+    + password: CharField
+    --
+    + check_password(password): bool
+    + set_password(password): void
+    + get_full_name(): str
+    + get_short_name(): str
+}
+
+' Enums
+enum PointTypes <<Enum>> {
+    TRAIL = 'trail'
+    WATER_FALL = 'water_fall'
+    PARK = 'park'
+    FARM = 'farm'
+    OTHER = 'other'
+}
+
+enum WeekDays <<Enum>> {
+    MONDAY = 'monday'
+    TUESDAY = 'tuesday'
+    WEDNESDAY = 'wednesday'
+    THURSDAY = 'thursday'
+    FRIDAY = 'friday'
+    SATURDAY = 'saturday'
+    SUNDAY = 'sunday'
+}
+
+' Main Models
+class Role <<Entity>> {
+    + id: AutoField {PK}
+    + name: CharField(50) {unique}
+    --
+    + __str__(): str
+}
+
+class CustomUser <<Entity>> {
+    + id: AutoField {PK}
+    + role: ForeignKey(Role) {FK, default=1}
+    + email: EmailField {unique, db_index}
+    + deactivation_reason: TextField {null, blank}
+    + created_at: DateTimeField {auto_now_add}
+    + updated_at: DateTimeField {auto_now}
+    --
+    + __str__(): str
+}
+
+class Photo <<Entity>> {
+    + id: AutoField {PK}
+    + image: CloudinaryField
+    + public_id: CharField(255) {null, blank}
+    + user: OneToOneField(CustomUser) {null, blank}
+    + point: ForeignKey(Point) {null, blank}
+    + created_at: DateTimeField {auto_now_add}
+    + updated_at: DateTimeField {auto_now}
+    --
+    + clean(): void
+    + save(*args, **kwargs): void
+    + __str__(): str
+}
+
+class Point <<Entity>> {
+    + id: AutoField {PK}
+    + user: ForeignKey(CustomUser) {FK}
+    + name: CharField(100)
+    + status: BooleanField {default=None, null}
+    + views: IntegerField {default=0, null}
+    + avg_rating: IntegerField {default=0, validators=[0-5]}
+    + is_active: BooleanField {default=False}
+    + description: TextField
+    + week_start: CharField {choices=WeekDays}
+    + week_end: CharField {choices=WeekDays}
+    + open_time: TimeField
+    + close_time: TimeField
+    + point_type: CharField {choices=PointTypes}
+    + link: URLField {null, blank}
+    + latitude: FloatField {null, blank}
+    + longitude: FloatField {null, blank}
+    + zip_code: CharField(20) {null, blank}
+    + city: CharField(100) {null, blank}
+    + neighborhood: CharField(100) {null, blank}
+    + state: CharField(100) {null, blank}
+    + street: CharField(200) {null, blank}
+    + number: CharField(20) {null, blank}
+    + deactivation_reason: TextField {null, blank}
+    + created_at: DateTimeField {auto_now_add}
+    + updated_at: DateTimeField {auto_now}
+    --
+    + __str__(): str
+}
+
+class PointReview <<Entity>> {
+    + id: AutoField {PK}
+    + user: ForeignKey(CustomUser) {FK}
+    + point: ForeignKey(Point) {FK}
+    + rating: IntegerField {validators=[1-5]}
+    + created_at: DateTimeField {auto_now_add}
+    + updated_at: DateTimeField {auto_now}
+    --
+    + __str__(): str
+}
+
+class Terms <<Entity>> {
+    + id: AutoField {PK}
+    + content: TextField
+    + created_at: DateTimeField {auto_now_add}
+    + updated_at: DateTimeField {auto_now}
+    --
+    + __str__(): str
+}
+
+' Relationships
+AbstractUser ||--|| CustomUser : "extends"
+
+Role ||--o{ CustomUser : "role (1:N)"
+CustomUser ||--|| Photo : "user (1:1, optional)"
+CustomUser ||--o{ Point : "user (1:N)"
+CustomUser ||--o{ PointReview : "user (1:N)"
+
+Point ||--o{ Photo : "point (1:N, optional)"
+Point ||--o{ PointReview : "point (1:N)"
+
+Point ||..|| PointTypes : "uses"
+Point ||..|| WeekDays : "uses (week_start, week_end)"
+
+' Notes
+note top of Photo : "A photo can belong to either\na user OR a point, but not both.\nValidated in clean() method."
+
+note right of CustomUser : "Extends Django's AbstractUser\nwith additional fields:\n- role relationship\n- email as unique identifier\n- audit fields"
+
+note bottom of Point : "Central entity representing\necotourism locations with\ngeographic, scheduling, and\nrating information"
+
+note left of PointReview : "Users can review points\nwith ratings from 1-5.\nUsed to calculate Point.avg_rating"
+
+@enduml

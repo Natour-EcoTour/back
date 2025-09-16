@@ -63,20 +63,14 @@ def get_my_info(request):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 @ratelimit(key='user', rate='3/h', block=True)
+@api_logger("delete_my_account")
 def delete_my_account(request):
     """
     Endpoint to delete the authenticated user's account.
     """
     user = request.user
-    logger.info(
-        "Received request to delete user account.",
-    )
 
     user.delete()
-
-    logger.info(
-        "User account deleted successfully.",
-    )
 
     return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -84,6 +78,7 @@ def delete_my_account(request):
 @delete_user_account_schema
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("delete_user_account")
 def delete_user_account(request, user_id):
     """
     Endpoint to delete a user's account by an admin.
@@ -169,6 +164,7 @@ def update_my_info(request):
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("get_all_users")
 def get_all_users(request):
     """
     Endpoint to get a list of all users.
@@ -214,6 +210,7 @@ def get_all_users(request):
 @change_user_status_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("change_user_status")
 def change_user_status(request, user_id):
     """
     Endpoint to change the status of a user.
@@ -291,6 +288,7 @@ def change_user_status(request, user_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("get_user_details")
 def get_user_details(request, user_id):
     """
     Endpoint to get detailed information about a specific user.
@@ -306,6 +304,7 @@ def get_user_details(request, user_id):
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("get_user_points")
 def get_user_points(request, user_id):
     """
     Endpoint to get all points created by a specific user.
@@ -339,6 +338,7 @@ def get_user_points(request, user_id):
 @vary_on_headers("Authorization")
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
+@api_logger("get_my_points")
 def get_my_points(request):
     """
     Endpoint to get all points created by the authenticated user.
@@ -387,6 +387,7 @@ def get_my_points(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 @ratelimit(key='user', rate='10/h', block=True)
+@api_logger("update_my_password")
 def update_my_password(request):
     """
     Endpoint to update the authenticated user's password.
@@ -440,6 +441,7 @@ def update_my_password(request):
 @reset_user_password_schema
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated, IsAdminUser])
+@api_logger("reset_user_password")
 def reset_user_password(request, user_id):
     """
     Endpoint to reset a user's password.
