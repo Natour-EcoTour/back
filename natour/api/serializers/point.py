@@ -86,10 +86,10 @@ class PointInfoSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
     def get_photos(self, obj):
-        """
-        Returns a list of photo URLs associated with the point.
-        """
-        return [photo.image.url for photo in obj.photos.all()]
+        return [
+            {"url": photo.image.url, "public_id": photo.public_id}
+            for photo in obj.photos.all()
+        ]
 
 
 class UserPointSerializer(serializers.ModelSerializer):
