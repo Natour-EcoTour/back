@@ -87,7 +87,7 @@ class PointInfoSerializer(serializers.ModelSerializer):
 
     def get_photos(self, obj):
         return [
-            {"url": photo.image.url, "public_id": photo.public_id}
+            {"url": photo.image.url, "public_id": photo.public_id, "id": photo.id}
             for photo in obj.photos.all()
         ]
 
