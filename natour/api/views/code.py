@@ -42,11 +42,12 @@ def send_verification_code(request):
     """
     target_username = request.data.get('username')
     target_email = request.data.get('email')
-    target_email.lower()
+
     if not target_email or not target_username:
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
     target_email = target_email.strip().lower()
+
     cache_key = f'verification_code:{target_email}'
     if cache.get(cache_key):
         return Response(
@@ -99,6 +100,10 @@ def verify_code(request):
     email = request.data.get('email')
     code = request.data.get('code')
 
+    if not email or not code:
+        return Response({"detail": "E-mail e código são obrigatórios."},
+                        status=status.HTTP_400_BAD_REQUEST)
+
     email = email.strip().lower()
 
     cache_key = f'verification_code:{email}'
@@ -129,6 +134,9 @@ def send_password_reset_code(request):
 
     if not target_email:
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Normalize email for lookups and cache keys
+    target_email = target_email.strip().lower()
 
     if not CustomUser.objects.filter(email=target_email).exists():
         return Response({'detail': 'ok'}, status=status.HTTP_200_OK)
@@ -172,14 +180,17 @@ def verify_password_reset_code(request):
     """
     View to verify the password reset code sent to the user's email.
     """
-    user = get_object_or_404(CustomUser, email=request.data.get('email'))
-
     email = request.data.get('email')
     code = request.data.get('code')
 
+    # Validate presence before any lookups and normalize
     if not email or not code:
         return Response({"detail": "E-mail e código são obrigatórios."},
                         status=status.HTTP_400_BAD_REQUEST)
+
+    email = email.strip().lower()
+
+    user = get_object_or_404(CustomUser, email=email)
 
     cache_key = f'verification_code:{email}'
     cached_code = cache.get(cache_key)
