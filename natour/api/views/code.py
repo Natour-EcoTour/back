@@ -42,10 +42,11 @@ def send_verification_code(request):
     """
     target_username = request.data.get('username')
     target_email = request.data.get('email')
-
+    target_email.lower()
     if not target_email or not target_username:
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
+    target_email = target_email.strip().lower()
     cache_key = f'verification_code:{target_email}'
     if cache.get(cache_key):
         return Response(
@@ -97,6 +98,8 @@ def verify_code(request):
     """
     email = request.data.get('email')
     code = request.data.get('code')
+
+    email = email.strip().lower()
 
     cache_key = f'verification_code:{email}'
     cached_code = cache.get(cache_key)

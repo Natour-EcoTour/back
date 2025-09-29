@@ -103,7 +103,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         Meta class for CreateUserSerializer.
         """
         model = CustomUser
-        fields = ['id', 'username', 'email', 'password', 'role']
+        fields = ['id', 'username', 'email', 'role']
         read_only_fields = ['id']
 
     def __init__(self, *args, **kwargs):

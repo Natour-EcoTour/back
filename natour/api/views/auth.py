@@ -87,6 +87,8 @@ def create_user(request):
             {"detail": "Você precisa validar seu e-mail antes de criar a conta."},
             status=status.HTTP_400_BAD_REQUEST
         )
+    
+    email = email.strip().lower()
 
     try:
         with transaction.atomic():
@@ -172,6 +174,8 @@ def login(request):
             {"error": "E-mail e senha são obrigatórios."},
             status=status.HTTP_400_BAD_REQUEST
         )
+
+    email = email.strip().lower()
 
     try:
         user = (CustomUser.objects
