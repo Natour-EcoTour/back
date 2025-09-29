@@ -82,13 +82,13 @@ def create_user(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
+    email = email.strip().lower()
+
     if not cache.get(f'verified_email:{email}'):
         return Response(
             {"detail": "Você precisa validar seu e-mail antes de criar a conta."},
             status=status.HTTP_400_BAD_REQUEST
         )
-    
-    email = email.strip().lower()
 
     try:
         with transaction.atomic():
