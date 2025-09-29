@@ -41,7 +41,8 @@ class AuthTests(APITestCase):
         data = {
             'username': 'newuser',
             'email': email,
-            'password': 'Aa12345678!'
+            'password': 'Aa12345678!',
+            'role': self.user_role.id
         }
         response = self.client.post(url, data, format='json')
 
