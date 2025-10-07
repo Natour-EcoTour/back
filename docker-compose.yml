@@ -1,17 +1,17 @@
 services:
   db:
-   image: postgres:17
-   environment:
-     POSTGRES_DB: ${DB_NAME}
-     POSTGRES_USER: ${DB_USER}
-     POSTGRES_PASSWORD: ${DB_PASSWORD}
-   ports:
-     - "5432:5432"
-   volumes:
-     - postgres_data:/var/lib/postgresql/data
-   env_file:
-     - .env
- 
+    image: postgres:17
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
   django-web:
     build: .
     container_name: django-docker
@@ -93,9 +93,19 @@ services:
 
   node_exporter:
     image: prom/node-exporter:latest
+    pid: host
     ports: ["9100:9100"]
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host:ro,rslave
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--path.rootfs=/host"
+      - "--collector.filesystem.ignored-mount-points=^/(dev|proc|run|sys|var/lib/docker/.+)($$|/)"
     restart: unless-stopped
 
 volumes:
-    postgres_data:
-    django_logs:
+  postgres_data:
+  django_logs:
