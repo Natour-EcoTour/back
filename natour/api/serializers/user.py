@@ -4,6 +4,8 @@ Serializers for user-related models.
 
 import re
 
+from natour.api.utils.email_anon import mask_email
+
 from django.core.validators import EmailValidator, RegexValidator
 from rest_framework import serializers
 
@@ -14,13 +16,25 @@ class GenericUserSerializer(serializers.ModelSerializer):
     """
     Generic serializer for CustomUser model.
     """
+
+    masked_email = serializers.SerializerMethodField()
+
     class Meta:
         """
         Meta class for GenericUserSerializer.
         """
         model = CustomUser
-        fields = ['id', 'username', 'email', 'role', 'is_active', 'is_staff']
+        fields = ['id', 'username', 'masked_email',
+                  'role', 'is_active', 'is_staff']
         read_only_fields = fields
+
+    def get_masked_email(self, obj):
+        """
+        Return masked email address for the user.
+        """
+        if obj.email:
+            return mask_email(obj.email)
+        return None
 
 
 class UserDetailsSerializer(serializers.ModelSerializer):
@@ -29,13 +43,14 @@ class UserDetailsSerializer(serializers.ModelSerializer):
     """
 
     photo = serializers.SerializerMethodField()
+    masked_email = serializers.SerializerMethodField()
 
     class Meta:
         """
         Meta class for UserDetailsSerializer.
         """
         model = CustomUser
-        fields = ['id', 'photo', 'username', 'email', 'is_active',
+        fields = ['id', 'photo', 'username', 'masked_email', 'is_active',
                   'created_at', 'updated_at']
         read_only_fields = fields
 
@@ -45,6 +60,14 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         """
         if hasattr(obj, 'photos') and obj.photos:
             return obj.photos.image.url
+        return None
+
+    def get_masked_email(self, obj):
+        """
+        Return masked email address for the user.
+        """
+        if obj.email:
+            return mask_email(obj.email)
         return None
 
 
@@ -182,14 +205,24 @@ class AllUsersSerializer(serializers.ModelSerializer):
     Serializer for retriving all users.
     """
     points = serializers.IntegerField(source='points_count', read_only=True)
+    masked_email = serializers.SerializerMethodField()
 
     class Meta:
         """
         Meta class for AllUsersSerializer.
         """
         model = CustomUser
-        fields = ['id', 'username', 'email', 'is_active', 'is_staff', 'points']
+        fields = ['id', 'username', 'masked_email',
+                  'is_active', 'is_staff', 'points']
         read_only_fields = fields
+
+    def get_masked_email(self, obj):
+        """
+        Return masked email address for the user.
+        """
+        if obj.email:
+            return mask_email(obj.email)
+        return None
 
 
 class UserStatusSerializer(serializers.ModelSerializer):

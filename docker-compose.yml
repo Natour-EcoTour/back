@@ -81,6 +81,21 @@ services:
       - ./docker/tempo/config.yml:/etc/tempo/config.yml
     restart: unless-stopped
 
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports: ["8081:8080"]
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    ports: ["9100:9100"]
+    restart: unless-stopped
+
 volumes:
     postgres_data:
     django_logs:
