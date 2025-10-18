@@ -17,3 +17,5 @@ Role.objects.all()
 from django.core.cache import cache
 cache.set("foo", "bar", timeout=60)
 print(cache.get("foo"))
+
+root@natour:~# sudo certbot certonly --standalone -d natour.com.br -d api.natour.com.br -d www.natour.com.br
