@@ -69,13 +69,10 @@ def update_photo(request, photo_id, user_id=None, point_id=None):
 
     photo = get_object_or_404(Photo, id=photo_id)
 
-    # Verifica se está vindo uma nova imagem
     new_image = data.get('image', None)
     if new_image:
-        # Deleta a imagem antiga do Cloudinary
         if photo.image:
             try:
-                # Extrai o public_id do Cloudinary
                 public_id = photo.image.public_id
                 destroy(public_id)
                 logger.info("Successfully deleted old image for photo ID %s", photo_id)
@@ -153,7 +150,6 @@ def delete_photo(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    # Query all matching photos at once
     photos = Photo.objects.filter(id__in=ids)  # pylint: disable=no-member
     if photos.count() != len(ids):
         return Response(
@@ -161,7 +157,6 @@ def delete_photo(request):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    # Build a lookup dict for validation
     photo_map = {photo.id: photo for photo in photos}
 
     for photo_id, public_id in zip(ids, public_ids):
@@ -174,7 +169,6 @@ def delete_photo(request):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    # All valid: proceed to delete
     for photo_id, public_id in zip(ids, public_ids):
         photo = photo_map[photo_id]
         try:

@@ -135,7 +135,6 @@ def send_password_reset_code(request):
     if not target_email:
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Normalize email for lookups and cache keys
     target_email = target_email.strip().lower()
 
     if not CustomUser.objects.filter(email=target_email).exists():
@@ -183,7 +182,6 @@ def verify_password_reset_code(request):
     email = request.data.get('email')
     code = request.data.get('code')
 
-    # Validate presence before any lookups and normalize
     if not email or not code:
         return Response({"detail": "E-mail e código são obrigatórios."},
                         status=status.HTTP_400_BAD_REQUEST)
