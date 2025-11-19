@@ -48,6 +48,10 @@ def send_verification_code(request):
 
     target_email = target_email.strip().lower()
 
+    if CustomUser.objects.filter(email=target_email).exists():
+        return Response({"detail": "Dados inválidos!"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
     cache_key = f'verification_code:{target_email}'
     if cache.get(cache_key):
         return Response(
