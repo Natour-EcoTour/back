@@ -37,7 +37,7 @@ class CodeTests(APITestCase):
         url = reverse('send_verification_code')
         data = {
             'email': 'test@example.com',
-            'username': 'testuser'
+            'username': 'newuser'
         }
         response = self.client.post(url, data, format='json')
 

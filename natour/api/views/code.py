@@ -42,13 +42,21 @@ def send_verification_code(request):
     """
     target_username = request.data.get('username')
     target_email = request.data.get('email')
+    target_username = request.data.get('username')
 
     if not target_email or not target_username:
         return Response({"detail": "Forneça um nome e e-mail."}, status=status.HTTP_400_BAD_REQUEST)
 
+    if not target_username or not target_username:
+        return Response({"detail": "Forneça um username."}, status=status.HTTP_400_BAD_REQUEST)
+
     target_email = target_email.strip().lower()
 
     if CustomUser.objects.filter(email=target_email).exists():
+        return Response({"detail": "Dados inválidos!"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    if CustomUser.objects.filter(username=target_username).exists():
         return Response({"detail": "Dados inválidos!"},
                         status=status.HTTP_400_BAD_REQUEST)
 
